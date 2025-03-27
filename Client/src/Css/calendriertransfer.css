@@ -1,0 +1,152 @@
+#All_calendar{
+  animation: fadeIn 0.9s;
+
+}
+#rediusboxes {
+    border-top-right-radius: 50px;  /* Arrondi en haut à droite */
+    border-bottom-right-radius: 50px;  /* Arrondi en bas à droite */
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+#calendrier_text {
+    font-size: 40px;
+}
+.date-minicalendrier{
+    font-size: 25px;
+    font-weight: bold;
+
+}
+
+#All1{
+    font-weight: bold;
+    background-color: #f4f4f576;
+}
+#All1:hover{
+  font-weight: bold;
+  background-color: #F4F4F5;
+  cursor: pointer;
+}
+
+
+#day_and_date{
+    font-weight: bold;
+    font-size: 20px;
+
+}
+
+#Today1{
+  font-weight: bold;
+  background-color: #f4f4f576;
+  border: 1px solid white;
+  transition: 0.5s;
+  border-radius: 10px;
+
+}
+
+#Today1:hover{
+  font-weight: bold;
+  background-color: #F4F4F5;
+  border: 1px solid white;
+  cursor: pointer;
+  
+
+}
+/* Animation pour le sidebar */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+
+
+.toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Ajustement pour le contenu principal lorsque le sidebar est caché */
+
+.panel{
+    margin-bottom: 800px;
+
+ 
+}
+/* Transfer Details Popup */
+.transfer-popup {
+  animation: fadeIn 0.3s ease-out;
+}
+
+#confirm-btn:hover{
+  background: green;
+  border: green;
+  transition: 0.5s;
+  cursor: pointer;
+  transform: scale(1.3);
+
+}
+#close-btn:hover{
+    background: red;
+    border: red;
+    transition: 0.5s;
+    cursor: pointer;
+    transform: scale(1.3);
+  
+  }
+  /* Ajoutez ceci à votre fichier CSS */
+.date-minicalendrier {
+  transition: background-color 0.2s ease;
+}
+
+.month-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.month-selector-button {
+  padding: 0.25rem 0;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.year-selector {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+.Circlex_day{
+  color: rgba(220, 124, 124, 0.956);
+  
+}
+.Circlex_day:hover{
+  color: red;
+  border: red;
+  transition: 0.5s;
+  cursor: pointer;
+  transform: scale(1.3);
+}
+.check{
+  color: rgba(25, 210, 25, 0.529);
+  
+}
+.check:hover{
+  color: goldenrod;
+  border: goldenrod;
+  transition: 0.5s;
+  cursor: pointer;
+  transform: scale(1.3);
+}
+.text-transfer
+{
+  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+}
+input,select{
+  border-radius: 20px;
+}
+#text_td{
+  font-size:15px;
+}

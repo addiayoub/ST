@@ -1,0 +1,27 @@
+.ALL_Import{
+  animation: fadeIn 0.9s;
+}
+
+.import_btn{
+    background: linear-gradient(to left, #3a96e76e 0%, white 58%);
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    padding: 10px;
+    padding-left: 30%;
+    padding-right: 30%;
+    transition: 0.5s;
+
+    border-radius: 50px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.07);
+
+  }
+.import_btn:hover{
+    background: #3a96e76e;
+    transition: 0.5s;
+    cursor: pointer;
+    color: white;
+  }
+  #CloudUpload{
+    color: #3A96E7;
+}
