@@ -35,8 +35,8 @@ function App() {
         return <div><Magasin/></div>;
       case 'user':
         return <div><Utilisateurs/></div>;
-      case 'list':
-        return <div>List Component</div>;
+      // case 'list':
+      //   return <div>List Component</div>;
       default:
         return <CalendrierTransferts />;
     }

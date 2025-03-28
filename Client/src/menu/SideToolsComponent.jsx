@@ -9,7 +9,7 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent }) => {
     { id: 'boxes', icon: Boxes, tooltip: 'Inventory' },
     { id: 'house', icon: HousePlus, tooltip: 'Add Location' },
     { id: 'user', icon: UserCog, tooltip: 'User Settings' },
-    { id: 'list', icon: List, tooltip: 'List View' }
+    // { id: 'list', icon: List, tooltip: 'List View' }
   ];
 
   return (
