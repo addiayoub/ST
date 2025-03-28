@@ -52,7 +52,7 @@ const FileImportComponent = () => {
             <CloudUpload 
               size={60} 
               className={`mx-auto mb-3 
-                ${isDragOver ? 'text-blue-500' : 'text-gray-400'}
+                ${isDragOver ? 'text-blue-500' : 'text-black-500'}
                 transition-colors duration-300`}
               strokeWidth={0.75}
             />

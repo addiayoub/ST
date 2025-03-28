@@ -60,6 +60,9 @@ const Loader = () => {
         <div className="logo-name">Welcome In STRADIVARIUS Système !</div>
       </div>
       <div className="name-container">
+        <div className="logo-name1">Powered by ID&A TECH</div>
+      </div>
+      <div className="name-container">
         <p className="logo-name2"></p>
       </div>
     </div>
