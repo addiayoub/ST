@@ -195,10 +195,10 @@ const MiniCalendar = ({
           
           <div className="flex justify-center mt-3">
             <button
-              className="text-sm px-3 py-1 rounded hover:bg-gray-500"
+              className="text-sm px-3 py-1 rounded hover: cursor-pointer"
               onClick={handleValidation}
             >
-              <CircleCheckBig className='text-green-500' size={30}/>
+              <CircleCheckBig className='check' size={30}/>
             </button>
           </div>
         </div>
