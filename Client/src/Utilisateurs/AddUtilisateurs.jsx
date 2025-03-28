@@ -1,61 +1,28 @@
 import React, { useState } from 'react';
-import { Boxes, Edit, X } from 'lucide-react';
-import { transfersData, destinations } from '../calendrier_transfert/data';
+import { UserCog, Edit, X } from 'lucide-react';
 import Swal from 'sweetalert2';
-import '../Css/Planification_Inventaires.css';
+import '../Css/Magasin.css';
+import { utilisateursList, userRoles, userStatuses } from '../calendrier_transfert/data';
 
-const Planification_Inventaires = () => {
-  const [inventories, setInventories] = useState(
-    Object.values(transfersData)
-      .flatMap(dateData => 
-        dateData.transfers.filter(transfer => 
-          transfer.status === 'Inventaire'
-        )
-      )
-  );
+const AddUtilisateurs = () => {
+  const [utilisateurs, setUtilisateurs] = useState(utilisateursList);
 
-  const [newInventory, setNewInventory] = useState({
-    date: '',
-    destination: '',
-    comment: ''
+
+  const [newUtilisateur, setNewUtilisateur] = useState({
+    nom: '',
+    prenom: '',
+    matricule: '',
+    role: 'Admin'
   });
 
-  const addInventory = () => {
-    if (newInventory.date && newInventory.destination) {
-      const inventoryToAdd = {
-        id: Date.now(),
-        date: newInventory.date,
-        to: newInventory.destination,
-        comment: newInventory.comment,
-        status: 'Inventaire',
-        showBoxIcon: true
-      };
-      
-      setInventories([...inventories, inventoryToAdd]);
-      setNewInventory({
-        date: '',
-        destination: '',
-        comment: ''
-      });
+  const roles = userRoles;
 
-      Swal.fire({
-        background: 'transparent',
-        title: '<span class="text-white">Succès!</span>',
-        html: '<span class="text-white">L\'inventaire a été planifié avec succès.</span>',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'bg-transparent',
-          title: 'text-white',
-          content: 'text-white'
-        }
-      });
-    } else {
+  const addUtilisateur = () => {
+    if (!newUtilisateur.nom || !newUtilisateur.prenom || !newUtilisateur.matricule) {
       Swal.fire({
         background: 'transparent',
         title: '<span class="text-white">Champs manquants!</span>',
-        html: '<span class="text-white">Veuillez remplir la date et la destination.</span>',
+        html: '<span class="text-white">Veuillez remplir tous les champs obligatoires.</span>',
         icon: 'warning',
         timer: 2000,
         showConfirmButton: false,
@@ -65,10 +32,41 @@ const Planification_Inventaires = () => {
           content: 'text-white'
         }
       });
+      return;
     }
+
+    const utilisateurToAdd = {
+      id: Date.now(),
+      nom: newUtilisateur.nom,
+      prenom: newUtilisateur.prenom,
+      matricule: newUtilisateur.matricule,
+      role: newUtilisateur.role
+    };
+    
+    setUtilisateurs([...utilisateurs, utilisateurToAdd]);
+    setNewUtilisateur({
+      nom: '',
+      prenom: '',
+      matricule: '',
+      role: 'Admin'
+    });
+
+    Swal.fire({
+      background: 'transparent',
+      title: '<span class="text-white">Succès!</span>',
+      html: '<span class="text-white">L\'utilisateur a été ajouté avec succès.</span>',
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'bg-transparent',
+        title: 'text-white',
+        content: 'text-white'
+      }
+    });
   };
 
-  const removeInventory = (id) => {
+  const removeUtilisateur = (id) => {
     Swal.fire({
       background: 'transparent',
       color: 'white',
@@ -133,12 +131,12 @@ const Planification_Inventaires = () => {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        setInventories(inventories.filter(inv => inv.id !== id));
+        setUtilisateurs(utilisateurs.filter(user => user.id !== id));
         
         Swal.fire({
           background: 'transparent',
           title: '<span class="text-white">Supprimé!</span>',
-          html: '<span class="text-white">L\'inventaire a été supprimé.</span>',
+          html: '<span class="text-white">L\'utilisateur a été supprimé.</span>',
           icon: 'success',
           timer: 2000,
           showConfirmButton: false,
@@ -152,7 +150,7 @@ const Planification_Inventaires = () => {
     });
   };
 
-  const editInventory = (inventory) => {
+  const editUtilisateur = (utilisateur) => {
     Swal.fire({
       background: '#007bff45',
       color: 'white',
@@ -162,7 +160,7 @@ const Planification_Inventaires = () => {
         confirmButton: 'custom-swal-confirm-button',
         actions: 'custom-swal-actions'
       },
-      title: 'Modifier l\'inventaire',
+      title: 'Modifier l\'utilisateur',
       html: `
         <style>
           .custom-swal-popup { border-radius: 50px; }
@@ -193,15 +191,17 @@ const Planification_Inventaires = () => {
             color: black;
           }
         </style>
-        <input id="swal-input-date" type="date" class="swal2-input custom-swal-input" 
-          value="${inventory.date}" placeholder="Date">
-        <select id="swal-input-destination" class="swal2-input custom-swal-input">
-          ${destinations.map(dest => 
-            `<option value="${dest}" ${inventory.to === dest ? 'selected' : ''}>${dest}</option>`
+        <input id="swal-input-nom" type="text" class="swal2-input custom-swal-input" 
+          value="${utilisateur.nom}" placeholder="Nom">
+        <input id="swal-input-prenom" type="text" class="swal2-input custom-swal-input" 
+          value="${utilisateur.prenom}" placeholder="Prénom">
+        <input id="swal-input-matricule" type="text" class="swal2-input custom-swal-input" 
+          value="${utilisateur.matricule}" placeholder="Matricule">
+        <select id="swal-input-role" class="swal2-input custom-swal-input">
+          ${roles.map(role => 
+            `<option value="${role}" ${utilisateur.role === role ? 'selected' : ''}>${role}</option>`
           ).join('')}
         </select>
-        <input id="swal-input-comment" type="text" class="swal2-input custom-swal-input" 
-          value="${inventory.comment || ''}" placeholder="Commentaire (optionnel)">
         <div class="w-full flex justify-center space-x-4 pb-4 mt-4">
           <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
@@ -221,9 +221,10 @@ const Planification_Inventaires = () => {
       showCancelButton: false,
       preConfirm: () => {
         return {
-          date: document.getElementById('swal-input-date').value,
-          destination: document.getElementById('swal-input-destination').value,
-          comment: document.getElementById('swal-input-comment').value
+          nom: document.getElementById('swal-input-nom').value,
+          prenom: document.getElementById('swal-input-prenom').value,
+          matricule: document.getElementById('swal-input-matricule').value,
+          role: document.getElementById('swal-input-role').value
         };
       },
       didOpen: () => {
@@ -231,9 +232,10 @@ const Planification_Inventaires = () => {
           Swal.close({ 
             isConfirmed: true, 
             value: {
-              date: document.getElementById('swal-input-date').value,
-              destination: document.getElementById('swal-input-destination').value,
-              comment: document.getElementById('swal-input-comment').value
+              nom: document.getElementById('swal-input-nom').value,
+              prenom: document.getElementById('swal-input-prenom').value,
+              matricule: document.getElementById('swal-input-matricule').value,
+              role: document.getElementById('swal-input-role').value
             }
           });
         });
@@ -244,17 +246,18 @@ const Planification_Inventaires = () => {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        const updatedInventories = inventories.map(inv => 
-          inv.id === inventory.id 
+        const updatedUtilisateurs = utilisateurs.map(user => 
+          user.id === utilisateur.id 
             ? {
-                ...inv, 
-                date: result.value.date,
-                to: result.value.destination,
-                comment: result.value.comment
+                ...user, 
+                nom: result.value.nom,
+                prenom: result.value.prenom,
+                matricule: result.value.matricule,
+                role: result.value.role
               } 
-            : inv
+            : user
         );
-        setInventories(updatedInventories);
+        setUtilisateurs(updatedUtilisateurs);
         
         Swal.fire({
           background: 'transparent',
@@ -275,7 +278,7 @@ const Planification_Inventaires = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewInventory(prev => ({
+    setNewUtilisateur(prev => ({
       ...prev,
       [name]: value
     }));
@@ -285,106 +288,127 @@ const Planification_Inventaires = () => {
     <div className="w-300 relative">
       <div className="bg-white rounded-2xl border-3 p-4 text-center">
         <div className="mb-4">
-          <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3" />
+          <UserCog strokeWidth={0.75} size={60} className="mx-auto mb-3" />
           
-          <div className="mb-3 grid grid-cols-3 gap-2">
+          <div className="mb-3 grid grid-cols-4 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
               <input
-                type="date"
-                name="date"
-                value={newInventory.date}
+                type="text"
+                name="nom"
+                value={newUtilisateur.nom}
                 onChange={handleInputChange}
+                placeholder="Doe"
                 className="w-full px-3 py-2 border rounded-lg"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+              <input
+                type="text"
+                name="prenom"
+                value={newUtilisateur.prenom}
+                onChange={handleInputChange}
+                placeholder="John"
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Matricule</label>
+              <input
+                type="text"
+                name="matricule"
+                value={newUtilisateur.matricule}
+                onChange={handleInputChange}
+                placeholder="EMP001"
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
               <select
-                name="destination"
-                value={newInventory.destination}
+                name="role"
+                value={newUtilisateur.role}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-lg"
               >
-                <option value="">Sélectionnez une destination</option>
-                {destinations.map((dest, index) => (
-                  <option key={index} value={dest}>{dest}</option>
+                {roles.map((role, index) => (
+                  <option key={index} value={role}>{role}</option>
                 ))}
               </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
-              <input
-                type="text"
-                name="comment"
-                value={newInventory.comment}
-                onChange={handleInputChange}
-                placeholder="Optionnel"
-                className="w-full px-3 py-2 border rounded-lg"
-              />
             </div>
           </div>
 
           <button
-            onClick={addInventory}
+            onClick={addUtilisateur}
             className="import_btn"
           >
-            Planifier Inventaire
+            Ajouter Utilisateur
           </button>
         </div>
       </div>
       <br />
       <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto">
         <h3 className="font-medium text-gray-700 mb-2 text-center">
-          Liste des Inventaires Planifiés
-          <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${inventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
-            {inventories.length}
+          Liste des Utilisateurs
+          <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${utilisateurs.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
+            {utilisateurs.length}
           </span>
         </h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
+                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
+                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
+                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
                 <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {inventories.map((inventory) => (
-                <tr key={inventory.id}>
+              {utilisateurs.map((utilisateur) => (
+                <tr key={utilisateur.id}>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.nom}</td>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.prenom}</td>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.matricule}</td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.date || 'Non spécifiée'}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.to}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.comment || '-'}
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${utilisateur.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 
+                        'bg-gray-100 text-gray-800'}`}>
+                      {utilisateur.role}
+                    </span>
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center justify-center space-x-2">
                       <button
-                        onClick={() => editInventory(inventory)}
+                        onClick={() => editUtilisateur(utilisateur)}
                         className="edit_Inv p-1 rounded-full hover:bg-blue-100"
                         title="Modifier"
                       >
                         <Edit size={16}  />
                       </button>
                       <button
-                        onClick={() => removeInventory(inventory.id)}
+                        onClick={() => removeUtilisateur(utilisateur.id)}
                         className="remove_Inv p-1 rounded-full hover:bg-red-100"
                         title="Supprimer"
                       >
-                        <X size={16} />
+                        <X size={16}  />
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {utilisateurs.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
+                    Aucun utilisateur enregistré
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -393,4 +417,4 @@ const Planification_Inventaires = () => {
   );
 };
 
-export default Planification_Inventaires;
+export default AddUtilisateurs;

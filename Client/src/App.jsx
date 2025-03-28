@@ -5,6 +5,8 @@ import Loader from './Loader/Loader';
 import "./App.css"
 import Importer from './Importer/Importer';
 import Inventaires from './Planification_Inventaires/Inventaires';
+import Magasin from './Magasin/Magasin';
+import Utilisateurs from './Utilisateurs/Utilisateurs';
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('calendar');
@@ -30,9 +32,9 @@ function App() {
       case 'boxes':
         return <div><Inventaires/></div>;
       case 'house':
-        return <div>House Component</div>;
+        return <div><Magasin/></div>;
       case 'user':
-        return <div>User Configuration Component</div>;
+        return <div><Utilisateurs/></div>;
       case 'list':
         return <div>List Component</div>;
       default:
@@ -42,7 +44,7 @@ function App() {
 
   // Si le chargement est en cours, afficher le Loader
   if (isLoading) {
-  //  return <Loader />;
+   return <Loader />;
   }
 
   return (

@@ -303,12 +303,18 @@ const CalendrierTransferts = () => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() - 1);
     setCurrentMonth(newMonth);
+    // Mettre à jour également selectedWeek si nécessaire
+    const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
+    setSelectedWeek(firstDayOfNewMonth);
   };
-
+  
   const goToNextMonth = () => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + 1);
     setCurrentMonth(newMonth);
+    // Mettre à jour également selectedWeek si nécessaire
+    const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
+    setSelectedWeek(firstDayOfNewMonth);
   };
 
   const goToPrevWeek = () => {
@@ -392,7 +398,7 @@ const CalendrierTransferts = () => {
           {isMiniCalendarVisible && (
             <>
               <MiniCalendar
-                currentMonth={selectedWeek ? new Date(selectedWeek) : currentMonth}
+                currentMonth={currentMonth}
                 miniCalendarDays={miniCalendarDays}
                 selectedDay={selectedDay}
                 goToPrevMonth={goToPrevMonth}
