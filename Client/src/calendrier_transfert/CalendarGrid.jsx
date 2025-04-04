@@ -2,7 +2,7 @@ import React from 'react';
 import { Boxes } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { transferOptions} from './data';
+import { transferOptions } from './data';
 const MySwal = withReactContent(Swal);
 import '../Css/calendriertransfer.css';
 
@@ -26,20 +26,22 @@ const CalendarGrid = ({
     };
 
     MySwal.fire({
-      background: '#007bff45',
+      background: transfer.showBoxIcon ? '#fff' : '#FFF',
       html: (
-        <div  className="p-4 space-y-4">
-          <div className="text-transfer font-semibold mb-4 text-white">Détails {transfer.showBoxIcon ? "de l'Inventaire" : "du Transfert"}</div>
+        <div className="p-4 space-y-4">
+          <div className="text-transfer font-semibold mb-4 text-black">
+            Détails {transfer.showBoxIcon ? "de l'Inventaire" : "du Transfert"}
+          </div>
           
           {transfer.showBoxIcon ? (
-            // Inventory-specific details
+            // Détails spécifiques à l'inventaire
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <strong className="block mb-1 text-white">Emplacement :</strong>
+                <strong className="block mb-1 text-black">Emplacement :</strong>
                 <select 
                   name="to"
                   defaultValue={transfer.to || ''} 
-                  className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded" 
                 >
                   {transferOptions.toOptions.map((option, index) => (
                     <option key={index} value={option} className="text-black">
@@ -50,21 +52,21 @@ const CalendarGrid = ({
               </div>
               
               <div>
-                <strong className="block mb-1 text-white">Date :</strong>
+                <strong className="block mb-1 text-black">Date :</strong>
                 <input 
                   type="date" 
                   name="date"
                   defaultValue={convertToDateInput(transfer.date || '')} 
-                  className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                  className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded" 
                 />
               </div>
               
               <div>
-                <strong className="block mb-1 text-white">Statut :</strong>
+                <strong className="block mb-1 text-black">Statut :</strong>
                 <select 
                   name="status"
                   defaultValue={transfer.status || ''} 
-                  className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded" 
                 >
                   {transferOptions.statusOptions.map((option, index) => (
                     <option key={index} value={option} className="text-black">
@@ -75,16 +77,16 @@ const CalendarGrid = ({
               </div>
             </div>
           ) : (
-            // Existing transfer details (unchanged)
+            // Détails existants du transfert
             <>
               <div className="grid grid-cols-2 gap-4">
                 {!transfer.showBoxIcon && (
                   <div>
-                    <strong className="block mb-1 text-white">De :</strong>
+                    <strong className="block mb-1 text-black">De :</strong>
                     <select 
                       name="from"
                       defaultValue={transfer.from || ''} 
-                      className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                      className="w-full p-2 border border-black text-black bg-transparent rounded" 
                     >
                       {transferOptions.fromOptions.map((option, index) => (
                         <option key={index} value={option} className="text-black">
@@ -96,11 +98,11 @@ const CalendarGrid = ({
                 )}
                 
                 <div>
-                  <strong className="block mb-1 text-white">{transfer.showBoxIcon ? "Emplacement" : "Vers :"}</strong>
+                  <strong className="block mb-1 text-black">{transfer.showBoxIcon ? "Emplacement" : "Vers :"}</strong>
                   <select 
                     name="to"
                     defaultValue={transfer.to || ''} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   >
                     {transferOptions.toOptions.map((option, index) => (
                       <option key={index} value={option} className="text-black">
@@ -113,43 +115,42 @@ const CalendarGrid = ({
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <strong className="block mb-1 text-white">Commentaire :</strong>
+                  <strong className="block mb-1 text-blackblack">Commentaire :</strong>
                   <input 
                     type="text" 
                     name="comment"
                     defaultValue={transfer.comment || ''} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-blackblack text-blackblack bg-transparent rounded" 
                   />
                 </div>
                 
                 <div>
-                  <strong className="block mb-1 text-white">Quantité:</strong>
+                  <strong className="block mb-1 text-blackblack">Quantité :</strong>
                   <input 
                     type="number" 
                     name="quantity"
                     defaultValue={transfer.quantity || ''} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <strong className="block mb-1 text-white">Numéro de Document:</strong>
+                  <strong className="block mb-1 text-black">Numéro de document :</strong>
                   <input 
                     type="text" 
                     name="documentNumber"
                     defaultValue={transfer.documentNumber || ''} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   />
                 </div>
-                
                 <div>
-                  <strong className="block mb-1 text-white">Statut :</strong>
+                  <strong className="block mb-1 text-black">Statut :</strong>
                   <select 
                     name="status"
                     defaultValue={transfer.status || ''} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   >
                     {transferOptions.statusOptions.map((option, index) => (
                       <option key={index} value={option} className="text-black">
@@ -162,12 +163,12 @@ const CalendarGrid = ({
               
               <div className="grid grid-cols-2 gap-4 ">
                 <div>
-                  <strong className="block mb-1 text-white">Date :</strong>
+                  <strong className="block mb-1 text-black">Date :</strong>
                   <input 
                     type="date" 
                     name="date"
                     defaultValue={convertToDateInput(transfer.date || '')} 
-                    className="w-full p-2 border border-white text-white bg-transparent rounded" 
+                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   />
                 </div>
               </div>
@@ -246,7 +247,7 @@ const CalendarGrid = ({
           
           MySwal.fire({
             background: 'transparent',
-            title: '<span class="text-white">Confirmé!</span>',
+            title: '<span class="text-white">Confirmé !</span>',
             html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
             icon: 'success',
             timer: 2000,
@@ -262,7 +263,7 @@ const CalendarGrid = ({
     });
   };
 
-return (
+  return (
     <table className="w-full border-collapse">
       <thead>
         <tr>
@@ -285,7 +286,6 @@ return (
         </tr>
       </thead>
       <tbody>
-        {/* Créer 5 lignes pour les transferts et lignes vides */}
         {Array.from({ length: 5 }).map((_, transferRowIndex) => (
           <tr key={`transfer-row-${transferRowIndex}`}>
             {Object.keys(transfersData).map((day, dayIndex) => {
@@ -309,9 +309,11 @@ return (
                 >
                   {transfer && (
                     <div 
-                      className={`p-4 m-2 border-l-4 rounded ${getBorderColor(transfer.type)} ${getBgColor(transfer.type)} ${
-                        selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''
-                      }`}
+                      className={`p-4 m-2 border-l-4 rounded ${
+                        transfer.showBoxIcon 
+                          ? 'border-yellow-500 bg-yellow-100' 
+                          : `${getBorderColor(transfer.type)} ${getBgColor(transfer.type)}`
+                      } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''}`}
                       onClick={(e) => {
                         handleTransferClick(transfer, dayData.date, e);
                         showTransferDetails(transfer, dayData);
@@ -328,9 +330,9 @@ return (
                         <>
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
-                            <div className="text-sm font-medium"id='text_td'>De: {transfer.from}</div>
+                            <div className="text-sm font-medium" id='text_td'>De : {transfer.from}</div>
                           </div>
-                          <div className="text-sm ml-4"id='text_td'>À: {transfer.to}</div>
+                          <div className="text-sm ml-4" id='text_td'>À : {transfer.to}</div>
                         </>
                       )}
                     </div>

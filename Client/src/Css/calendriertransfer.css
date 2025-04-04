@@ -2,12 +2,23 @@
   animation: fadeIn 0.9s;
 
 }
+#nav{
+  background: linear-gradient(to right, #1A5B5B, #297F7F, #fff,#fff);
+  color: white;
+  padding: 10px;
+  border-radius: 50px;
+  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5) ;
+
+}
 #rediusboxes {
     border-top-right-radius: 50px;  /* Arrondi en haut à droite */
     border-bottom-right-radius: 50px;  /* Arrondi en bas à droite */
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-}
+    background: linear-gradient( #1A5B5B, #297F7F ,#297f7f79 );
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5) ;
+
+  }
 #calendrier_text {
     font-size: 40px;
 }
@@ -75,7 +86,12 @@
 .transfer-popup {
   animation: fadeIn 0.3s ease-out;
 }
+#confirm-btn{
+  background: rgba(0, 128, 0, 0.387);
+  border: rgba(0, 128, 0, 0.387);
+  transition: 0.5s;
 
+}
 #confirm-btn:hover{
   background: green;
   border: green;
@@ -83,6 +99,12 @@
   cursor: pointer;
   transform: scale(1.3);
 
+}
+#close-btn{
+  background: rgba(255, 0, 0, 0.487);
+  border: rgba(255, 0, 0, 0.487);
+  transition: 0.5s;
+  
 }
 #close-btn:hover{
     background: red;

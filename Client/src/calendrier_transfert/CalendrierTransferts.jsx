@@ -5,6 +5,7 @@ import '../Css/calendriertransfer.css';
 import { PanelLeft, PanelLeftOpen } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import logo from "/Logo-nesk-investment@2x.png";
 
 import { 
   daysOfWeek, 
@@ -43,7 +44,7 @@ const CalendrierTransferts = () => {
   const [filter, setFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeLegend, setActiveLegend] = useState(null);
-
+  const appVersion = "1.0.0"; // ou importée depuis package.json
   const updateTransfer = (date, updatedTransfer) => {
     setTransfersData(prevData => {
       const dateStr = formatDateToKey(date);
@@ -217,6 +218,12 @@ const CalendrierTransferts = () => {
     
     return result;
   };
+  const handleWeekSelect = (weekStart) => {
+    const newWeekStart = new Date(weekStart);
+    setSelectedWeek(newWeekStart);
+    setCurrentMonth(new Date(newWeekStart)); // Synchroniser le mois affiché
+    setSelectedDay(newWeekStart.getDate()); // Synchroniser le jour sélectionné
+  };
 
   const handleFilterAll = () => {
     setActiveFilter('all');
@@ -291,7 +298,7 @@ const CalendrierTransferts = () => {
     date.setDate(selectedDay);
     if (isNaN(date.getTime())) return '';
     
-    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const dayNames = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
     const dayName = dayNames[date.getDay()];
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -394,7 +401,7 @@ const CalendrierTransferts = () => {
         ref={sidebarRef}
         className={`flex ${isMiniCalendarVisible ? 'w-87' : 'w-0'} transition-all duration-300 overflow-hidden relative`}
       >
-        <div id='rediusboxes' className="bg-black text-white overflow-y-auto flex-1">
+        <div id='rediusboxes' className=" text-white overflow-y-auto flex-1">
           {isMiniCalendarVisible && (
             <>
               <MiniCalendar
@@ -403,9 +410,11 @@ const CalendrierTransferts = () => {
                 selectedDay={selectedDay}
                 goToPrevMonth={goToPrevMonth}
                 goToNextMonth={goToNextMonth}
-                selectDay={selectDay}
+                selectDay={selectDay} 
                 formatMonth={formatMonth}
                 onMonthYearChange={handleMonthYearChange}
+                onWeekSelect={handleWeekSelect} // Nouvelle prop
+
               />
               
               
@@ -417,7 +426,26 @@ const CalendrierTransferts = () => {
                 onLegendClick={handleLegendClick}
                 activeLegend={activeLegend}
               />
-            </>
+
+
+
+<div className="flex flex-col items-center justify-center">
+  <div className="font-medium ">
+  </div>
+  <div className="h-12">
+    <img 
+      src={logo} 
+      alt="IDOA TECH" 
+      className="h-full object-contain"
+    />
+    
+  </div>
+
+</div>
+
+ 
+
+   </>
           )}
         </div>
         
@@ -461,6 +489,10 @@ const CalendrierTransferts = () => {
             onFilterTransfers={handleFilterTransfers}
             activeFilter={activeFilter}
             formatSelectedDate={formatSelectedDate}
+            onWeekSelect={handleWeekSelect} // Nouvelle prop
+            currentMonth={currentMonth} // Nouvelle prop
+
+
           />     
         <div className="flex-1 overflow-auto">
           <CalendarGrid

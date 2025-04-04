@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Boxes, Edit, HousePlus, X } from 'lucide-react';
-import { transfersData, magasinsList } from '../calendrier_transfert/data';
 import Swal from 'sweetalert2';
 import '../Css/Magasin.css';
+import axios from 'axios';
 
 const Add_Magasin = () => {
-  // Utiliser la liste des magasins existants comme état initial
-  const [magasins, setMagasins] = useState(magasinsList);
+  const [magasins, setMagasins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [newMagasin, setNewMagasin] = useState({
     codeInditex: '',
@@ -15,7 +16,50 @@ const Add_Magasin = () => {
     statut: 'active'
   });
 
-  const addMagasin = () => {
+  // Configurer l'instance axios avec token
+  const api = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+
+  // Charger les magasins depuis l'API
+  const fetchMagasins = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('api/magasins');
+      setMagasins(response.data.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Erreur lors du chargement des magasins:', err);
+      setError('Impossible de charger les magasins');
+      setLoading(false);
+      
+      // Si erreur d'authentification, rediriger vers login
+      if (err.response && err.response.status === 401) {
+        Swal.fire({
+          title: 'Session expirée',
+          text: 'Veuillez vous reconnecter',
+          icon: 'warning',
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          // Redirection vers la page de login ou refresh du token
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        });
+      }
+    }
+  };
+
+  // Charger les données au chargement du composant
+  useEffect(() => {
+    fetchMagasins();
+  }, []);
+
+  const addMagasin = async () => {
     // Validation des champs
     if (!newMagasin.codeInditex || !newMagasin.nomMagasin || !newMagasin.codeFutura) {
       Swal.fire({
@@ -34,17 +78,30 @@ const Add_Magasin = () => {
       return;
     }
 
-    // Vérifier si le code Inditex existe déjà
-    const codeExists = magasins.some(
-      mag => mag.codeInditex.toLowerCase() === newMagasin.codeInditex.toLowerCase()
-    );
+    try {
+      const response = await api.post('api/magasins', {
+        codeInditex: newMagasin.codeInditex,
+        nomMagasin: newMagasin.nomMagasin,
+        codeFutura: newMagasin.codeFutura,
+        statut: newMagasin.statut
+      });
 
-    if (codeExists) {
+      // Ajouter le nouveau magasin à la liste
+      setMagasins([response.data.data, ...magasins]);
+      
+      // Réinitialiser le formulaire
+      setNewMagasin({
+        codeInditex: '',
+        nomMagasin: '',
+        codeFutura: '',
+        statut: 'active'
+      });
+
       Swal.fire({
         background: 'transparent',
-        title: '<span class="text-white">Code existant!</span>',
-        html: '<span class="text-white">Ce code Inditex est déjà utilisé.</span>',
-        icon: 'error',
+        title: '<span class="text-white">Succès!</span>',
+        html: '<span class="text-white">Le magasin a été ajouté avec succès.</span>',
+        icon: 'success',
         timer: 2000,
         showConfirmButton: false,
         customClass: {
@@ -53,42 +110,31 @@ const Add_Magasin = () => {
           content: 'text-white'
         }
       });
-      return;
-    }
-
-    const magasinToAdd = {
-      id: Date.now(),
-      codeInditex: newMagasin.codeInditex,
-      nomMagasin: newMagasin.nomMagasin,
-      codeFutura: newMagasin.codeFutura,
-      statut: newMagasin.statut,
-      status: 'Inventaire',
-      showBoxIcon: true
-    };
-    
-    setMagasins([...magasins, magasinToAdd]);
-    setNewMagasin({
-      codeInditex: '',
-      nomMagasin: '',
-      codeFutura: '',
-      statut: 'active'
-    });
-
-    Swal.fire({
-      background: 'transparent',
-      title: '<span class="text-white">Succès!</span>',
-      html: '<span class="text-white">Le magasin a été ajouté avec succès.</span>',
-      icon: 'success',
-      timer: 2000,
-      showConfirmButton: false,
-      customClass: {
-        popup: 'bg-transparent',
-        title: 'text-white',
-        content: 'text-white'
+    } catch (err) {
+      console.error('Erreur lors de l\'ajout du magasin:', err);
+      
+      let errorMessage = 'Une erreur est survenue lors de l\'ajout du magasin.';
+      if (err.response && err.response.data && err.response.data.message) {
+        errorMessage = err.response.data.message;
       }
-    });
+      
+      Swal.fire({
+        background: 'transparent',
+        title: '<span class="text-white">Erreur!</span>',
+        html: `<span class="text-white">${errorMessage}</span>`,
+        icon: 'error',
+        timer: 3000,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'bg-transparent',
+          title: 'text-white',
+          content: 'text-white'
+        }
+      });
+    }
   };
-  const removeMagasin = (id) => {
+
+  const removeMagasin = async (id) => {
     Swal.fire({
       background: 'transparent',
       color: 'white',
@@ -151,30 +197,52 @@ const Add_Magasin = () => {
         `;
         document.head.appendChild(style);
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setMagasins(magasins.filter(mag => mag.id !== id));
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Supprimé!</span>',
-          html: '<span class="text-white">Le magasin a été supprimé.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
-          }
-        });
+        try {
+          await api.delete(`api/magasins/${id}`);
+          
+          // Mettre à jour la liste des magasins
+          setMagasins(magasins.filter(mag => mag.id !== id));
+          
+          Swal.fire({
+            background: 'transparent',
+            title: '<span class="text-white">Supprimé!</span>',
+            html: '<span class="text-white">Le magasin a été supprimé.</span>',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'bg-transparent',
+              title: 'text-white',
+              content: 'text-white'
+            }
+          });
+        } catch (err) {
+          console.error('Erreur lors de la suppression du magasin:', err);
+          
+          Swal.fire({
+            background: 'transparent',
+            title: '<span class="text-white">Erreur!</span>',
+            html: '<span class="text-white">Impossible de supprimer le magasin.</span>',
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'bg-transparent',
+              title: 'text-white',
+              content: 'text-white'
+            }
+          });
+        }
       }
     });
   };
+
   const editMagasin = (magasin) => {
     Swal.fire({
-      background: '#007bff45',
-      color: 'white',
+      background: '#FFF',
+      color: 'black',
       customClass: {
         popup: 'custom-swal-popup',
         input: 'custom-swal-input',
@@ -186,14 +254,14 @@ const Add_Magasin = () => {
         <style>
           .custom-swal-popup { border-radius: 50px; }
           .custom-swal-input { 
-            border: 1px solid white !important; 
-            color: white !important;
+            border: 1px solid black !important; 
+            color: black !important;
             background: transparent !important;
             margin-bottom: 10px;
           }
           .custom-swal-input::placeholder { color: rgba(255,255,255,0.7) !important; }
           .custom-swal-confirm-button { 
-            background-color: white !important; 
+            background-color: black !important; 
             color: blue !important; 
           }
           .custom-swal-actions {
@@ -223,13 +291,13 @@ const Add_Magasin = () => {
           <option value="inactive" ${magasin.statut === 'inactive' ? 'selected' : ''}>Inactif</option>
         </select>
         <div class="w-full flex justify-center space-x-4 pb-4 mt-4">
-          <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
+          <button id="close-btn" class="bg-transparent border text-white   w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/10">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
               <path d="M18 6 6 18"/>
               <path d="m6 6 12 12"/>
             </svg>
           </button>
-          <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
+          <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/10">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
@@ -264,34 +332,58 @@ const Add_Magasin = () => {
           Swal.close();
         });
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedMagasins = magasins.map(mag => 
-          mag.id === magasin.id 
-            ? {
-                ...mag, 
-                codeInditex: result.value.codeInditex,
-                nomMagasin: result.value.nomMagasin,
-                codeFutura: result.value.codeFutura,
-                statut: result.value.statut
-              } 
-            : mag
-        );
-        setMagasins(updatedMagasins);
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Confirmé!</span>',
-          html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
+        try {
+          const updatedData = {
+            codeInditex: result.value.codeInditex,
+            nomMagasin: result.value.nomMagasin,
+            codeFutura: result.value.codeFutura,
+            statut: result.value.statut
+          };
+          
+          const response = await api.put(`api/magasins/${magasin.id}`, updatedData);
+          
+          // Mettre à jour la liste des magasins
+          setMagasins(magasins.map(mag => 
+            mag.id === magasin.id ? response.data.data : mag
+          ));
+          
+          Swal.fire({
+            background: 'transparent',
+            title: '<span class="text-white">Confirmé!</span>',
+            html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'bg-transparent',
+              title: 'text-white',
+              content: 'text-white'
+            }
+          });
+        } catch (err) {
+          console.error('Erreur lors de la modification du magasin:', err);
+          
+          let errorMessage = 'Une erreur est survenue lors de la modification du magasin.';
+          if (err.response && err.response.data && err.response.data.message) {
+            errorMessage = err.response.data.message;
           }
-        });
+          
+          Swal.fire({
+            background: 'transparent',
+            title: '<span class="text-white">Erreur!</span>',
+            html: `<span class="text-white">${errorMessage}</span>`,
+            icon: 'error',
+            timer: 3000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'bg-transparent',
+              title: 'text-white',
+              content: 'text-white'
+            }
+          });
+        }
       }
     });
   };
@@ -306,9 +398,9 @@ const Add_Magasin = () => {
 
   return (
     <div className="w-300 relative">
-      <div className="bg-white rounded-2xl border-3 p-4 text-center">
+      <div className="bg-white rounded-2xl border-3 text-blue-900 p-4 text-center">
         <div className="mb-4">
-          <HousePlus strokeWidth={0.75} size={60} className="mx-auto mb-3" />
+          <HousePlus strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
           
           <div className="mb-3 grid grid-cols-4 gap-2">
             <div>
@@ -363,69 +455,91 @@ const Add_Magasin = () => {
 
           <button
             onClick={addMagasin}
-            className="import_btn"
+            className="addMagasin_btn"
           >
             Ajouter Magasin
           </button>
         </div>
       </div>
       <br />
-      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto">
-        <h3 className="font-medium text-gray-700 mb-2 text-center">
-          Liste des Magasins
-          <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${magasins.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
-            {magasins.length}
-          </span>
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Code Inditex</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du magasin</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Code Futura</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {magasins.map((magasin) => (
-                <tr key={magasin.id}>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.codeInditex}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.nomMagasin}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.codeFutura}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${magasin.statut === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {magasin.statut === 'active' ? 'Actif' : 'Inactif'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => editMagasin(magasin)}
-                        className="edit_Inv p-1 rounded-full hover:bg-blue-100"
-                        title="Modifier"
-                      >
-                        <Edit size={16}  />
-                      </button>
-                      <button
-                        onClick={() => removeMagasin(magasin.id)}
-                        className="remove_Inv p-1 rounded-full hover:bg-red-100"
-                        title="Supprimer"
-                      >
-                        <X size={16}  />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
+        {loading ? (
+          <div className="text-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Chargement des magasins...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-4 text-red-500">
+            {error}
+          </div>
+        ) : (
+          <>
+            <h3 className="font-medium text-gray-700 mb-2 text-center">
+              Liste des Magasins
+              <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${magasins && magasins.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
+                {magasins ? magasins.length : 0}
+              </span>
+            </h3>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Code Inditex</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du magasin</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Code Futura</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200 text-center">
+                  {!magasins || magasins.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                        Aucun magasin trouvé
+                      </td>
+                    </tr>
+                  ) : (
+                    magasins.map((magasin) => (
+                      <tr key={magasin.id}>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.codeInditex}</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.nomMagasin}</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{magasin.codeFutura}</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            ${magasin.statut === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {magasin.statut === 'active' ? 'Actif' : 'Inactif'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex items-center justify-center space-x-2">
+                            <button
+                              onClick={() => editMagasin(magasin)}
+                              className="edit_Inv p-1 rounded-full hover:bg-blue-100"
+                              title="Modifier"
+                            >
+                              <Edit size={16}  />
+                            </button>
+                            <button
+                              onClick={() => removeMagasin(magasin.id)}
+                              className="remove_Inv p-1 rounded-full hover:bg-red-100"
+                              title="Supprimer"
+                            >
+                              <X size={16}  />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-export default Add_Magasin;
+export default Add_Magasin;//

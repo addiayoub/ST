@@ -10,3 +10,12 @@
     text-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Ajoutez ceci à votre fichier CSS */
+.scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Masquer la scrollbar */
+  .max-w-md::-webkit-scrollbar {
+    display: none;
+  }

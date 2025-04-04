@@ -40,7 +40,7 @@ export const userRoles = ['Admin', 'Super Admin'];
 // Statuts utilisateurs
 export const userStatuses = ['active', 'inactive'];
 // Jours de la semaine
-export const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+export const daysOfWeek = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
 
 // Liste des magasins existants
 export const magasinsList = [
@@ -104,7 +104,7 @@ export const transfersData = {
         type: 'yellow', // Changed from blue to yellow for inventory
         to: 'stradi Marrakech',
         status: 'Inventaire',
-        date: '22/02/2021',
+        date: '22/03/2021',
         showBoxIcon: true,
       }
     ] 
@@ -120,7 +120,7 @@ export const transfersData = {
         documentNumber: '456789',
         quantity: 30,
         comment: 'Pantalon',
-        date: '25/02/2021'
+        date: '25/03/2021'
       },
       {
         id: 3,
@@ -131,7 +131,7 @@ export const transfersData = {
         documentNumber: '567890',
         quantity: 10,
         comment: 'Chaussures',
-        date: '25/02/2021'
+        date: '25/03/2021'
       }
     ] 
   },
@@ -146,7 +146,7 @@ export const transfersData = {
         documentNumber: '456789',
         quantity: 30,
         comment: 'Pantalon',
-        date: '26/02/2025'
+        date: '26/03/2025'
       },
       {
         id: 6,
@@ -157,14 +157,14 @@ export const transfersData = {
         documentNumber: '567890',
         quantity: 10,
         comment: 'Chaussures',
-        date: '26/02/2025'
+        date: '26/03/2025'
       },
       {
         id: 7,
         type: 'yellow',
         to: 'stradi Casablanca',
         status: 'Inventaire',
-        date: '16/02/2025',
+        date: '16/03/2025',
         showBoxIcon: true
       }
     ] 

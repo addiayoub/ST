@@ -4,7 +4,7 @@ import '../Css/calendriertransfer.css';
 
 const MainCalendarHeader = () => {
   return (
-    <div className="flex items-center justify-between p-5 bg-white">
+    <div id='nav' className="flex items-center justify-between p-5 ">
       <div>
         <h1 id="calendrier_text">Calendrier des transferts</h1>
       </div>

@@ -42,7 +42,7 @@ const FileImportComponent = () => {
       <div className="w-300 relative">
         <div 
           className={`bg-white rounded-2xl border-3 p-4 text-center 
-            ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
+            ${isDragOver ? 'border-blue-900 bg-blue-50' : 'border-gray-300'}
             transition-all duration-300`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -52,7 +52,7 @@ const FileImportComponent = () => {
             <CloudUpload 
               size={60} 
               className={`mx-auto mb-3 
-                ${isDragOver ? 'text-blue-500' : 'text-black-500'}
+                ${isDragOver ? 'text-blue-900' : 'text-black-500'}
                 transition-colors duration-300`}
               strokeWidth={0.75}
             />
@@ -78,7 +78,7 @@ const FileImportComponent = () => {
         </div>
         <br />
         <div className={`bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto
-          ${files.length > 0 ? 'border-blue-500' : 'border-gray-300'} transition-colors duration-300`}>
+          ${files.length > 0 ? 'border-blue-900' : 'border-gray-300'} transition-colors duration-300`}>
           <h3 className="font-medium text-gray-700 mb-2 text-center">
             Fichiers importés
             <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white 

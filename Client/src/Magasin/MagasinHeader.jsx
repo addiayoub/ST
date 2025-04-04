@@ -4,7 +4,7 @@ import '../Css/Magasin.css';
 
 const MagasinHeader = () => {
   return (
-<div className="flex items-center justify-between p-5 bg-white">
+<div id='nav' className="flex items-center justify-between p-5">
       <div>
         <h1 id="calendrier_text">Gestion des magasins</h1>
       </div>

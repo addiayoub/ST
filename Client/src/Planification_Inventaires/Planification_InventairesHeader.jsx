@@ -4,7 +4,7 @@ import '../Css/Planification_Inventaires.css';
 
 const Planification_InventairesHeader = () => {
   return (
-<div className="flex items-center justify-between p-5 bg-white">
+<div className="flex items-center justify-between p-5 " id='nav'>
       <div>
         <h1 id="calendrier_text">planification des Inventaires</h1>
       </div>

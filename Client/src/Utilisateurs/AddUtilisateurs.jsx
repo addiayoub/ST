@@ -1,60 +1,71 @@
-import React, { useState } from 'react';
-import { UserCog, Edit, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UserCog, Edit, X, Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
-import '../Css/Magasin.css';
-import { utilisateursList, userRoles, userStatuses } from '../calendrier_transfert/data';
+import '../Css/addUtilisateur.css';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
 const AddUtilisateurs = () => {
-  const [utilisateurs, setUtilisateurs] = useState(utilisateursList);
-
-
+  const [utilisateurs, setUtilisateurs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [newUtilisateur, setNewUtilisateur] = useState({
     nom: '',
     prenom: '',
     matricule: '',
+    username: '',
+    password: '',
     role: 'Admin'
   });
 
-  const roles = userRoles;
-
-  const addUtilisateur = () => {
-    if (!newUtilisateur.nom || !newUtilisateur.prenom || !newUtilisateur.matricule) {
-      Swal.fire({
-        background: 'transparent',
-        title: '<span class="text-white">Champs manquants!</span>',
-        html: '<span class="text-white">Veuillez remplir tous les champs obligatoires.</span>',
-        icon: 'warning',
-        timer: 2000,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'bg-transparent',
-          title: 'text-white',
-          content: 'text-white'
+  const roles = ['Super Admin', 'Admin'];
+const togglePasswordVisibility = () => {
+  setShowPassword(!showPassword);
+};
+  // Récupérer tous les utilisateurs
+  const fetchUtilisateurs = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.get(`${API_BASE_URL}/api/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
-      return;
+      setUtilisateurs(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des utilisateurs:', error.response?.data?.message || error.message);
+      showErrorAlert(error.response?.data?.message || 'Erreur lors de la récupération des utilisateurs');
+      setLoading(false);
     }
+  };
 
-    const utilisateurToAdd = {
-      id: Date.now(),
-      nom: newUtilisateur.nom,
-      prenom: newUtilisateur.prenom,
-      matricule: newUtilisateur.matricule,
-      role: newUtilisateur.role
-    };
-    
-    setUtilisateurs([...utilisateurs, utilisateurToAdd]);
-    setNewUtilisateur({
-      nom: '',
-      prenom: '',
-      matricule: '',
-      role: 'Admin'
+  useEffect(() => {
+    fetchUtilisateurs();
+  }, []);
+
+  const showErrorAlert = (message) => {
+    Swal.fire({
+      background: 'transparent',
+      title: '<span class="text-white">Erreur!</span>',
+      html: `<span class="text-white">${message}</span>`,
+      icon: 'error',
+      timer: 2000,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'bg-transparent',
+        title: 'text-white',
+        content: 'text-white'
+      }
     });
+  };
 
+  const showSuccessAlert = (message) => {
     Swal.fire({
       background: 'transparent',
       title: '<span class="text-white">Succès!</span>',
-      html: '<span class="text-white">L\'utilisateur a été ajouté avec succès.</span>',
+      html: `<span class="text-white">${message}</span>`,
       icon: 'success',
       timer: 2000,
       showConfirmButton: false,
@@ -66,7 +77,46 @@ const AddUtilisateurs = () => {
     });
   };
 
-  const removeUtilisateur = (id) => {
+  const addUtilisateur = async () => {
+    if (!newUtilisateur.nom || !newUtilisateur.prenom || !newUtilisateur.matricule || 
+        !newUtilisateur.username || !newUtilisateur.password) {
+      showErrorAlert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.post(`${API_BASE_URL}/api/auth/register`, {
+        nom: newUtilisateur.nom,
+        prenom: newUtilisateur.prenom,
+        matricule: newUtilisateur.matricule,
+        username: newUtilisateur.username,
+        password: newUtilisateur.password,
+        role: newUtilisateur.role
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setUtilisateurs([...utilisateurs, data]);
+      setNewUtilisateur({
+        nom: '',
+        prenom: '',
+        matricule: '',
+        username: '',
+        password: '',
+        role: 'Admin'
+      });
+
+      showSuccessAlert('L\'utilisateur a été ajouté avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de l\'utilisateur:', error.response?.data?.message || error.message);
+      showErrorAlert(error.response?.data?.message || 'Erreur lors de l\'ajout de l\'utilisateur');
+    }
+  };
+
+  const removeUtilisateur = async (id) => {
     Swal.fire({
       background: 'transparent',
       color: 'white',
@@ -129,23 +179,21 @@ const AddUtilisateurs = () => {
         `;
         document.head.appendChild(style);
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setUtilisateurs(utilisateurs.filter(user => user.id !== id));
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Supprimé!</span>',
-          html: '<span class="text-white">L\'utilisateur a été supprimé.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
-          }
-        });
+        try {
+          const token = localStorage.getItem('token');
+          await axios.delete(`${API_BASE_URL}/api/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setUtilisateurs(utilisateurs.filter(user => user._id !== id));
+          showSuccessAlert('L\'utilisateur a été supprimé.');
+        } catch (error) {
+          console.error('Erreur lors de la suppression de l\'utilisateur:', error.response?.data?.message || error.message);
+          showErrorAlert(error.response?.data?.message || 'Erreur lors de la suppression de l\'utilisateur');
+        }
       }
     });
   };
@@ -197,6 +245,8 @@ const AddUtilisateurs = () => {
           value="${utilisateur.prenom}" placeholder="Prénom">
         <input id="swal-input-matricule" type="text" class="swal2-input custom-swal-input" 
           value="${utilisateur.matricule}" placeholder="Matricule">
+        <input id="swal-input-username" type="text" class="swal2-input custom-swal-input" 
+          value="${utilisateur.username}" placeholder="Nom d'utilisateur">
         <select id="swal-input-role" class="swal2-input custom-swal-input">
           ${roles.map(role => 
             `<option value="${role}" ${utilisateur.role === role ? 'selected' : ''}>${role}</option>`
@@ -224,6 +274,7 @@ const AddUtilisateurs = () => {
           nom: document.getElementById('swal-input-nom').value,
           prenom: document.getElementById('swal-input-prenom').value,
           matricule: document.getElementById('swal-input-matricule').value,
+          username: document.getElementById('swal-input-username').value,
           role: document.getElementById('swal-input-role').value
         };
       },
@@ -235,6 +286,7 @@ const AddUtilisateurs = () => {
               nom: document.getElementById('swal-input-nom').value,
               prenom: document.getElementById('swal-input-prenom').value,
               matricule: document.getElementById('swal-input-matricule').value,
+              username: document.getElementById('swal-input-username').value,
               role: document.getElementById('swal-input-role').value
             }
           });
@@ -244,36 +296,33 @@ const AddUtilisateurs = () => {
           Swal.close();
         });
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedUtilisateurs = utilisateurs.map(user => 
-          user.id === utilisateur.id 
-            ? {
-                ...user, 
-                nom: result.value.nom,
-                prenom: result.value.prenom,
-                matricule: result.value.matricule,
-                role: result.value.role
-              } 
-            : user
-        );
-        setUtilisateurs(updatedUtilisateurs);
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Confirmé!</span>',
-          html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
-          }
-        });
+        try {
+          const token = localStorage.getItem('token');
+          const { data } = await axios.put(`${API_BASE_URL}/api/users/${utilisateur._id}`, {
+            nom: result.value.nom,
+            prenom: result.value.prenom,
+            matricule: result.value.matricule,
+            username: result.value.username,
+            role: result.value.role
+          }, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+    
+          setUtilisateurs(utilisateurs.map(user => 
+            user._id === utilisateur._id ? data : user
+          ));
+          
+          showSuccessAlert('Les modifications ont été enregistrées.');
+        } catch (error) {
+          console.error('Erreur lors de la modification de l\'utilisateur:', error.response?.data?.message || error.message);
+          showErrorAlert(error.response?.data?.message || 'Erreur lors de la modification de l\'utilisateur');
+        }
       }
-    });
+    })
   };
 
   const handleInputChange = (e) => {
@@ -286,9 +335,9 @@ const AddUtilisateurs = () => {
 
   return (
     <div className="w-300 relative">
-      <div className="bg-white rounded-2xl border-3 p-4 text-center">
+      <div className="bg-white rounded-2xl border-3 p-4 text-center text-blue-900">
         <div className="mb-4">
-          <UserCog strokeWidth={0.75} size={60} className="mx-auto mb-3" />
+          <UserCog strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
           
           <div className="mb-3 grid grid-cols-4 gap-2">
             <div>
@@ -342,76 +391,127 @@ const AddUtilisateurs = () => {
             </div>
           </div>
 
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
+              <input
+                type="text"
+                name="username"
+                value={newUtilisateur.username}
+                onChange={handleInputChange}
+                placeholder="john.doe"
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            
+            <div className="relative">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    value={newUtilisateur.password}
+    onChange={handleInputChange}
+    placeholder="••••••••"
+    className="w-full px-3 py-2 border rounded-lg pr-10"
+  />
+  <button
+    type="button"
+    onClick={togglePasswordVisibility}
+    className="absolute inset-y-0 right-0 pr-3 flex items-center pt-5 "
+    aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+  >
+    {showPassword ? (
+     <Eye id='masquer_btnadd'/>
+    ) : (
+      <EyeOff id='masquer_btnadd'/>
+    )}
+  </button>
+</div>
+          </div>
+
           <button
             onClick={addUtilisateur}
-            className="import_btn"
+            className="addUtilisateur_btn"
           >
             Ajouter Utilisateur
           </button>
         </div>
       </div>
       <br />
-      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto">
+      <div className="bg-white rounded-2xl border-3 text-blue-900 p-4 mb-4 max-h-96 overflow-y-auto">
         <h3 className="font-medium text-gray-700 mb-2 text-center">
           Liste des Utilisateurs
           <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${utilisateurs.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
             {utilisateurs.length}
           </span>
         </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {utilisateurs.map((utilisateur) => (
-                <tr key={utilisateur.id}>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.nom}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.prenom}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.matricule}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${utilisateur.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 
-                        'bg-gray-100 text-gray-800'}`}>
-                      {utilisateur.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => editUtilisateur(utilisateur)}
-                        className="edit_Inv p-1 rounded-full hover:bg-blue-100"
-                        title="Modifier"
-                      >
-                        <Edit size={16}  />
-                      </button>
-                      <button
-                        onClick={() => removeUtilisateur(utilisateur.id)}
-                        className="remove_Inv p-1 rounded-full hover:bg-red-100"
-                        title="Supprimer"
-                      >
-                        <X size={16}  />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {utilisateurs.length === 0 && (
+        {loading ? (
+          <div className="text-center py-4">Chargement...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
-                    Aucun utilisateur enregistré
-                  </td>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Nom</th>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Prénom</th>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Matricule</th>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Nom d'utilisateur</th>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Rôle</th>
+                  <th className="px-4 py-2 text-xs font-medium  
+                  id='masquer_btnadd'uppercase tracking-wider">Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 text-center">
+                {utilisateurs.map((utilisateur) => (
+                  <tr key={utilisateur._id}>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.nom}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.prenom}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.matricule}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.username}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${utilisateur.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 
+                          'bg-gray-100 text-gray-800'}`}>
+                        {utilisateur.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => editUtilisateur(utilisateur)}
+                          className="edit_Inv p-1 rounded-full hover:bg-blue-100"
+                          title="Modifier"
+                        >
+                          <Edit size={16}  />
+                        </button>
+                        <button
+                          onClick={() => removeUtilisateur(utilisateur._id)}
+                          className="remove_Inv p-1 rounded-full hover:bg-red-100"
+                          title="Supprimer"
+                        >
+                          <X size={16}  />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {utilisateurs.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="px-4 py-4 text-center text-sm "
+                    id='masquer_btnadd'>
+                      Aucun utilisateur enregistré
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

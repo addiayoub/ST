@@ -52,16 +52,16 @@ const MiniCalendar = ({
             py-1 
             relative 
             group 
-            hover:bg-gray-400 
+            hover:bg-gray-500 
             transition-colors 
             duration-200'
           onClick={() => setShowMonthYearSelector(!showMonthYearSelector)}
-          title="Select Month and Year"
+          title="Sélectionner le mois et l'année"
         >
           {!showMonthYearSelector ? (
             <>
               <span>{formatMonth(currentMonth).split(' ')[0]} </span>
-              <span className="text-blue-500">{formatMonth(currentMonth).split(' ')[1]}</span>
+              <span className="text-white">{formatMonth(currentMonth).split(' ')[1]}</span>
             </>
           ) : (
             <span></span>
@@ -74,7 +74,7 @@ const MiniCalendar = ({
              left-1/2 
              transform 
              -translate-x-1/2 
-             bg-blue-500 
+             bg-blue-900 
              bg-opacity-70 
              text-white 
              text-xs 
@@ -88,7 +88,7 @@ const MiniCalendar = ({
              group-hover:opacity-100 
              transition-opacity
           ">
-            Select Month and Year
+            Sélectionner le mois et l'année
           </span>
         </div>
         
@@ -109,7 +109,7 @@ const MiniCalendar = ({
              left-1/2 
              transform 
              -translate-x-1/2 
-             bg-blue-500 
+             bg-blue-900 
              bg-opacity-70 
              text-white 
              text-xs 
@@ -142,7 +142,7 @@ const MiniCalendar = ({
              left-1/2 
              transform 
              -translate-x-1/2 
-             bg-blue-500 
+             bg-blue-900 
              bg-opacity-70 
              text-white 
              text-xs 
@@ -169,12 +169,12 @@ const MiniCalendar = ({
             {Array.from({ length: 12 }, (_, i) => (
               <button
                 key={i}
-                className={`py-1 rounded text-sm hover:bg-blue-500 hover:text-white cursor-pointer transition-colors ${
-                  selectedMonth === i ? 'bg-blue-500 text-white font-medium' : ''
+                className={`py-1 rounded text-sm hover:bg-blue-900 hover:text-white cursor-pointer transition-colors ${
+                  selectedMonth === i ? 'bg-blue-900 text-white font-medium' : ''
                 }`}
                 onClick={() => handleMonthSelect(i)}
               >
-                {new Date(0, i).toLocaleString('default', { month: 'short' })}
+                {new Date(0, i).toLocaleString('fr-FR', { month: 'short' })}
               </button>
             ))}
           </div>
@@ -206,40 +206,40 @@ const MiniCalendar = ({
         <table className="w-full">
           <thead>
             <tr>
-              {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, index) => (
+              {['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'].map((day, index) => (
                 <th key={index} className="text-xs py-1">{day}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-  {miniCalendarDays.map((week, weekIndex) => (
-    <tr key={weekIndex}>
-      {week.map((day, dayIndex) => (
-        <td 
-          key={dayIndex} 
-          className={`text-center py-2 cursor-pointer relative ${
-            day.isCurrentDay ? 'font-bold' : ''
-          }`}
-          onClick={() => selectDay(day.day, day.month)}
-        >
-          <div className="relative">
-            <span className={`
-              inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-600
-              ${day.isCurrentDay ? 'bg-blue-500 text-white' : ''}
-              ${day.month !== 'current' && !day.isCurrentDay ? "text-gray-400" : ""}
-              ${day.hasEvent && !day.isCurrentDay ? "text-blue-500 font-semibold" : ""}
-            `}>
-              {day.day}
-            </span>
-            {day.hasEvent && !day.isCurrentDay && (
-              <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></span>
-            )}
-          </div>
-        </td>
-      ))}
-    </tr>
-  ))}
-</tbody>
+            {miniCalendarDays.map((week, weekIndex) => (
+              <tr key={weekIndex}>
+                {week.map((day, dayIndex) => (
+                  <td 
+                    key={dayIndex} 
+                    className={`text-center py-2 cursor-pointer relative ${
+                      day.isCurrentDay ? 'font-bold' : ''
+                    }`}
+                    onClick={() => selectDay(day.day, day.month)}
+                  >
+                    <div className="relative">
+                      <span className={`
+                        inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-600
+                        ${day.isCurrentDay ? 'bg-blue-900 text-white' : ''}
+                        ${day.month !== 'current' && !day.isCurrentDay ? "text-gray-400" : ""}
+                        ${day.hasEvent && !day.isCurrentDay ? "text-blue-900 font-semibold" : ""}
+                      `}>
+                        {day.day}
+                      </span>
+                      {day.hasEvent && !day.isCurrentDay && (
+                        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-900 rounded-full"></span>
+                      )}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
         </table>
       )}
     </div>

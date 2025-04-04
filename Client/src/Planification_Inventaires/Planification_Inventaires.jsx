@@ -283,9 +283,9 @@ const Planification_Inventaires = () => {
 
   return (
     <div className="w-300 relative">
-      <div className="bg-white rounded-2xl border-3 p-4 text-center">
+      <div className="bg-white rounded-2xl text-blue-900 border-3 p-4 text-center">
         <div className="mb-4">
-          <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3" />
+          <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
           
           <div className="mb-3 grid grid-cols-3 gap-2">
             <div>
@@ -329,14 +329,14 @@ const Planification_Inventaires = () => {
 
           <button
             onClick={addInventory}
-            className="import_btn"
+            className="addInventory_btn"
           >
             Planifier Inventaire
           </button>
         </div>
       </div>
       <br />
-      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto">
+      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
         <h3 className="font-medium text-gray-700 mb-2 text-center">
           Liste des Inventaires Planifiés
           <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${inventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
