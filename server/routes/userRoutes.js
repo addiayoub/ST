@@ -13,12 +13,12 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(protect, authorize('Super Admin', 'Admin'), getUsers);
+  .get(protect, authorize('Admin', 'User'), getUsers);
 
 router
   .route('/:id')
-  .get(protect, authorize('Super Admin', 'Admin'), getUserById)
-  .put(protect, authorize('Super Admin', 'Admin'), updateUser)
-  .delete(protect, authorize('Super Admin', 'Admin'), deleteUser);
+  .get(protect, authorize('Admin', 'User'), getUserById)
+  .put(protect, authorize('Admin', 'User'), updateUser)
+  .delete(protect, authorize('Admin', 'User'), deleteUser);
 
 module.exports = router;//

@@ -1,57 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Boxes, Edit, X } from 'lucide-react';
-import { transfersData, destinations } from '../calendrier_transfert/data';
 import Swal from 'sweetalert2';
 import '../Css/Planification_Inventaires.css';
 
 const Planification_Inventaires = () => {
-  const [inventories, setInventories] = useState(
-    Object.values(transfersData)
-      .flatMap(dateData => 
-        dateData.transfers.filter(transfer => 
-          transfer.status === 'Inventaire'
-        )
-      )
-  );
+  const [inventories, setInventories] = useState([]);
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [newInventory, setNewInventory] = useState({
     date: '',
     destination: '',
-    comment: ''
+    comment: '',
+    status: 'Planifié'
   });
 
-  const addInventory = () => {
-    if (newInventory.date && newInventory.destination) {
-      const inventoryToAdd = {
-        id: Date.now(),
-        date: newInventory.date,
-        to: newInventory.destination,
-        comment: newInventory.comment,
-        status: 'Inventaire',
-        showBoxIcon: true
-      };
-      
-      setInventories([...inventories, inventoryToAdd]);
-      setNewInventory({
-        date: '',
-        destination: '',
-        comment: ''
-      });
+  // Helper function to get auth headers
+  const getAuthHeaders = (includeContentType = true) => {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+    
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    return headers;
+  };
 
-      Swal.fire({
-        background: 'transparent',
-        title: '<span class="text-white">Succès!</span>',
-        html: '<span class="text-white">L\'inventaire a été planifié avec succès.</span>',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'bg-transparent',
-          title: 'text-white',
-          content: 'text-white'
+  // Fetch inventories and destinations on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [inventoriesRes, magasinsRes] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
+            headers: getAuthHeaders(false)
+          }),
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
+            headers: getAuthHeaders(false)
+          })
+        ]);
+
+        if (!inventoriesRes.ok) {
+          const errorData = await inventoriesRes.json();
+          throw new Error(errorData.message || 'Failed to fetch inventories');
         }
-      });
-    } else {
+        
+        if (!magasinsRes.ok) {
+          const errorData = await magasinsRes.json();
+          throw new Error(errorData.message || 'Failed to fetch magasins');
+        }
+
+        const inventoriesData = await inventoriesRes.json();
+        const magasinsData = await magasinsRes.json();
+
+        setInventories(inventoriesData.data);
+        setDestinations(magasinsData.data.map(m => m.nomMagasin));
+        setLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+        setLoading(false);
+        showErrorAlert(err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const showErrorAlert = (message) => {
+    Swal.fire({
+      background: 'transparent',
+      title: '<span class="text-white">Erreur!</span>',
+      html: `<span class="text-white">${message}</span>`,
+      icon: 'error',
+      timer: 2000,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'bg-transparent',
+        title: 'text-white',
+        content: 'text-white'
+      }
+    });
+  };
+
+  const showSuccessAlert = (message) => {
+    Swal.fire({
+      background: 'transparent',
+      title: '<span class="text-white">Succès!</span>',
+      html: `<span class="text-white">${message}</span>`,
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'bg-transparent',
+        title: 'text-white',
+        content: 'text-white'
+      }
+    });
+  };
+
+  const addInventory = async () => {
+    if (!newInventory.date || !newInventory.destination) {
       Swal.fire({
         background: 'transparent',
         title: '<span class="text-white">Champs manquants!</span>',
@@ -65,10 +117,37 @@ const Planification_Inventaires = () => {
           content: 'text-white'
         }
       });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          date: newInventory.date,
+          destination: newInventory.destination,
+          comment: newInventory.comment,
+          status: newInventory.status
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create inventory');
+      }
+
+      const createdInventory = await response.json();
+      setInventories([...inventories, createdInventory.data]);
+      setNewInventory({ date: '', destination: '', comment: '', status: 'Planifié' });
+      showSuccessAlert('L\'inventaire a été planifié avec succès');
+    } catch (err) {
+      console.error('Add inventory error:', err);
+      showErrorAlert(err.message);
     }
   };
 
-  const removeInventory = (id) => {
+  const removeInventory = async (id) => {
     Swal.fire({
       background: 'transparent',
       color: 'white',
@@ -131,30 +210,32 @@ const Planification_Inventaires = () => {
         `;
         document.head.appendChild(style);
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setInventories(inventories.filter(inv => inv.id !== id));
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Supprimé!</span>',
-          html: '<span class="text-white">L\'inventaire a été supprimé.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(false)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete inventory');
           }
-        });
+
+          setInventories(inventories.filter(inv => inv._id !== id));
+          showSuccessAlert('L\'inventaire a été supprimé');
+        } catch (err) {
+          console.error('Delete inventory error:', err);
+          showErrorAlert(err.message);
+        }
       }
     });
   };
 
-  const editInventory = (inventory) => {
+  const editInventory = async (inventory) => {
     Swal.fire({
-      background: '#007bff45',
+      background: 'white',
       color: 'white',
       customClass: {
         popup: 'custom-swal-popup',
@@ -165,10 +246,10 @@ const Planification_Inventaires = () => {
       title: 'Modifier l\'inventaire',
       html: `
         <style>
-          .custom-swal-popup { border-radius: 50px; }
+          .custom-swal-popup { border-radius: 50px; color: black !important; }
           .custom-swal-input { 
-            border: 1px solid white !important; 
-            color: white !important;
+            border: 1px solid black !important; 
+            color: black !important;
             background: transparent !important;
             margin-bottom: 10px;
           }
@@ -194,11 +275,17 @@ const Planification_Inventaires = () => {
           }
         </style>
         <input id="swal-input-date" type="date" class="swal2-input custom-swal-input" 
-          value="${inventory.date}" placeholder="Date">
+          value="${inventory.date.split('T')[0]}" placeholder="Date">
         <select id="swal-input-destination" class="swal2-input custom-swal-input">
           ${destinations.map(dest => 
-            `<option value="${dest}" ${inventory.to === dest ? 'selected' : ''}>${dest}</option>`
+            `<option value="${dest}" ${inventory.destination === dest ? 'selected' : ''}>${dest}</option>`
           ).join('')}
+        </select>
+        <select id="swal-input-status" class="swal2-input custom-swal-input">
+          <option value="Planifié" ${inventory.status === 'Planifié' ? 'selected' : ''}>Planifié</option>
+          <option value="En cours" ${inventory.status === 'En cours' ? 'selected' : ''}>En cours</option>
+          <option value="Terminé" ${inventory.status === 'Terminé' ? 'selected' : ''}>Terminé</option>
+          <option value="Annulé" ${inventory.status === 'Annulé' ? 'selected' : ''}>Annulé</option>
         </select>
         <input id="swal-input-comment" type="text" class="swal2-input custom-swal-input" 
           value="${inventory.comment || ''}" placeholder="Commentaire (optionnel)">
@@ -223,6 +310,7 @@ const Planification_Inventaires = () => {
         return {
           date: document.getElementById('swal-input-date').value,
           destination: document.getElementById('swal-input-destination').value,
+          status: document.getElementById('swal-input-status').value,
           comment: document.getElementById('swal-input-comment').value
         };
       },
@@ -233,6 +321,7 @@ const Planification_Inventaires = () => {
             value: {
               date: document.getElementById('swal-input-date').value,
               destination: document.getElementById('swal-input-destination').value,
+              status: document.getElementById('swal-input-status').value,
               comment: document.getElementById('swal-input-comment').value
             }
           });
@@ -242,33 +331,34 @@ const Planification_Inventaires = () => {
           Swal.close();
         });
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedInventories = inventories.map(inv => 
-          inv.id === inventory.id 
-            ? {
-                ...inv, 
-                date: result.value.date,
-                to: result.value.destination,
-                comment: result.value.comment
-              } 
-            : inv
-        );
-        setInventories(updatedInventories);
-        
-        Swal.fire({
-          background: 'transparent',
-          title: '<span class="text-white">Confirmé!</span>',
-          html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-          customClass: {
-            popup: 'bg-transparent',
-            title: 'text-white',
-            content: 'text-white'
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories/${inventory._id}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              date: result.value.date,
+              destination: result.value.destination,
+              status: result.value.status,
+              comment: result.value.comment
+            })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update inventory');
           }
-        });
+
+          const updatedInventory = await response.json();
+          setInventories(inventories.map(inv => 
+            inv._id === inventory._id ? updatedInventory.data : inv
+          ));
+          showSuccessAlert('Les modifications ont été enregistrées');
+        } catch (err) {
+          console.error('Update inventory error:', err);
+          showErrorAlert(err.message);
+        }
       }
     });
   };
@@ -281,13 +371,29 @@ const Planification_Inventaires = () => {
     }));
   };
 
+  if (loading) {
+    return (
+      <div className="w-300 relative flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-300 relative bg-white rounded-2xl text-blue-900 border-3 p-4 text-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-300 relative">
       <div className="bg-white rounded-2xl text-blue-900 border-3 p-4 text-center">
         <div className="mb-4">
           <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
           
-          <div className="mb-3 grid grid-cols-3 gap-2">
+          <div className="mb-3 grid grid-cols-4 gap-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
               <input
@@ -311,6 +417,21 @@ const Planification_Inventaires = () => {
                 {destinations.map((dest, index) => (
                   <option key={index} value={dest}>{dest}</option>
                 ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+              <select
+                name="status"
+                value={newInventory.status}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="Planifié">Planifié</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminé">Terminé</option>
+                <option value="Annulé">Annulé</option>
               </select>
             </div>
             
@@ -349,42 +470,59 @@ const Planification_Inventaires = () => {
               <tr>
                 <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                 <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
                 <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {inventories.map((inventory) => (
-                <tr key={inventory.id}>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.date || 'Non spécifiée'}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.to}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {inventory.comment || '-'}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => editInventory(inventory)}
-                        className="edit_Inv p-1 rounded-full hover:bg-blue-100"
-                        title="Modifier"
-                      >
-                        <Edit size={16}  />
-                      </button>
-                      <button
-                        onClick={() => removeInventory(inventory.id)}
-                        className="remove_Inv p-1 rounded-full hover:bg-red-100"
-                        title="Supprimer"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
+              {inventories.length > 0 ? (
+                inventories.map((inventory) => (
+                  <tr key={inventory._id}>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {inventory.date ? new Date(inventory.date).toLocaleDateString() : 'Non spécifiée'}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {inventory.destination}
+                    </td>
+                    <td className={`px-4 py-2 whitespace-nowrap text-sm ${
+                      inventory.status === 'Planifié' ? 'text-orange-500' :
+                      inventory.status === 'En cours' ? 'text-blue-600' :
+                      inventory.status === 'Terminé' ? 'text-green-600' :
+                      'text-red-600'
+                    }`}>
+                      {inventory.status}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {inventory.comment || '-'}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => editInventory(inventory)}
+                          className="edit_Inv p-1 rounded-full hover:bg-blue-100"
+                          title="Modifier"
+                        >
+                          <Edit size={16}  />
+                        </button>
+                        <button
+                          onClick={() => removeInventory(inventory._id)}
+                          className="remove_Inv p-1 rounded-full hover:bg-red-100"
+                          title="Supprimer"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
+                    Aucun inventaire planifié
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

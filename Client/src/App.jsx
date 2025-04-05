@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CalendrierTransferts from './calendrier_transfert/CalendrierTransferts';
 import SideToolsComponent from './menu/SideToolsComponent';
 import Loader from './Loader/Loader';
+import LoaderNesk from './Loader NESK/LoaderNesk';
 import Login from './Login/Login';
 import "./App.css";
 import Importer from './Importer/Importer';
@@ -14,29 +15,54 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [showLoaderAfterLogin, setShowLoaderAfterLogin] = useState(false);
+  const [showInitialLoader, setShowInitialLoader] = useState(true);
+  const [showLogoutLoader, setShowLogoutLoader] = useState(false);
+  const [isTabVisible, setIsTabVisible] = useState(true); // Nouvel état pour la visibilité de l'onglet
+  const [showWakeUpLoader, setShowWakeUpLoader] = useState(false); // Nouvel état pour le loader après réveil
 
+  // Vérifier la visibilité de l'onglet
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // L'onglet redevient visible (mode veille terminé)
+        setShowWakeUpLoader(true); // Afficher LoaderNesk
+        setTimeout(() => setShowWakeUpLoader(false), 3000); // Disparaît après 3s
+      }
+      setIsTabVisible(document.visibilityState === 'visible');
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Vérifier si l'utilisateur est déjà connecté
+  useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
 
-    // Synchroniser avec l'animation GSAP du Loader
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000); // Correspond à la durée totale de l'animation GSAP
+    const initialLoaderTimer = setTimeout(() => {
+      setShowInitialLoader(false);
+    }, 3000);
 
-    // Nettoyer le timer si le composant est démonté
-    return () => clearTimeout(timer);
+    const loginLoaderTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(initialLoaderTimer);
+      clearTimeout(loginLoaderTimer);
+    };
   }, []);
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setShowLoaderAfterLogin(true); // Activer le loader après login
+    setShowLoaderAfterLogin(true);
     setIsLoading(true);
     
-    // Désactiver le loader après 5 secondes
     setTimeout(() => {
       setIsLoading(false);
       setShowLoaderAfterLogin(false);
@@ -44,35 +70,45 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
+    setShowLogoutLoader(true);
+    setTimeout(() => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      setUser(null);
+      setShowLogoutLoader(false);
+    }, 3000);
   };
 
-  // Fonction pour vérifier si l'utilisateur a accès à un composant spécifique
   const hasAccess = (componentName) => {
     if (!user) return false;
-    
-    // Super Admin a accès à tout
-    if (user.role === 'Super Admin') return true;
-    
-    // Admin a accès seulement au calendrier et à l'importation
-    if (user.role === 'Admin') {
-      return ['calendar', 'upload'].includes(componentName);
-    }
-    
+    if (user.role === 'Admin') return true;
+    if (user.role === 'User') return ['calendar', 'upload'].includes(componentName);
     return false;
   };
 
+  // Afficher LoaderNesk après logout
+  if (showLogoutLoader) {
+    return <LoaderNesk />;
+  }
+
+  // Afficher LoaderNesk avant le login (si pas d'utilisateur)
+  if (!user && showInitialLoader) {
+    return <LoaderNesk />;
+  }
+
+  // Afficher LoaderNesk quand l'utilisateur revient après inactivité (mode veille)
+  if (showWakeUpLoader && !user) {
+    return <LoaderNesk />;
+  }
+
+  // Afficher le Loader normal après login
   if (isLoading || showLoaderAfterLogin) {
     return <Loader user={user} />;
   }
 
   const renderActiveComponent = () => {
-    // Si l'utilisateur n'a pas accès au composant actif, rediriger vers le calendrier
     if (!hasAccess(activeComponent)) {
-      // Rediriger vers le calendrier si c'est un Admin, ou ne rien afficher
-      return user && user.role === 'Admin' ? <CalendrierTransferts /> : null;
+      return user && user.role === 'User' ? <CalendrierTransferts /> : null;
     }
 
     switch(activeComponent) {
@@ -91,7 +127,7 @@ function App() {
     }
   };
 
-  // Si l'utilisateur n'est pas connecté, afficher la page de connexion
+  // Si l'utilisateur n'est pas connecté et le loader initial est terminé, afficher Login
   if (!user) {
     return <Login onLogin={handleLogin} />;
   }

@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   // Récupération de l'URL de base depuis les variables d'environnement
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
   const showErrorAlert = (message) => {
     Swal.fire({

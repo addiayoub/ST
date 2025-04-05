@@ -6,7 +6,6 @@ import { PanelLeft, PanelLeftOpen } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import logo from "/Logo-nesk-investment@2x.png";
-
 import { 
   daysOfWeek, 
   transfersData as initialTransfersData, 
@@ -14,7 +13,6 @@ import {
   colorUtils, 
   transferLegend
 } from './data';
-
 import MiniCalendar from './MiniCalendar';
 import TransferLegend from './TransferLegend';
 import MainCalendarHeader from './MainCalendarHeader';
@@ -23,13 +21,14 @@ import CalendarGrid from './CalendarGrid';
 const MySwal = withReactContent(Swal);
 
 const CalendrierTransferts = () => {
- 
-  
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date();
     return isNaN(date.getTime()) ? new Date() : date;
   });
-  
+  const [filterDirection, setFilterDirection] = useState({
+    from: true,
+    to: true
+  });
   const [miniCalendarDays, setMiniCalendarDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState(defaultDate.getDate());
   const [selectedDayEvents, setSelectedDayEvents] = useState([]);
@@ -39,12 +38,12 @@ const CalendrierTransferts = () => {
   const [isMiniCalendarVisible, setIsMiniCalendarVisible] = useState(true);
   const hoverAreaRef = useRef(null);
   const sidebarRef = useRef(null);
-
+  const [selectedWarehouses, setSelectedWarehouses] = useState([]);
   const { getDotColor, getBorderColor, getBgColor } = colorUtils;
   const [filter, setFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeLegend, setActiveLegend] = useState(null);
-  const appVersion = "1.0.0"; // ou importée depuis package.json
+
   const updateTransfer = (date, updatedTransfer) => {
     setTransfersData(prevData => {
       const dateStr = formatDateToKey(date);
@@ -101,7 +100,7 @@ const CalendrierTransferts = () => {
       hoverArea.addEventListener('mouseenter', handleMouseEnter);
       hoverArea.addEventListener('mouseleave', handleMouseLeave);
     }
-
+   
     return () => {
       if (hoverArea) {
         hoverArea.removeEventListener('mouseenter', handleMouseEnter);
@@ -110,6 +109,10 @@ const CalendrierTransferts = () => {
     };
   }, []);
 
+  const handleFilterWarehouse = (warehouses) => {
+    setSelectedWarehouses(warehouses);
+  };
+  
   const generateMiniCalendarDays = (date) => {
     const days = [];
     const year = date.getFullYear();
@@ -133,6 +136,7 @@ const CalendrierTransferts = () => {
             day: prevMonthLength - prevMonthDays + j + 1,
             month: 'prev',
             hasEvent: false,
+            hasInventory: false,
             isCurrentDay: false
           });
         } else if (day > monthLength) {
@@ -140,20 +144,31 @@ const CalendrierTransferts = () => {
             day: nextMonthDay,
             month: 'next',
             hasEvent: false,
+            hasInventory: false,
             isCurrentDay: false
           });
           nextMonthDay++;
-        } else {
-          const hasEvent = hasTransfersForDay(day, month, year);
+        } else {  const dateStr = formatDateToKey(new Date(year, month, day));
+          const dayTransfers = initialTransfersData[dateStr]?.transfers || [];
+          const hasEvent = dayTransfers.length > 0;
+          const hasInventory = dayTransfers.some(t => t.showBoxIcon);
           const isCurrentDay = day === selectedDay && 
-          month === currentMonth.getMonth() && 
-          year === currentMonth.getFullYear();
+                               month === currentMonth.getMonth() && 
+                               year === currentMonth.getFullYear();
           
+          // Compter les transferts et inventaires
+          const transferCount = dayTransfers.filter(t => !t.showBoxIcon).length;
+          const inventoryCount = dayTransfers.filter(t => t.showBoxIcon).length;
+      
           week.push({
             day,
             month: 'current',
             hasEvent,
-            isCurrentDay
+            hasInventory,
+            isCurrentDay,
+            transferCount,
+            inventoryCount,
+            dateStr // Ajouté pour référence
           });
           day++;
         }
@@ -169,15 +184,13 @@ const CalendrierTransferts = () => {
     return days;
   };
 
-  const hasTransfersForDay = (day, month, year) => {
-    const date = new Date(year, month, day);
-    const dateStr = formatDateToKey(date);
-    return initialTransfersData[dateStr]?.transfers?.length > 0 || false;
-  };
+
+
   const handleLegendClick = (legendType) => {
     setActiveLegend(prev => prev === legendType ? null : legendType);
-    setActiveFilter('all'); // Réinitialise le filtre principal
+    setActiveFilter('all');
   };
+
   const generateWeekData = (weekStartDate) => {
     const result = {};
     const currentDate = new Date(weekStartDate);
@@ -185,26 +198,27 @@ const CalendrierTransferts = () => {
     for (let i = 0; i < 7; i++) {
       const dayOfWeek = daysOfWeek[currentDate.getDay()];
       const dateStr = formatDateToKey(currentDate);
-      
-      const dayData = initialTransfersData[dateStr] || { 
-        date: String(currentDate.getDate()), 
-        transfers: [] 
-      };
+      const dayData = initialTransfersData[dateStr] || { date: String(currentDate.getDate()), transfers: [] };
       
       const filteredTransfers = dayData.transfers.filter(transfer => {
-        // Filtre par légende si active
         if (activeLegend && transfer.type !== activeLegend) return false;
-        
-        // Filtre principal si actif
         if (activeFilter === 'inventory' && !transfer.showBoxIcon) return false;
         if (activeFilter === 'transfers' && transfer.showBoxIcon) return false;
         
+        if (selectedWarehouses && selectedWarehouses.length > 0) {
+          if (transfer.showBoxIcon) {
+            return filterDirection.to && 
+                   selectedWarehouses.some(warehouse => transfer.to?.includes(warehouse));
+          } else {
+            const fromMatch = filterDirection.from && 
+                             selectedWarehouses.some(warehouse => transfer.from?.includes(warehouse));
+            const toMatch = filterDirection.to && 
+                            selectedWarehouses.some(warehouse => transfer.to?.includes(warehouse));
+            return fromMatch || toMatch;
+          }
+        }
         return true;
-      }).map(transfer => transfer.showBoxIcon ? {
-        ...transfer,
-        from: '',
-        to: transfer.to.trim()
-      } : transfer);
+      }).map(transfer => transfer.showBoxIcon ? { ...transfer, from: '', to: transfer.to.trim() } : transfer);
       
       result[dayOfWeek] = {
         ...dayData,
@@ -212,17 +226,17 @@ const CalendrierTransferts = () => {
         date: String(currentDate.getDate()),
         fullDate: dateStr
       };
-      
       currentDate.setDate(currentDate.getDate() + 1);
     }
     
     return result;
   };
+
   const handleWeekSelect = (weekStart) => {
     const newWeekStart = new Date(weekStart);
     setSelectedWeek(newWeekStart);
-    setCurrentMonth(new Date(newWeekStart)); // Synchroniser le mois affiché
-    setSelectedDay(newWeekStart.getDate()); // Synchroniser le jour sélectionné
+    setCurrentMonth(new Date(newWeekStart));
+    setSelectedDay(newWeekStart.getDate());
   };
 
   const handleFilterAll = () => {
@@ -263,7 +277,7 @@ const CalendrierTransferts = () => {
       const newTransfersData = generateWeekData(new Date(selectedWeek));
       setTransfersData(newTransfersData);
     }
-  }, [selectedWeek, filter,activeFilter, activeLegend]);
+  }, [selectedWeek, filter, activeFilter, activeLegend, selectedWarehouses, filterDirection]);
 
   useEffect(() => {
     const events = findEventsForDay(selectedDay);
@@ -310,7 +324,6 @@ const CalendrierTransferts = () => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() - 1);
     setCurrentMonth(newMonth);
-    // Mettre à jour également selectedWeek si nécessaire
     const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
     setSelectedWeek(firstDayOfNewMonth);
   };
@@ -319,7 +332,6 @@ const CalendrierTransferts = () => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + 1);
     setCurrentMonth(newMonth);
-    // Mettre à jour également selectedWeek si nécessaire
     const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
     setSelectedWeek(firstDayOfNewMonth);
   };
@@ -381,8 +393,6 @@ const CalendrierTransferts = () => {
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  
-
   const goToCurrentWeek = () => {
     const currentWeekStart = getCurrentWeekStart();
     setSelectedWeek(new Date(currentWeekStart));
@@ -391,7 +401,7 @@ const CalendrierTransferts = () => {
   };
 
   return (
-    <div id="All_calendar"className="flex h-screen overflow-hidden">
+    <div id="All_calendar" className="flex h-screen overflow-hidden">
       <div
         ref={hoverAreaRef}
         className="fixed left-0 top-0 bottom-0 w-4 z-20 hover:w-8 transition-all"
@@ -401,24 +411,30 @@ const CalendrierTransferts = () => {
         ref={sidebarRef}
         className={`flex ${isMiniCalendarVisible ? 'w-87' : 'w-0'} transition-all duration-300 overflow-hidden relative`}
       >
-        <div id='rediusboxes' className=" text-white overflow-y-auto flex-1">
+        <div id='rediusboxes' className="text-white overflow-y-auto flex-1">
           {isMiniCalendarVisible && (
             <>
+              <div className="flex flex-col items-center justify-center pt-6">
+                <div className="h-12">
+                  <img 
+                    src={logo} 
+                    alt="IDOA TECH" 
+                    className="h-full object-contain"
+                  />
+                </div>
+              </div>
+              
               <MiniCalendar
                 currentMonth={currentMonth}
                 miniCalendarDays={miniCalendarDays}
                 selectedDay={selectedDay}
                 goToPrevMonth={goToPrevMonth}
                 goToNextMonth={goToNextMonth}
-                selectDay={selectDay} 
+                selectDay={selectDay}
                 formatMonth={formatMonth}
                 onMonthYearChange={handleMonthYearChange}
-                onWeekSelect={handleWeekSelect} // Nouvelle prop
-
+                onWeekSelect={handleWeekSelect}
               />
-              
-              
-              
               
               <TransferLegend 
                 transferLegend={transferLegend}
@@ -426,54 +442,34 @@ const CalendrierTransferts = () => {
                 onLegendClick={handleLegendClick}
                 activeLegend={activeLegend}
               />
-
-
-
-<div className="flex flex-col items-center justify-center">
-  <div className="font-medium ">
-  </div>
-  <div className="h-12">
-    <img 
-      src={logo} 
-      alt="IDOA TECH" 
-      className="h-full object-contain"
-    />
-    
-  </div>
-
-</div>
-
- 
-
-   </>
+            </>
           )}
         </div>
         
         <button 
-  onClick={() => setIsMiniCalendarVisible(!isMiniCalendarVisible)}
-  className="panelbg relative group"
-  aria-label={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
-  title={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
->
-  {isMiniCalendarVisible ? (
-    <PanelLeft className="panel cursor-pointer" />
-  ) : (
-    <PanelLeftOpen className="panel cursor-pointer" />
-  )}
-  
-  {/* Hover Tooltip */}
-  <span className="
-    hidden group-hover:block 
-    absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 
-    bg-gray-800 text-white text-xs 
-    px-3 py-2 rounded 
-    whitespace-nowrap 
-    mb-2
-    pointer-events-none
-  ">
-    {isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
-  </span>
-</button>
+          onClick={() => setIsMiniCalendarVisible(!isMiniCalendarVisible)}
+          className="panelbg relative group"
+          aria-label={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+          title={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+        >
+          {isMiniCalendarVisible ? (
+            <PanelLeft className="panel cursor-pointer" />
+          ) : (
+            <PanelLeftOpen className="panel cursor-pointer" />
+          )}
+          
+          <span className="
+            hidden group-hover:block 
+            absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 
+            bg-gray-800 text-white text-xs 
+            px-3 py-2 rounded 
+            whitespace-nowrap 
+            mb-2
+            pointer-events-none
+          ">
+            {isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+          </span>
+        </button>
       </div>
       
       <div className={`flex-1 flex flex-col transition-all duration-300 ${
@@ -481,19 +477,22 @@ const CalendrierTransferts = () => {
       }`}>
         <MainCalendarHeader/>
         <FilterComponent 
-            goToPrevWeek={goToPrevWeek}
-            goToNextWeek={goToNextWeek}
-            goToCurrentWeek={goToCurrentWeek}
-            onFilterAll={handleFilterAll}
-            onFilterInventory={handleFilterInventory}
-            onFilterTransfers={handleFilterTransfers}
-            activeFilter={activeFilter}
-            formatSelectedDate={formatSelectedDate}
-            onWeekSelect={handleWeekSelect} // Nouvelle prop
-            currentMonth={currentMonth} // Nouvelle prop
-
-
-          />     
+          goToPrevWeek={goToPrevWeek}
+          goToNextWeek={goToNextWeek}
+          goToCurrentWeek={goToCurrentWeek}
+          onFilterAll={handleFilterAll}
+          onFilterInventory={handleFilterInventory}
+          onFilterTransfers={handleFilterTransfers}
+          activeFilter={activeFilter}
+          formatSelectedDate={formatSelectedDate}
+          onWeekSelect={handleWeekSelect}
+          currentMonth={currentMonth}
+          selectedWarehouses={selectedWarehouses}
+          onFilterWarehouse={handleFilterWarehouse}
+          filterDirection={filterDirection}
+          setFilterDirection={setFilterDirection}
+        />   
+        
         <div className="flex-1 overflow-auto">
           <CalendarGrid
             transfersData={transfersData}
@@ -514,4 +513,4 @@ const CalendrierTransferts = () => {
   );
 };
 
-export default CalendrierTransferts;//stop
+export default CalendrierTransferts;

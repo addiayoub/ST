@@ -23,7 +23,7 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout }) =
       { id: 'upload', icon: Upload, tooltip: 'Importer Transfert' },
     ];
 
-    // Additional items for Super Admin role
+    // Additional items for Admin role
     const superAdminItems = [
       { id: 'boxes', icon: Boxes, tooltip: 'Inventaires' },
       { id: 'house', icon: HousePlus, tooltip: 'Magasin' },
@@ -31,7 +31,7 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout }) =
     ];
 
     // Return the appropriate items based on user role
-    return user.role === 'Super Admin' ? [...baseItems, ...superAdminItems] : baseItems;
+    return user.role === 'Admin' ? [...baseItems, ...superAdminItems] : baseItems;
   };
 
   const menuItems = getMenuItems();
@@ -40,11 +40,11 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout }) =
   const hasAccess = (componentName) => {
     if (!user) return false;
     
-    // Super Admin a accès à tout
-    if (user.role === 'Super Admin') return true;
+    // Admin a accès à tout
+    if (user.role === 'Admin') return true;
     
     // Admin a accès seulement au calendrier et à l'importation
-    if (user.role === 'Admin') {
+    if (user.role === 'User') {
       return ['calendar', 'upload'].includes(componentName);
     }
     

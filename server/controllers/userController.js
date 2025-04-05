@@ -35,10 +35,10 @@ exports.updateUser = asyncHandler(async (req, res) => {
     throw new Error('Utilisateur non trouvé');
   }
 
-  // Empêcher la modification d'un Super Admin par un Admin
-  if (user.role === 'Super Admin' && req.user.role !== 'Super Admin') {
+  // Empêcher la modification d'un Admin par un Admin
+  if (user.role === 'Admin' && req.user.role !== 'Admin') {
     res.status(403);
-    throw new Error('Non autorisé à modifier un Super Admin');
+    throw new Error('Non autorisé à modifier un Admin');
   }
 
   user.nom = req.body.nom || user.nom;
@@ -74,10 +74,10 @@ exports.deleteUser = asyncHandler(async (req, res) => {
     throw new Error('Utilisateur non trouvé');
   }
 
-  // Empêcher la suppression d'un Super Admin par un Admin
-  if (user.role === 'Super Admin' && req.user.role !== 'Super Admin') {
+  // Empêcher la suppression d'un Admin par un Admin
+  if (user.role === 'Admin' && req.user.role !== 'Admin') {
     res.status(403);
-    throw new Error('Non autorisé à supprimer un Super Admin');
+    throw new Error('Non autorisé à supprimer un Admin');
   }
 
   await user.deleteOne();

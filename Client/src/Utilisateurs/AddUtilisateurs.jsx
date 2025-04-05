@@ -16,10 +16,10 @@ const AddUtilisateurs = () => {
     matricule: '',
     username: '',
     password: '',
-    role: 'Admin'
+    role: 'User'
   });
 
-  const roles = ['Super Admin', 'Admin'];
+  const roles = ['Admin', 'User'];
 const togglePasswordVisibility = () => {
   setShowPassword(!showPassword);
 };
@@ -106,7 +106,7 @@ const togglePasswordVisibility = () => {
         matricule: '',
         username: '',
         password: '',
-        role: 'Admin'
+        role: 'User'
       });
 
       showSuccessAlert('L\'utilisateur a été ajouté avec succès.');
@@ -475,7 +475,7 @@ const togglePasswordVisibility = () => {
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{utilisateur.username}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${utilisateur.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 
+                        ${utilisateur.role === 'Admin' ? 'bg-purple-100 text-purple-800' : 
                           'bg-gray-100 text-gray-800'}`}>
                         {utilisateur.role}
                       </span>

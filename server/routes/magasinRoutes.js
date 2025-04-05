@@ -14,10 +14,10 @@ router.use(protect);
 
 router.route('/')
   .get(getMagasins)
-  .post(authorize('Super Admin', 'Admin'), createMagasin);
+  .post(authorize('Admin', 'User'), createMagasin);
 
 router.route('/:id')
-  .put(authorize('Super Admin', 'Admin'), updateMagasin)
-  .delete(authorize('Super Admin', 'Admin'), deleteMagasin);
+  .put(authorize('Admin', 'User'), updateMagasin)
+  .delete(authorize('Admin', 'User'), deleteMagasin);
 
 module.exports = router;
