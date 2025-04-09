@@ -12,7 +12,7 @@
     const [transferOptions, setTransferOptions] = useState({
       fromOptions: [],
       toOptions: [],
-      statusOptions: ['En cours', 'Confirmé', 'En attente', 'annulé']
+      statusOptions: ['En cours', 'Confirmé', 'En attente', 'Annulé']
     });
 
     useEffect(() => {
@@ -44,9 +44,9 @@
           const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
           
           const magasinNames = activeWarehouses.map(magasin => {
-            // Supprime "stradi " si déjà présent pour éviter les doublons
-            const nom = magasin.nomMagasin.replace(/^stradi\s+/i, '');
-            return `stradi ${nom}`;
+            // Supprime "Stradi " si déjà présent pour éviter les doublons
+            const nom = magasin.nomMagasin.replace(/^Stradi\s+/i, '');
+            return `Stradi ${nom}`;
           });
           
           

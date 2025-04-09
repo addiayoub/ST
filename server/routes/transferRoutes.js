@@ -9,7 +9,7 @@ const transferValidationRules = [
   check('to').notEmpty().withMessage('La destination est obligatoire'),
   check('date').isISO8601().withMessage('Format de date invalide'),
   check('quantity').isInt({ min: 0 }).withMessage('La quantité doit être un nombre positif'),
-  check('status').isIn(['En cours', 'Confirmé', 'En attente', 'annulé', 'Inventaire'])
+  check('status').isIn(['En cours', 'Confirmé', 'En attente', 'Annulé', 'Inventaire'])
     .withMessage('Statut invalide')
 ];
 

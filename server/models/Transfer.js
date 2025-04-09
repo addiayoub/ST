@@ -25,7 +25,7 @@ const TransferSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['En cours', 'Confirmé', 'En attente', 'annulé', 'Inventaire', 'Inventaire z'],
+    enum: ['En cours', 'Confirmé', 'En attente', 'Annulé', 'Inventaire', 'Inventaire z'],
     default: 'En attente'
   },
   type: {
@@ -70,7 +70,7 @@ TransferSchema.pre('save', function(next) {
         case 'En attente':
           this.type = 'orange';
           break;
-        case 'annulé':
+        case 'Annulé':
           this.type = 'red';
           break;
     }

@@ -288,7 +288,7 @@ useEffect(() => {
           <option value="En attente" ${inventory.status === 'En attente' ? 'selected' : ''}>En attente</option>
           <option value="En cours" ${inventory.status === 'En cours' ? 'selected' : ''}>En cours</option>
           <option value="Confirmé" ${inventory.status === 'Confirmé' ? 'selected' : ''}>Confirmé</option>
-          <option value="annulé" ${inventory.status === 'annulé' ? 'selected' : ''}>annulé</option>
+          <option value="Annulé" ${inventory.status === 'Annulé' ? 'selected' : ''}>Annulé</option>
         </select>
         <input id="swal-input-comment" type="text" class="swal2-input custom-swal-input" 
           value="${inventory.comment || ''}" placeholder="Commentaire (optionnel)">
@@ -434,7 +434,7 @@ useEffect(() => {
                 <option value="En attente">En attente</option>
                 <option value="En cours">En cours</option>
                 <option value="Confirmé">Confirmé</option>
-                <option value="annulé">annulé</option>
+                <option value="Annulé">Annulé</option>
               </select>
             </div>
             

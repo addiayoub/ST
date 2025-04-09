@@ -17,7 +17,7 @@ const inventorySchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'En attente',
-    enum: ['En attente', 'En cours', 'Confirmé', 'annulé']
+    enum: ['En attente', 'En cours', 'Confirmé', 'Annulé']
   },
   createdBy: {
     type: mongoose.Schema.ObjectId,

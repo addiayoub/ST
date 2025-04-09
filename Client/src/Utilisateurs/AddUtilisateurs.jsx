@@ -197,133 +197,209 @@ const togglePasswordVisibility = () => {
       }
     });
   };
+// Dans le composant React AddUtilisateurs.jsx, modifiez la fonction editUtilisateur:
 
-  const editUtilisateur = (utilisateur) => {
-    Swal.fire({
-      background: 'white',
-      color: 'black',
-      customClass: {
-        popup: 'custom-swal-popup',
-        input: 'custom-swal-input',
-        confirmButton: 'custom-swal-confirm-button',
-        actions: 'custom-swal-actions'
-      },
-      title: 'Modifier l\'utilisateur',
-      html: `
-        <style>
-          .custom-swal-popup { border-radius: 50px; }
-          .custom-swal-input { 
-            border: 1px solid black !important; 
-            color: black !important;
-            background: transparent !important;
-            margin-bottom: 10px;
-          }
-          .custom-swal-input::placeholder { color: rgba(255,255,255,0.7) !important; }
-          .custom-swal-confirm-button { 
-            background-color: white !important; 
-            color: blue !important; 
-          }
-          .custom-swal-actions {
-            margin-top: 0 !important;
-            padding-bottom: 0 !important;
-          }
-          .swal2-actions {
-            display: flex !important;
-            justify-content: center !important;
-            gap: 1rem !important;
-          }
-          .swal-button-container {
-            margin: 0 !important;
-          }
-          option {
-            color: black;
-          }
-        </style>
-        <input id="swal-input-nom" type="text" class="swal2-input custom-swal-input" 
-          value="${utilisateur.nom}" placeholder="Nom">
-        <input id="swal-input-prenom" type="text" class="swal2-input custom-swal-input" 
-          value="${utilisateur.prenom}" placeholder="Prénom">
-        <input id="swal-input-matricule" type="text" class="swal2-input custom-swal-input" 
-          value="${utilisateur.matricule}" placeholder="Matricule">
-        <input id="swal-input-username" type="text" class="swal2-input custom-swal-input" 
-          value="${utilisateur.username}" placeholder="Nom d'utilisateur">
-        <select id="swal-input-role" class="swal2-input custom-swal-input">
-          ${roles.map(role => 
-            `<option value="${role}" ${utilisateur.role === role ? 'selected' : ''}>${role}</option>`
-          ).join('')}
-        </select>
-        <div class="w-full flex justify-center space-x-4 pb-4 mt-4">
-          <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
-              <path d="M18 6 6 18"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
-          <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </button>
-        </div>
-      `,
-      focusConfirm: false,
-      showConfirmButton: false,
-      showCancelButton: false,
-      preConfirm: () => {
-        return {
-          nom: document.getElementById('swal-input-nom').value,
-          prenom: document.getElementById('swal-input-prenom').value,
-          matricule: document.getElementById('swal-input-matricule').value,
-          username: document.getElementById('swal-input-username').value,
-          role: document.getElementById('swal-input-role').value
-        };
-      },
-      didOpen: () => {
-        document.getElementById('confirm-btn').addEventListener('click', () => {
-          Swal.close({ 
-            isConfirmed: true, 
-            value: {
-              nom: document.getElementById('swal-input-nom').value,
-              prenom: document.getElementById('swal-input-prenom').value,
-              matricule: document.getElementById('swal-input-matricule').value,
-              username: document.getElementById('swal-input-username').value,
-              role: document.getElementById('swal-input-role').value
-            }
-          });
-        });
-        
-        document.getElementById('close-btn').addEventListener('click', () => {
-          Swal.close();
-        });
-      }
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const token = localStorage.getItem('token');
-          const { data } = await axios.put(`${API_BASE_URL}/api/users/${utilisateur._id}`, {
-            nom: result.value.nom,
-            prenom: result.value.prenom,
-            matricule: result.value.matricule,
-            username: result.value.username,
-            role: result.value.role
-          }, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-    
-          setUtilisateurs(utilisateurs.map(user => 
-            user._id === utilisateur._id ? data : user
-          ));
-          
-          showSuccessAlert('Les modifications ont été enregistrées.');
-        } catch (error) {
-          console.error('Erreur lors de la modification de l\'utilisateur:', error.response?.data?.message || error.message);
-          showErrorAlert(error.response?.data?.message || 'Erreur lors de la modification de l\'utilisateur');
+const editUtilisateur = (utilisateur) => {
+  // État local pour gérer la visibilité du mot de passe dans la fenêtre d'édition
+  let passwordVisible = false;
+  
+  Swal.fire({
+    background: 'white',
+    color: 'black',
+    customClass: {
+      popup: 'custom-swal-popup',
+      input: 'custom-swal-input',
+      confirmButton: 'custom-swal-confirm-button',
+      actions: 'custom-swal-actions'
+    },
+    title: 'Modifier l\'utilisateur',
+    html: `
+      <style>
+        .custom-swal-popup { border-radius: 50px; }
+        .custom-swal-input { 
+          border: 1px solid black !important; 
+          color: black !important;
+          background: transparent !important;
+          margin-bottom: 10px;
         }
+        .custom-swal-input::placeholder { color: rgba(0,0,0,0.7) !important; }
+        .custom-swal-confirm-button { 
+          background-color: white !important; 
+          color: blue !important; 
+        }
+        .custom-swal-actions {
+          margin-top: 0 !important;
+          padding-bottom: 0 !important;
+        }
+        .swal2-actions {
+          display: flex !important;
+          justify-content: center !important;
+          gap: 1rem !important;
+        }
+        .swal-button-container {
+          margin: 0 !important;
+        }
+        option {
+          color: black;
+        }
+        .password-field-container {
+          position: relative;
+          width: 100%;
+        }
+        .toggle-password-btn {
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #666;
+        }
+        .toggle-password-btn:hover {
+          color: #333;
+        }
+        .swal-password-label {
+          display: block;
+          text-align: left;
+          margin-bottom: 5px;
+          font-size: 14px;
+          color: #333;
+        }
+      </style>
+      <input id="swal-input-nom" type="text" class="swal2-input custom-swal-input" 
+        value="${utilisateur.nom}" placeholder="Nom">
+      <input id="swal-input-prenom" type="text" class="swal2-input custom-swal-input" 
+        value="${utilisateur.prenom}" placeholder="Prénom">
+      <input id="swal-input-matricule" type="text" class="swal2-input custom-swal-input" 
+        value="${utilisateur.matricule}" placeholder="Matricule">
+      <input id="swal-input-username" type="text" class="swal2-input custom-swal-input" 
+        value="${utilisateur.username}" placeholder="Nom d'utilisateur">
+      
+      <div class="password-field-container">
+        <label for="swal-input-password" class="swal-password-label">Nouveau mot de passe (laisser vide pour ne pas modifier)</label>
+        <input id="swal-input-password" type="password" class="swal2-input custom-swal-input" 
+          value="" placeholder="Nouveau mot de passe">
+        <button type="button" id="toggle-password-btn" class="toggle-password-btn">
+          <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+            <line x1="2" x2="22" y1="2" y2="22"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <select id="swal-input-role" class="swal2-input custom-swal-input">
+        ${roles.map(role => 
+          `<option value="${role}" ${utilisateur.role === role ? 'selected' : ''}>${role}</option>`
+        ).join('')}
+      </select>
+      <div class="w-full flex justify-center space-x-4 pb-4 mt-4">
+        <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+        <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </div>
+    `,
+    focusConfirm: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+    preConfirm: () => {
+      return {
+        nom: document.getElementById('swal-input-nom').value,
+        prenom: document.getElementById('swal-input-prenom').value,
+        matricule: document.getElementById('swal-input-matricule').value,
+        username: document.getElementById('swal-input-username').value,
+        password: document.getElementById('swal-input-password').value,
+        role: document.getElementById('swal-input-role').value
+      };
+    },
+    didOpen: () => {
+      // Gestion de l'affichage/masquage du mot de passe
+      const togglePasswordBtn = document.getElementById('toggle-password-btn');
+      const passwordInput = document.getElementById('swal-input-password');
+      const eyeIcon = document.getElementById('eye-icon');
+      const eyeOffIcon = document.getElementById('eye-off-icon');
+      
+      togglePasswordBtn.addEventListener('click', () => {
+        passwordVisible = !passwordVisible;
+        
+        if (passwordVisible) {
+          passwordInput.type = 'text';
+          eyeIcon.style.display = 'none';
+          eyeOffIcon.style.display = 'block';
+        } else {
+          passwordInput.type = 'password';
+          eyeIcon.style.display = 'block';
+          eyeOffIcon.style.display = 'none';
+        }
+      });
+      
+      document.getElementById('confirm-btn').addEventListener('click', () => {
+        Swal.close({ 
+          isConfirmed: true, 
+          value: {
+            nom: document.getElementById('swal-input-nom').value,
+            prenom: document.getElementById('swal-input-prenom').value,
+            matricule: document.getElementById('swal-input-matricule').value,
+            username: document.getElementById('swal-input-username').value,
+            password: document.getElementById('swal-input-password').value,
+            role: document.getElementById('swal-input-role').value
+          }
+        });
+      });
+      
+      document.getElementById('close-btn').addEventListener('click', () => {
+        Swal.close();
+      });
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('token');
+        const updateData = {
+          nom: result.value.nom,
+          prenom: result.value.prenom,
+          matricule: result.value.matricule,
+          username: result.value.username,
+          role: result.value.role
+        };
+        
+        // Ajouter le mot de passe seulement s'il a été fourni
+        if (result.value.password.trim() !== '') {
+          updateData.password = result.value.password;
+        }
+        
+        const { data } = await axios.put(`${API_BASE_URL}/api/users/${utilisateur._id}`, updateData, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+  
+        setUtilisateurs(utilisateurs.map(user => 
+          user._id === utilisateur._id ? data : user
+        ));
+        
+        showSuccessAlert('Les modifications ont été enregistrées.');
+      } catch (error) {
+        console.error('Erreur lors de la modification de l\'utilisateur:', error.response?.data?.message || error.message);
+        showErrorAlert(error.response?.data?.message || 'Erreur lors de la modification de l\'utilisateur');
       }
-    })
-  };
+    }
+  });
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

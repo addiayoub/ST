@@ -20,7 +20,7 @@ const app = express();
 // Middleware pour parser le JSON
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173', // pas de slash à la fin
+  origin: process.env, // pas de slash à la fin
   credentials: true
 }));
 

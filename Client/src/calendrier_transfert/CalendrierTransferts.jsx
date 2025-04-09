@@ -21,7 +21,7 @@ export const transferLegend = [
   { type: 'blue', label: 'En cours' },
   { type: 'green', label: 'Confirmé' },
   { type: 'orange', label: 'En attente' },
-  { type: 'red', label: 'annulé' },
+  { type: 'red', label: 'Annulé' },
   { type: 'yellow', label: 'Inventaire' }
 ];
 
@@ -137,10 +137,62 @@ const formatTransfersData = (response) => {
     }
   });
   // Charger tous les transferts
-// Charger tous les transferts et inventaires
+  // Setup the API instance with proper token handling
+const setupApi = () => {
+  const token = localStorage.getItem('token');
+  
+  // Create axios instance with token if available
+  return axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
+  });
+};
+
+// Use this function before each API call to ensure token is fresh
+const getApi = () => {
+  // Get a fresh token in case it was updated
+  const token = localStorage.getItem('token');
+  const api = setupApi();
+  
+  // Add response interceptor to handle 401 errors globally
+  api.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response && error.response.status === 401) {
+        // Handle unauthorized error
+        console.error('Session expired or unauthorized');
+        
+        // Show notification
+        MySwal.fire({
+          title: 'Session expirée',
+          text: 'Votre session a expiré, veuillez vous reconnecter',
+          icon: 'warning'
+        });
+        
+        // Clear storage and reset user state
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        // Force page reload to redirect to login
+        window.location.reload();
+      }
+      return Promise.reject(error);
+    }
+  );
+  
+  return api;
+};
+
+// Replace your existing fetchAllTransfers function with this:
 const fetchAllTransfers = async () => {
   try {
     setIsLoading(true);
+    
+    // Get fresh API instance with current token
+    const api = getApi();
     
     // Fetch transfers
     const transfersResponse = await api.get('/api/transfers');
@@ -159,13 +211,88 @@ const fetchAllTransfers = async () => {
   } catch (err) {
     setError(err.message);
     setIsLoading(false);
-    MySwal.fire({
-      title: 'Erreur',
-      text: 'Impossible de charger les données',
-      icon: 'error'
-    });
+    // Only show error if it's not a 401 (that's handled by interceptor)
+    if (!err.response || err.response.status !== 401) {
+      MySwal.fire({
+        title: 'Erreur',
+        text: 'Impossible de charger les données',
+        icon: 'error'
+      });
+    }
   }
 };
+
+// Update fetchAllInventories to use getApi()
+const fetchAllInventories = async () => {
+  try {
+    const api = getApi();
+    const response = await api.get('/api/inventories');
+    return response.data;
+  } catch (err) {
+    console.error('Erreur lors du chargement des inventaires:', err);
+    // Only show error if it's not a 401 (that's handled by interceptor)
+    if (!err.response || err.response.status !== 401) {
+      MySwal.fire({
+        title: 'Erreur',
+        text: 'Impossible de charger les inventaires',
+        icon: 'error'
+      });
+    }
+    return { success: false, data: {} };
+  }
+};
+
+// Update fetchTransfersByPeriod to use getApi()
+
+
+
+
+
+
+const deleteInventory = async (id) => {
+  try {
+    const api = getApi();
+    await api.delete(`/api/inventories/${id}`);
+    await fetchAllTransfers(); // Refresh all data
+    MySwal.fire({
+      title: 'Succès',
+      text: 'Inventaire supprimé avec succès',
+      icon: 'success'
+    });
+  } catch (err) {
+    if (!err.response || err.response.status !== 401) {
+      MySwal.fire({
+        title: 'Erreur',
+        text: err.response?.data?.message || 'Erreur lors de la suppression de l\'inventaire',
+        icon: 'error'
+      });
+    }
+  }
+};
+
+const createTransfer = async (transferData) => {
+  try {
+    const api = getApi();
+    const response = await api.post('/api/transfers', transferData);
+    await fetchAllTransfers();
+    return response.data;
+  } catch (err) {
+    if (!err.response || err.response.status !== 401) {
+      MySwal.fire({
+        title: 'Erreur',
+        text: err.response?.data?.message || 'Erreur lors de la création du transfert',
+        icon: 'error'
+      });
+    }
+    throw err;
+  }
+};
+
+
+
+
+// Charger tous les transferts et inventaires
+
 const mergeTransfersAndInventories = (transfersResponse, inventoriesResponse) => {
   const mergedData = {};
   
@@ -260,20 +387,7 @@ const formatDateTimeString = (dateString) => {
   return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 };
 // Charger tous les inventaires
-const fetchAllInventories = async () => {
-  try {
-    const response = await api.get('/api/inventories');
-    return response.data;
-  } catch (err) {
-    console.error('Erreur lors du chargement des inventaires:', err);
-    MySwal.fire({
-      title: 'Erreur',
-      text: 'Impossible de charger les inventaires',
-      icon: 'error'
-    });
-    return { success: false, data: {} };
-  }
-};
+
 // Charger les transferts et inventaires par période
 const fetchTransfersByPeriod = async (startDate, endDate) => {
   try {
@@ -346,40 +460,10 @@ const updateInventory = async (id, inventoryData) => {
 };
 
 // Supprimer un inventaire
-const deleteInventory = async (id) => {
-  try {
-    await api.delete(`/api/inventories/${id}`);
-    await fetchAllTransfers(); // Refresh all data
-    MySwal.fire({
-      title: 'Succès',
-      text: 'Inventaire supprimé avec succès',
-      icon: 'success'
-    });
-  } catch (err) {
-    MySwal.fire({
-      title: 'Erreur',
-      text: err.response?.data?.message || 'Erreur lors de la suppression de l\'inventaire',
-      icon: 'error'
-    });
-  }
-};
+
 
   // Créer un nouveau transfert
-  const createTransfer = async (transferData) => {
-    try {
-      const response = await api.post('/api/transfers', transferData);
-      await fetchAllTransfers();
-      return response.data;
-    } catch (err) {
-      MySwal.fire({
-        title: 'Erreur',
-        text: err.response?.data?.message || 'Erreur lors de la création du transfert',
-        icon: 'error'
-      });
-      throw err;
-    }
-  };
-
+ 
   // Mettre à jour un transfert
   const updateTransfer = async (id, transferData) => {
     try {
@@ -432,7 +516,7 @@ const deleteInventory = async (id) => {
             return 'green';
           case 'En attente':
             return 'orange';
-          case 'annulé':
+          case 'Annulé':
             return 'red';
           default:
             return 'blue';

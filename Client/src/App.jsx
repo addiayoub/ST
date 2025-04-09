@@ -9,7 +9,10 @@ import Importer from './Importer/Importer';
 import Inventaires from './Planification_Inventaires/Inventaires';
 import Magasin from './Magasin/Magasin';
 import Utilisateurs from './Utilisateurs/Utilisateurs';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
+const MySwal = withReactContent(Swal);
 function App() {
   const [activeComponent, setActiveComponent] = useState('calendar');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,8 +20,8 @@ function App() {
   const [showLoaderAfterLogin, setShowLoaderAfterLogin] = useState(false);
   const [showInitialLoader, setShowInitialLoader] = useState(true);
   const [showLogoutLoader, setShowLogoutLoader] = useState(false);
-  const [isTabVisible, setIsTabVisible] = useState(true); // Nouvel état pour la visibilité de l'onglet
-  const [showWakeUpLoader, setShowWakeUpLoader] = useState(false); // Nouvel état pour le loader après réveil
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  const [showWakeUpLoader, setShowWakeUpLoader] = useState(false);
 
   // Vérifier la visibilité de l'onglet
   useEffect(() => {
@@ -36,6 +39,38 @@ function App() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
+  
+  // Vérification de l'expiration du token
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const isExpired = payload.exp * 1000 < Date.now();
+
+          if (isExpired) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            MySwal.fire({
+              title: 'Session expirée',
+              text: 'Votre session a expiré, veuillez vous reconnecter',
+              icon: 'warning'
+            });
+          }
+        } catch (error) {
+          console.error('Erreur lors de la vérification du token:', error);
+          // En cas d'erreur, on déconnecte par sécurité
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+      }
+    }, 5 * 60 * 1000); // Vérification toutes les 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Vérifier si l'utilisateur est déjà connecté
   useEffect(() => {
@@ -48,13 +83,8 @@ function App() {
       setShowInitialLoader(false);
     }, 3000);
 
-    const loginLoaderTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000);
-
     return () => {
       clearTimeout(initialLoaderTimer);
-      clearTimeout(loginLoaderTimer);
     };
   }, []);
 
@@ -86,26 +116,6 @@ function App() {
     return false;
   };
 
-  // Afficher LoaderNesk après logout
-  if (showLogoutLoader) {
-    return <LoaderNesk />;
-  }
-
-  // Afficher LoaderNesk avant le login (si pas d'utilisateur)
-  if (!user && showInitialLoader) {
-    return <LoaderNesk />;
-  }
-
-  // Afficher LoaderNesk quand l'utilisateur revient après inactivité (mode veille)
-  if (showWakeUpLoader && !user) {
-    return <LoaderNesk />;
-  }
-
-  // Afficher le Loader normal après login
-  if (isLoading || showLoaderAfterLogin) {
-    return <Loader user={user} />;
-  }
-
   const renderActiveComponent = () => {
     if (!hasAccess(activeComponent)) {
       return user && user.role === 'User' ? <CalendrierTransferts /> : null;
@@ -127,11 +137,35 @@ function App() {
     }
   };
 
-  // Si l'utilisateur n'est pas connecté et le loader initial est terminé, afficher Login
+  // Display logic with clear priorities
+  
+  // 1. Show logout loader if active
+  if (showLogoutLoader) {
+    return <LoaderNesk />;
+  }
+  
+  // 2. If user is not logged in
   if (!user) {
+    // 2a. Initial app loader
+    if (showInitialLoader) {
+      return <LoaderNesk />;
+    }
+    
+    // 2b. Wake up loader
+    if (showWakeUpLoader) {
+      return <LoaderNesk />;
+    }
+    
+    // 2c. No loaders active, show login
     return <Login onLogin={handleLogin} />;
   }
-
+  
+  // 3. User is logged in but still showing loader after login
+  if (isLoading || showLoaderAfterLogin) {
+    return <Loader user={user} />;
+  }
+  
+  // 4. Normal logged-in state - show the app
   return (
     <div className="App">
       <div className="user-info">

@@ -422,7 +422,7 @@ const Add_Magasin = () => {
                 name="nomMagasin"
                 value={newMagasin.nomMagasin}
                 onChange={handleInputChange}
-                placeholder="stradi Casablanca"
+                placeholder="Stradi Casablanca"
                 className="w-full px-3 py-2 border rounded-lg"
               />
             </div>
