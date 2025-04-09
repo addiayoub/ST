@@ -1,0 +1,65 @@
+[{
+  "_id": {
+    "$oid": "67efc59947d088d1cdd9de9b"
+  },
+  "codeInditex": "IND002",
+  "nomMagasin": "Stradi Rabat",
+  "codeFutura": "FUT002",
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-04T11:42:17.467Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67efd0eb8d81e1c06d192881"
+  },
+  "codeInditex": "IND001",
+  "nomMagasin": "Stradi Casablanca",
+  "codeFutura": "FUT001",
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-04T12:30:35.707Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0130dcac1f24ddd056bb0"
+  },
+  "codeInditex": "IND003",
+  "nomMagasin": "Stradi Marrakech",
+  "codeFutura": "FUT003",
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-04T17:12:45.294Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f01324cac1f24ddd056bb5"
+  },
+  "codeInditex": "IND004",
+  "nomMagasin": "Stradi Tanger",
+  "codeFutura": "FUT004",
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-04T17:13:08.377Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f3926806b005fa19612da3"
+  },
+  "codeInditex": "IND005",
+  "nomMagasin": "Stradi Morocco-mall",
+  "codeFutura": "FUT005",
+  "statut": "inactive",
+  "createdAt": {
+    "$date": "2025-04-07T08:52:56.131Z"
+  },
+  "__v": 0
+}]
