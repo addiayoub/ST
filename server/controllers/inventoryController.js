@@ -124,7 +124,36 @@ exports.updateInventory = asyncHandler(async (req, res, next) => {
     data: inventory
   });
 });
+// @desc    Get inventories by period
+// @route   GET /api/inventories/period
+// @access  Private
+exports.getInventoriesByPeriod = async (req, res, next) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide both startDate and endDate'
+      });
+    }
 
+    const inventories = await Inventory.find({
+      date: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      }
+    }).sort({ date: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: inventories.length,
+      data: inventories
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 // @desc    Supprimer un inventaire
 // @route   DELETE /api/inventories/:id
 // @access  Private/Admin

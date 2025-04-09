@@ -1,48 +1,126 @@
-// import React, { useState, useEffect } from 'react';
-// import FilterComponent from './FilterComponents';
-// import SideToolsComponent from './SideToolsComponent';
-// import './calendriertransfer.css';
-// import { ChevronLeft, ChevronRight, Boxes } from 'lucide-react';
-// import ST from "/ST.png";
+// import React, { useState, useEffect, useRef } from 'react';
+// import FilterComponent from '../filter/FilterComponents';
+// import SideToolsComponent from '../menu/SideToolsComponent';
+// import '../Css/calendriertransfer.css';
+// import { PanelLeft, PanelLeftOpen } from 'lucide-react';
+// import Swal from 'sweetalert2';
+// import withReactContent from 'sweetalert2-react-content';
+// import logo from "/Logo-nesk-investment@2x.png";
 // import { 
 //   daysOfWeek, 
 //   transfersData as initialTransfersData, 
 //   defaultDate, 
 //   colorUtils, 
 //   transferLegend
-// } from './data';
+// } from "../les apis/data";
+// import MiniCalendar from './MiniCalendar';
+// import TransferLegend from './TransferLegend';
+// import MainCalendarHeader from './MainCalendarHeader';
+// import CalendarGrid from './CalendarGrid';
+
+// const MySwal = withReactContent(Swal);
 
 // const CalendrierTransferts = () => {
-//   const [currentDate, setCurrentDate] = useState(defaultDate);
-//   const [currentMonth, setCurrentMonth] = useState(new Date(currentDate));
+//   const [currentMonth, setCurrentMonth] = useState(() => {
+//     const date = new Date();
+//     return isNaN(date.getTime()) ? new Date() : date;
+//   });
+//   const [filterDirection, setFilterDirection] = useState({
+//     from: true,
+//     to: true
+//   });
 //   const [miniCalendarDays, setMiniCalendarDays] = useState([]);
 //   const [selectedDay, setSelectedDay] = useState(defaultDate.getDate());
 //   const [selectedDayEvents, setSelectedDayEvents] = useState([]);
 //   const [selectedWeek, setSelectedWeek] = useState(null);
-//   const [transfersData, setTransfersData] = useState(initialTransfersData);
+//   const [transfersData, setTransfersData] = useState({});
 //   const [selectedTransfer, setSelectedTransfer] = useState(null);
-  
-//   // Utilisation des fonctions importées depuis data.js
+//   const [isMiniCalendarVisible, setIsMiniCalendarVisible] = useState(true);
+//   const hoverAreaRef = useRef(null);
+//   const sidebarRef = useRef(null);
+//   const [selectedWarehouses, setSelectedWarehouses] = useState([]);
 //   const { getDotColor, getBorderColor, getBgColor } = colorUtils;
+//   const [filter, setFilter] = useState('all');
+//   const [activeFilter, setActiveFilter] = useState('all');
+//   const [activeLegend, setActiveLegend] = useState(null);
 
-//   // Générer les jours du mini-calendrier dynamiquement
+//   const updateTransfer = (date, updatedTransfer) => {
+//     setTransfersData(prevData => {
+//       const dateStr = formatDateToKey(date);
+//       if (!prevData[dateStr]) return prevData;
+  
+//       return {
+//         ...prevData,
+//         [dateStr]: {
+//           ...prevData[dateStr],
+//           transfers: prevData[dateStr].transfers.map(t => 
+//             t.from === selectedTransfer?.from && 
+//             t.to === selectedTransfer?.to && 
+//             t.date === selectedTransfer?.date
+//               ? {...t, ...updatedTransfer}
+//               : t
+//           )
+//         }
+//       };
+//     });
+//   };
+
+//   const formatDateToKey = (date) => {
+//     if (!date) return '';
+    
+//     try {
+//       if (typeof date === 'string') {
+//         const [day, month, year] = date.split('/');
+//         const formattedDate = new Date(`${year}-${month}-${day}`);
+//         return isNaN(formattedDate.getTime()) ? '' : formattedDate.toISOString().split('T')[0];
+//       }
+      
+//       const d = new Date(date);
+//       return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+//     } catch {
+//       return '';
+//     }
+//   };
+
+//   useEffect(() => {
+//     const handleMouseEnter = () => {
+//       setIsMiniCalendarVisible(true);
+//     };
+
+//     const handleMouseLeave = (e) => {
+//       if (e.relatedTarget === sidebarRef.current || 
+//           sidebarRef.current.contains(e.relatedTarget)) {
+//         return;
+//       }
+//       setIsMiniCalendarVisible(false);
+//     };
+
+//     const hoverArea = hoverAreaRef.current;
+//     if (hoverArea) {
+//       hoverArea.addEventListener('mouseenter', handleMouseEnter);
+//       hoverArea.addEventListener('mouseleave', handleMouseLeave);
+//     }
+   
+//     return () => {
+//       if (hoverArea) {
+//         hoverArea.removeEventListener('mouseenter', handleMouseEnter);
+//         hoverArea.removeEventListener('mouseleave', handleMouseLeave);
+//       }
+//     };
+//   }, []);
+
+//   const handleFilterWarehouse = (warehouses) => {
+//     setSelectedWarehouses(warehouses);
+//   };
+  
 //   const generateMiniCalendarDays = (date) => {
 //     const days = [];
 //     const year = date.getFullYear();
 //     const month = date.getMonth();
-    
-//     // Premier jour du mois
 //     const firstDay = new Date(year, month, 1);
-//     // Jour de la semaine du premier jour (0-6)
 //     const startingDay = firstDay.getDay();
-    
-//     // Nombre de jours dans le mois
 //     const monthLength = new Date(year, month + 1, 0).getDate();
-    
-//     // Nombre de jours du mois précédent à afficher
 //     const prevMonthDays = startingDay;
-    
-//     // Jours du mois précédent
 //     const prevMonth = new Date(year, month, 0);
 //     const prevMonthLength = prevMonth.getDate();
     
@@ -54,41 +132,43 @@
       
 //       for (let j = 0; j < 7; j++) {
 //         if (i === 0 && j < startingDay) {
-//           // Jours du mois précédent
-//           const prevDay = prevMonthLength - prevMonthDays + j + 1;
 //           week.push({
-//             day: prevDay,
+//             day: prevMonthLength - prevMonthDays + j + 1,
 //             month: 'prev',
 //             hasEvent: false,
+//             hasInventory: false,
 //             isCurrentDay: false
 //           });
 //         } else if (day > monthLength) {
-//           // Jours du mois suivant
 //           week.push({
 //             day: nextMonthDay,
 //             month: 'next',
 //             hasEvent: false,
+//             hasInventory: false,
 //             isCurrentDay: false
 //           });
 //           nextMonthDay++;
-//         } else {
-//           // Jours du mois courant
-//           const currentDay = new Date(year, month, day);
-          
-//           // Vérifier si le jour a un événement
-//           // Utilisez votre logique pour déterminer les événements
-//           const hasEvent = hasTransfersForDay(day, month, year);
-          
-//           // Vérifier si c'est le jour sélectionné
+//         } else {  const dateStr = formatDateToKey(new Date(year, month, day));
+//           const dayTransfers = initialTransfersData[dateStr]?.transfers || [];
+//           const hasEvent = dayTransfers.length > 0;
+//           const hasInventory = dayTransfers.some(t => t.showBoxIcon);
 //           const isCurrentDay = day === selectedDay && 
-//                               currentDate.getMonth() === month && 
-//                               currentDate.getFullYear() === year;
+//                                month === currentMonth.getMonth() && 
+//                                year === currentMonth.getFullYear();
           
+//           // Compter les transferts et inventaires
+//           const transferCount = dayTransfers.filter(t => !t.showBoxIcon).length;
+//           const inventoryCount = dayTransfers.filter(t => t.showBoxIcon).length;
+      
 //           week.push({
 //             day,
 //             month: 'current',
 //             hasEvent,
-//             isCurrentDay
+//             hasInventory,
+//             isCurrentDay,
+//             transferCount,
+//             inventoryCount,
+//             dateStr // Ajouté pour référence
 //           });
 //           day++;
 //         }
@@ -96,7 +176,6 @@
       
 //       days.push(week);
       
-//       // Si nous avons déjà traité tous les jours du mois et du mois suivant
 //       if (day > monthLength && nextMonthDay > (7 - (day - monthLength) % 7) % 7) {
 //         break;
 //       }
@@ -105,183 +184,207 @@
 //     return days;
 //   };
 
-//   // Vérifier si un jour a des transferts
-//   const hasTransfersForDay = (day, month, year) => {
-//     // Pour simplifier, on va juste vérifier dans les données actuelles
-//     // Dans une vraie application, vous devriez vérifier dans votre base de données
-//     const dayStr = String(day).padStart(2, '0');
-    
-//     return Object.values(transfersData).some(dayData => {
-//       return parseInt(dayData.date) === day && dayData.transfers.length > 0;
-//     });
+
+
+//   const handleLegendClick = (legendType) => {
+//     setActiveLegend(prev => prev === legendType ? null : legendType);
+//     setActiveFilter('all');
 //   };
 
-//   // Générer les données du calendrier pour une semaine spécifique
 //   const generateWeekData = (weekStartDate) => {
 //     const result = {};
 //     const currentDate = new Date(weekStartDate);
     
-//     // Créer des données pour chaque jour de la semaine
 //     for (let i = 0; i < 7; i++) {
 //       const dayOfWeek = daysOfWeek[currentDate.getDay()];
-//       const dayNum = currentDate.getDate();
+//       const dateStr = formatDateToKey(currentDate);
+//       const dayData = initialTransfersData[dateStr] || { date: String(currentDate.getDate()), transfers: [] };
       
-//       // Vérifier si nous avons des données de transfert pour ce jour dans nos données initiales
-//       let dayTransfers = [];
-//       const matchingDay = Object.keys(initialTransfersData).find(key => 
-//         initialTransfersData[key].date === String(dayNum)
-//       );
-      
-//       if (matchingDay) {
-//         dayTransfers = initialTransfersData[matchingDay].transfers;
-//       }
+//       const filteredTransfers = dayData.transfers.filter(transfer => {
+//         if (activeLegend && transfer.type !== activeLegend) return false;
+//         if (activeFilter === 'inventory' && !transfer.showBoxIcon) return false;
+//         if (activeFilter === 'transfers' && transfer.showBoxIcon) return false;
+        
+//         if (selectedWarehouses && selectedWarehouses.length > 0) {
+//           if (transfer.showBoxIcon) {
+//             return filterDirection.to && 
+//                    selectedWarehouses.some(warehouse => transfer.to?.includes(warehouse));
+//           } else {
+//             const fromMatch = filterDirection.from && 
+//                              selectedWarehouses.some(warehouse => transfer.from?.includes(warehouse));
+//             const toMatch = filterDirection.to && 
+//                             selectedWarehouses.some(warehouse => transfer.to?.includes(warehouse));
+//             return fromMatch || toMatch;
+//           }
+//         }
+//         return true;
+//       }).map(transfer => transfer.showBoxIcon ? { ...transfer, from: '', to: transfer.to.trim() } : transfer);
       
 //       result[dayOfWeek] = {
-//         date: String(dayNum),
-//         transfers: dayTransfers
+//         ...dayData,
+//         transfers: filteredTransfers,
+//         date: String(currentDate.getDate()),
+//         fullDate: dateStr
 //       };
-      
-//       // Passer au jour suivant
 //       currentDate.setDate(currentDate.getDate() + 1);
 //     }
     
 //     return result;
 //   };
 
-//   // Mettre à jour le mini-calendrier quand le mois change
+//   const handleWeekSelect = (weekStart) => {
+//     const newWeekStart = new Date(weekStart);
+//     setSelectedWeek(newWeekStart);
+//     setCurrentMonth(new Date(newWeekStart));
+//     setSelectedDay(newWeekStart.getDate());
+//   };
+
+//   const handleFilterAll = () => {
+//     setActiveFilter('all');
+//     setFilter('all');
+//   };
+  
+//   const handleFilterInventory = () => {
+//     setActiveFilter('inventory');
+//     setFilter('inventory');
+//   };
+  
+//   const handleFilterTransfers = () => {
+//     setActiveFilter('transfers');
+//     setFilter('transfers');
+//   };
+
+//   const getCurrentWeekStart = () => {
+//     const today = new Date();
+//     const dayOfWeek = today.getDay();
+//     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+//     return new Date(today.setDate(diff));
+//   };
+
+//   useEffect(() => {
+//     const currentWeekStart = getCurrentWeekStart();
+//     setSelectedWeek(new Date(currentWeekStart));
+//     setSelectedDay(new Date().getDate());
+//     setCurrentMonth(new Date());
+//   }, []);
+
 //   useEffect(() => {
 //     setMiniCalendarDays(generateMiniCalendarDays(currentMonth));
 //   }, [currentMonth, selectedDay]);
 
-//   // Mettre à jour le calendrier principal quand la semaine change
 //   useEffect(() => {
 //     if (selectedWeek) {
-//       const newTransfersData = generateWeekData(selectedWeek);
+//       const newTransfersData = generateWeekData(new Date(selectedWeek));
 //       setTransfersData(newTransfersData);
 //     }
-//   }, [selectedWeek]);
+//   }, [selectedWeek, filter, activeFilter, activeLegend, selectedWarehouses, filterDirection]);
 
-//   // Initialiser la semaine sélectionnée au chargement
 //   useEffect(() => {
-//     // Par défaut, on sélectionne la semaine qui contient le 25 février 2021
-//     const initialWeek = new Date(2021, 1, 21); // 21 février 2021 (dimanche)
-//     setSelectedWeek(initialWeek);
-    
-//     // Sélectionnez le 25 février comme dans l'image
-//     setSelectedDay(25);
-//   }, []);
-
-//   // Simuler les événements pour le jour sélectionné
-//   useEffect(() => {
-//     // Trouver les événements pour le jour sélectionné
 //     const events = findEventsForDay(selectedDay);
 //     setSelectedDayEvents(events);
 //   }, [selectedDay, transfersData]);
 
-//   // Trouver les événements pour un jour spécifique
 //   const findEventsForDay = (day) => {
-//     // Chercher le jour dans les données de transfert
-//     const dayEntry = Object.entries(transfersData).find(([_, dayData]) => 
-//       parseInt(dayData.date) === day
-//     );
-    
-//     if (dayEntry) {
-//       return dayEntry[1].transfers;
-//     }
-    
-//     return [];
+//     const date = new Date(currentMonth);
+//     date.setDate(day);
+//     const dateStr = formatDateToKey(date);
+//     return initialTransfersData[dateStr]?.transfers || [];
 //   };
 
-//   // Format de la date sélectionnée
+//   const handleMonthYearChange = (newDate) => {
+//     const validDate = new Date(newDate);
+//     if (isNaN(validDate.getTime())) return;
+    
+//     setCurrentMonth(validDate);
+    
+//     const firstDayOfWeek = new Date(validDate);
+//     firstDayOfWeek.setDate(1);
+//     const dayOfWeek = firstDayOfWeek.getDay();
+//     const diff = firstDayOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+//     const weekStart = new Date(firstDayOfWeek.setDate(diff));
+    
+//     setSelectedWeek(weekStart);
+//     setSelectedDay(validDate.getDate());
+//   };
+
 //   const formatSelectedDate = () => {
 //     const date = new Date(currentMonth);
 //     date.setDate(selectedDay);
+//     if (isNaN(date.getTime())) return '';
     
-//     const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+//     const dayNames = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
 //     const dayName = dayNames[date.getDay()];
-    
 //     const day = String(date.getDate()).padStart(2, '0');
 //     const month = String(date.getMonth() + 1).padStart(2, '0');
 //     const year = date.getFullYear();
-    
 //     return `${dayName} ${day} / ${month} / ${year}`;
 //   };
 
-//   // Navigation du mois dans le mini-calendrier
 //   const goToPrevMonth = () => {
 //     const newMonth = new Date(currentMonth);
 //     newMonth.setMonth(newMonth.getMonth() - 1);
 //     setCurrentMonth(newMonth);
+//     const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
+//     setSelectedWeek(firstDayOfNewMonth);
 //   };
-
+  
 //   const goToNextMonth = () => {
 //     const newMonth = new Date(currentMonth);
 //     newMonth.setMonth(newMonth.getMonth() + 1);
 //     setCurrentMonth(newMonth);
+//     const firstDayOfNewMonth = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
+//     setSelectedWeek(firstDayOfNewMonth);
 //   };
 
-//   // Navigation de la semaine dans le calendrier principal
 //   const goToPrevWeek = () => {
 //     if (selectedWeek) {
 //       const newWeek = new Date(selectedWeek);
 //       newWeek.setDate(newWeek.getDate() - 7);
 //       setSelectedWeek(newWeek);
+//       if (newWeek.getMonth() !== currentMonth.getMonth()) {
+//         setCurrentMonth(new Date(newWeek));
+//       }
 //     }
 //   };
-
+  
 //   const goToNextWeek = () => {
 //     if (selectedWeek) {
 //       const newWeek = new Date(selectedWeek);
 //       newWeek.setDate(newWeek.getDate() + 7);
 //       setSelectedWeek(newWeek);
+//       if (newWeek.getMonth() !== currentMonth.getMonth()) {
+//         setCurrentMonth(new Date(newWeek));
+//       }
 //     }
 //   };
 
-//   // Sélection d'un jour dans le mini-calendrier ou le calendrier principal
 //   const selectDay = (day, monthType) => {
 //     let targetDate = new Date(currentMonth);
     
 //     if (monthType === 'prev') {
 //       targetDate.setMonth(targetDate.getMonth() - 1);
-//       targetDate.setDate(day);
-//       setCurrentMonth(new Date(targetDate));
 //     } else if (monthType === 'next') {
 //       targetDate.setMonth(targetDate.getMonth() + 1);
-//       targetDate.setDate(day);
-//       setCurrentMonth(new Date(targetDate));
-//     } else {
-//       targetDate.setDate(day);
 //     }
     
+//     targetDate.setDate(day);
+//     setCurrentMonth(new Date(targetDate));
 //     setSelectedDay(day);
-//     setCurrentDate(new Date(targetDate)); // Update the current date to match selected
     
-//     // Si le jour sélectionné n'est pas dans la semaine actuelle, changer de semaine
-//     const dayOfWeek = targetDate.getDay(); // 0 pour dimanche, 6 pour samedi
+//     const dayOfWeek = targetDate.getDay();
 //     const weekStart = new Date(targetDate);
-//     weekStart.setDate(targetDate.getDate() - dayOfWeek); // Revenir au dimanche de la semaine
+//     weekStart.setDate(targetDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
     
 //     setSelectedWeek(weekStart);
-    
-//     // Réinitialiser le transfert sélectionné lorsqu'on change de jour
 //     setSelectedTransfer(null);
 //   };
 
-//   // Gestion des clics sur un transfert spécifique
 //   const handleTransferClick = (transfer, date, e) => {
-//     e.stopPropagation(); // Empêcher la propagation pour ne pas déclencher selectDay
-    
-//     // Sélectionner d'abord le jour correspondant
+//     e.stopPropagation();
 //     selectDay(parseInt(date));
-    
-//     // Ensuite, définir le transfert sélectionné
 //     setSelectedTransfer(transfer);
-    
-//     // Vous pourriez ajouter ici une logique supplémentaire comme afficher un modal
-//     console.log('Transfert sélectionné:', transfer);
 //   };
 
-//   // Formater le nom du mois
 //   const formatMonth = (date) => {
 //     const months = [
 //       'January', 'February', 'March', 'April', 'May', 'June',
@@ -290,302 +393,124 @@
 //     return `${months[date.getMonth()]} ${date.getFullYear()}`;
 //   };
 
-//   // Liste des jours de la semaine pour le header du calendrier principal
-//   const dayHeaders = Object.keys(transfersData).map(day => ({
-//     day,
-//     date: transfersData[day].date
-//   }));
-  
+//   const goToCurrentWeek = () => {
+//     const currentWeekStart = getCurrentWeekStart();
+//     setSelectedWeek(new Date(currentWeekStart));
+//     setSelectedDay(new Date().getDate());
+//     setCurrentMonth(new Date());
+//   };
+
 //   return (
-//     <div className="flex h-screen overflow-hidden">
-//       {/* Sidebar */}
-//       <div id='rediusboxes' className="w-80 bg-black text-white overflow-y-auto">
-//         <div className="px-5 py-4 flex items-center justify-between">
-//           <div className='date-minicalendrier'>
-//             <span>{formatMonth(currentMonth).split(' ')[0]} </span>
-//             <span className="text-blue-500">{formatMonth(currentMonth).split(' ')[1]}</span>
-//           </div>
-//           <div className="flex space-x-2">
-//             <button className="text-xl" onClick={goToPrevMonth}><ChevronLeft /></button>
-//             <button className="text-xl" onClick={goToNextMonth}><ChevronRight /></button>
-//           </div>
-//         </div>
-        
-//         {/* Mini Calendar */}
-//         <div className="px-2">
-//           <table className="w-full">
-//             <thead>
-//               <tr>
-//                 {daysOfWeek.map((day, index) => (
-//                   <th key={index} className="text-xs py-1">{day}</th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {miniCalendarDays.map((week, weekIndex) => (
-//                 <tr key={weekIndex}>
-//                   {week.map((day, dayIndex) => (
-//                     <td 
-//                       key={dayIndex} 
-//                       className={`text-center py-2 cursor-pointer relative ${
-//                         day.isCurrentDay ? 'font-bold' : ''
-//                       }`}
-//                       onClick={() => selectDay(day.day, day.month)}
-//                     >
-//                       <div className="relative">
-//                         <span className={`
-//                           inline-flex items-center justify-center w-8 h-8 rounded-full
-//                           ${day.isCurrentDay ? 'bg-blue-500 text-white' : ''}
-//                           ${day.month !== 'current' && !day.isCurrentDay ? "text-gray-400" : ""}
-//                           ${day.hasEvent && !day.isCurrentDay ? "text-blue-500 font-semibold" : ""}
-//                         `}>
-//                           {day.day}
-//                         </span>
-//                         {/* Indicateur pour les jours avec événements */}
-//                         {day.hasEvent && !day.isCurrentDay && (
-//                           <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></span>
-//                         )}
-//                       </div>
-//                     </td>
-//                   ))}
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-        
-//         {/* Selected Date */}
-//         <div className="px-5 py-4">
-//           <div className="text-blue-500 text-lg font-medium">
-//             {formatSelectedDate()}
-//           </div>
-//         </div>
-        
-//         {/* Events for Selected Date */}
-//         <div className="px-5 space-y-4">
-//           {selectedDayEvents.length > 0 ? (
-//             selectedDayEvents.map((event, index) => (
-//               <div 
-//                 key={index} 
-//                 className={`flex cursor-pointer p-2 rounded ${
-//                   selectedTransfer === event ? 'bg-blue-900 bg-opacity-20' : ''
-//                 }`}
-//                 onClick={() => setSelectedTransfer(event)}
-//               >
-//                 <div className={`w-3 h-3 rounded-full ${getDotColor(event.type)} mt-1.5 mr-2`}></div>
-//                 <div>
-//                   {event.from && <div className="font-medium">{event.from}</div>}
-//                   {event.to && <div className="text-sm ml-1">{event.to}</div>}
-//                   {event.label && (
-//                     <div className="flex items-center">
-//                       <span>{event.label}</span>
-//                       {event.showBoxIcon && <Boxes className="ml-2 text-blue-500" size={16} />}
-//                     </div>
-//                   )}
+//     <div id="All_calendar" className="flex h-screen overflow-hidden">
+//       <div
+//         ref={hoverAreaRef}
+//         className="fixed left-0 top-0 bottom-0 w-4 z-20 hover:w-8 transition-all"
+//       />
+
+//       <div
+//         ref={sidebarRef}
+//         className={`flex ${isMiniCalendarVisible ? 'w-87' : 'w-0'} transition-all duration-300 overflow-hidden relative`}
+//       >
+//         <div id='rediusboxes' className="text-white overflow-y-auto flex-1">
+//           {isMiniCalendarVisible && (
+//             <>
+//               <div className="flex flex-col items-center justify-center pt-6">
+//                 <div className="h-12">
+//                   <img 
+//                     src={logo} 
+//                     alt="IDOA TECH" 
+//                     className="h-full object-contain"
+//                   />
 //                 </div>
 //               </div>
-//             ))
-//           ) : (
-//             <div className="text-gray-400">Aucun transfert prévu pour ce jour</div>
+              
+//               <MiniCalendar
+//                 currentMonth={currentMonth}
+//                 miniCalendarDays={miniCalendarDays}
+//                 selectedDay={selectedDay}
+//                 goToPrevMonth={goToPrevMonth}
+//                 goToNextMonth={goToNextMonth}
+//                 selectDay={selectDay}
+//                 formatMonth={formatMonth}
+//                 onMonthYearChange={handleMonthYearChange}
+//                 onWeekSelect={handleWeekSelect}
+//               />
+              
+//               <TransferLegend 
+//                 transferLegend={transferLegend}
+//                 getDotColor={getDotColor}
+//                 onLegendClick={handleLegendClick}
+//                 activeLegend={activeLegend}
+//               />
+//             </>
 //           )}
 //         </div>
         
-//         {/* Legend */}
-//         <div className="px-5 py-8 space-y-3">
-//           <div className="text-sm mb-2 text-gray-400">Légende</div>
-//           {transferLegend.map((item, index) => (
-//             <div key={index} className="flex items-center">
-//               <div className={`w-3 h-3 rounded-full ${getDotColor(item.type)} mr-2`}></div>
-//               <div>{item.label}</div>
-//             </div>
-//           ))}
-//         </div>
+//         <button 
+//           onClick={() => setIsMiniCalendarVisible(!isMiniCalendarVisible)}
+//           className="panelbg relative group"
+//           aria-label={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+//           title={isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+//         >
+//           {isMiniCalendarVisible ? (
+//             <PanelLeft className="panel cursor-pointer" />
+//           ) : (
+//             <PanelLeftOpen className="panel cursor-pointer" />
+//           )}
+          
+//           <span className="
+//             hidden group-hover:block 
+//             absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 
+//             bg-gray-800 text-white text-xs 
+//             px-3 py-2 rounded 
+//             whitespace-nowrap 
+//             mb-2
+//             pointer-events-none
+//           ">
+//             {isMiniCalendarVisible ? "Hide calendar" : "Show calendar"}
+//           </span>
+//         </button>
 //       </div>
       
-//       {/* Main Content */}
-//       <div className="flex-1 flex flex-col">
-//         {/* Header */}
-//         <div className="flex items-center justify-between p-5 bg-white">
-//           <div>
-//             <h1 className="calendrier_text">Calendrier des transferts</h1>
-           
-//           </div>
-//           <div className="w-100 h-10 rounded-full flex items-center justify-center font-bold">
-//             <img src={ST} alt="" />
-//           </div>
-//         </div>
+//       <div className={`flex-1 flex flex-col transition-all duration-300 ${
+//         isMiniCalendarVisible ? 'ml-0' : 'ml-0'
+//       }`}>
+//         <MainCalendarHeader/>
+//         <FilterComponent 
+//           goToPrevWeek={goToPrevWeek}
+//           goToNextWeek={goToNextWeek}
+//           goToCurrentWeek={goToCurrentWeek}
+//           onFilterAll={handleFilterAll}
+//           onFilterInventory={handleFilterInventory}
+//           onFilterTransfers={handleFilterTransfers}
+//           activeFilter={activeFilter}
+//           formatSelectedDate={formatSelectedDate}
+//           onWeekSelect={handleWeekSelect}
+//           currentMonth={currentMonth}
+//           selectedWarehouses={selectedWarehouses}
+//           onFilterWarehouse={handleFilterWarehouse}
+//           filterDirection={filterDirection}
+//           setFilterDirection={setFilterDirection}
+//         />   
         
-//         {/* Filtre */}
-//         <FilterComponent goToPrevWeek={goToPrevWeek} goToNextWeek={goToNextWeek} />
-        
-//         {/* Calendar Grid */}
 //         <div className="flex-1 overflow-auto">
-//           {/* Calendar Table */}
-//           <table className="w-full border-collapse">
-//             {/* Day Headers Row */}
-//             <thead>
-//               <tr>
-//                 {dayHeaders.map((header, index) => (
-//                   <th 
-//                     key={index} 
-//                     className={`p-3 border text-center font-normal ${
-//                       parseInt(header.date) === selectedDay ? 'bg-blue-50 border-blue-500' : ''
-//                     }`}
-//                     style={{ 
-//                       borderColor: parseInt(header.date) === selectedDay ? '#3b82f6' : '#e5e7eb',
-//                       borderWidth: parseInt(header.date) === selectedDay ? '2px' : '1px'
-//                     }}
-//                     onClick={() => selectDay(parseInt(header.date))}
-//                   >
-//                     <div>{header.day}</div>
-//                     <div id='day_and_date'>{header.date}</div>
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {/* First row with transfers */}
-//               <tr>
-//                 {Object.keys(transfersData).map((day, index) => {
-//                   const dayData = transfersData[day];
-//                   const isSelectedDay = parseInt(dayData.date) === selectedDay;
-                  
-//                   return (
-//                     <td 
-//                       key={index}
-//                       className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
-//                       style={{ 
-//                         height: 'auto', 
-//                         borderColor: isSelectedDay ? '#3b82f6' : '#e5e7eb',
-//                         borderWidth: isSelectedDay ? '2px' : '1px',
-//                         verticalAlign: 'top',
-//                         position: 'relative',
-//                         cursor: 'pointer'
-//                       }}
-//                       onClick={() => selectDay(parseInt(dayData.date))}
-//                     >
-//                       {/* Indicateur visuel pour le jour sélectionné */}
-//                       {isSelectedDay && (
-//                         <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
-//                       )}
-                      
-//                       {/* Display first transfer (if any) */}
-//                       {dayData.transfers.length > 0 && (
-//                         <div 
-//                           className={`p-2 m-2 border-l-4 rounded ${getBorderColor(dayData.transfers[0].type)} ${getBgColor(dayData.transfers[0].type)} ${
-//                             selectedTransfer === dayData.transfers[0] ? 'ring-2 ring-blue-500' : ''
-//                           }`}
-//                           onClick={(e) => handleTransferClick(dayData.transfers[0], dayData.date, e)}
-//                         >
-//                           {dayData.transfers[0].from && (
-//                             <div className="flex items-center">
-//                               <div className={`w-3 h-3 rounded-full ${getDotColor(dayData.transfers[0].type)} mr-1`}></div>
-//                               <div className="text-sm font-medium">{dayData.transfers[0].from}</div>
-//                             </div>
-//                           )}
-//                           {dayData.transfers[0].to && (
-//                             <div className="text-sm ml-4">{dayData.transfers[0].to}</div>
-//                           )}
-//                           {dayData.transfers[0].label && (
-//                             <div className="flex items-center justify-between">
-//                               <div className="flex items-center">
-//                                 <div className={`w-3 h-3 rounded-full ${getDotColor(dayData.transfers[0].type)} mr-1`}></div>
-//                                 <div className="text-sm font-medium">{dayData.transfers[0].label}</div>
-//                               </div>
-//                               {dayData.transfers[0].showBoxIcon && (
-//                                 <Boxes className="text-blue-500" size={16} />
-//                               )}
-//                             </div>
-//                           )}
-//                         </div>
-//                       )}
-//                     </td>
-//                   );
-//                 })}
-//               </tr>
-              
-//               {/* Second row with transfers */}
-//               <tr>
-//                 {Object.keys(transfersData).map((day, index) => {
-//                   const dayData = transfersData[day];
-//                   const isSelectedDay = parseInt(dayData.date) === selectedDay;
-                  
-//                   return (
-//                     <td 
-//                       key={index}
-//                       className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
-//                       style={{ 
-//                         height: 'auto', 
-//                         borderColor: isSelectedDay ? '#3b82f6' : '#e5e7eb',
-//                         borderWidth: isSelectedDay ? '2px' : '1px',
-//                         verticalAlign: 'top'
-//                       }}
-//                       onClick={() => selectDay(parseInt(dayData.date))}
-//                     >
-//                       {/* Display second transfer (if any) */}
-//                       {dayData.transfers.length > 1 && (
-//                         <div 
-//                           className={`p-2 m-2 border-l-4 rounded ${getBorderColor(dayData.transfers[1].type)} ${getBgColor(dayData.transfers[1].type)} ${
-//                             selectedTransfer === dayData.transfers[1] ? 'ring-2 ring-blue-500' : ''
-//                           }`}
-//                           onClick={(e) => handleTransferClick(dayData.transfers[1], dayData.date, e)}
-//                         >
-//                           {dayData.transfers[1].from && (
-//                             <div className="flex items-center">
-//                               <div className={`w-3 h-3 rounded-full ${getDotColor(dayData.transfers[1].type)} mr-1`}></div>
-//                               <div className="text-sm font-medium">{dayData.transfers[1].from}</div>
-//                             </div>
-//                           )}
-//                           {dayData.transfers[1].to && (
-//                             <div className="text-sm ml-4">{dayData.transfers[1].to}</div>
-//                           )}
-//                           {dayData.transfers[1].label && (
-//                             <div className="flex items-center justify-between">
-//                               <div className="flex items-center">
-//                                 <div className={`w-3 h-3 rounded-full ${getDotColor(dayData.transfers[1].type)} mr-1`}></div>
-//                                 <div className="text-sm font-medium">{dayData.transfers[1].label}</div>
-//                               </div>
-//                               {dayData.transfers[1].showBoxIcon && (
-//                                 <Boxes className="text-blue-500" size={16} />
-//                               )}
-//                             </div>
-//                           )}
-//                         </div>
-//                       )}
-//                     </td>
-//                   );
-//                 })}
-//               </tr>
-              
-//               {/* Empty rows for the rest of the calendar */}
-//               {Array.from({ length: 5 }).map((_, rowIndex) => (
-//                 <tr key={`empty-row-${rowIndex}`}>
-//                   {Object.keys(transfersData).map((day, colIndex) => {
-//                     const isSelectedDay = parseInt(transfersData[day].date) === selectedDay;
-//                     return (
-//                       <td 
-//                         key={`empty-cell-${rowIndex}-${colIndex}`}
-//                         className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
-//                         style={{ 
-//                           height: '100px', 
-//                           borderColor: isSelectedDay ? '#3b82f6' : '#e5e7eb',
-//                           borderWidth: isSelectedDay ? '2px' : '1px'
-//                         }}
-//                         onClick={() => selectDay(parseInt(transfersData[day].date))}
-//                       ></td>
-//                     );
-//                   })}
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
+//           <CalendarGrid
+//             transfersData={transfersData}
+//             selectedDay={selectedDay}
+//             selectDay={selectDay}
+//             handleTransferClick={handleTransferClick}
+//             selectedTransfer={selectedTransfer}
+//             getDotColor={getDotColor}
+//             getBorderColor={getBorderColor}
+//             getBgColor={getBgColor}
+//             updateTransfer={updateTransfer}
+//           />
 //         </div>
 //       </div>
       
-//       {/* Side Tools */}
 //       <SideToolsComponent />
 //     </div>
 //   );
 // };
 
-// export default CalendrierTransferts;//stop
+// export default CalendrierTransferts;

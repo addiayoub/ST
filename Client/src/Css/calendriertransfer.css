@@ -27,7 +27,18 @@
     font-weight: bold;
 
 }
-
+/* .years{
+  transition: 0.5s;
+  padding: 10px;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  
+}
+.years:hover{
+background:  rgba(128, 128, 128, 0.575);
+cursor: pointer;
+} */
 #All1{
     font-weight: bold;
     background-color: #f4f4f576;
@@ -137,6 +148,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
+  height: ;
 }
 .Circlex_day{
   color: rgba(220, 124, 124, 0.956);

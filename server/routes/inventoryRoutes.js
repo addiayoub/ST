@@ -5,7 +5,8 @@ const {
   getInventory,
   updateInventory,
   deleteInventory,
-  getDestinations
+  getDestinations,
+  getInventoriesByPeriod
 } = require('../controllers/inventoryController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -20,6 +21,10 @@ router.route('/')
 
 router.route('/destinations')
   .get(getDestinations);
+
+// Add this before the /:id route
+router.route('/period')
+  .get(getInventoriesByPeriod);
 
 router.route('/:id')
   .get(getInventory)

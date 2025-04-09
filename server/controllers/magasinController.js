@@ -32,7 +32,17 @@ exports.createMagasin = asyncHandler(async (req, res) => {
 // @route   GET /api/magasins
 // @access  Private
 exports.getMagasins = asyncHandler(async (req, res) => {
-  const magasins = await Magasin.find().sort({ createdAt: -1 });
+  // Vérifier que req.query existe et contient statut
+  const filter = {};
+  
+  if (req.query.statut) {
+    filter.statut = req.query.statut;
+    console.log(`Filtrage par statut: ${req.query.statut}`); // Log pour débugger
+  }
+
+  const magasins = await Magasin.find(filter).sort({ createdAt: -1 });
+  
+  console.log(`Magasins trouvés: ${magasins.length}, avec filtre:`, filter); // Log pour débugger
   
   res.status(200).json({
     success: true,
@@ -48,7 +58,6 @@ exports.getMagasins = asyncHandler(async (req, res) => {
     }))
   });
 });
-
 // @desc    Mettre à jour un magasin
 // @route   PUT /api/magasins/:id
 // @access  Private/Admin

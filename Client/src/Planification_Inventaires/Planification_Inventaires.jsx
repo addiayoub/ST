@@ -13,7 +13,7 @@ const Planification_Inventaires = () => {
     date: '',
     destination: '',
     comment: '',
-    status: 'Planifié'
+    status: 'En attente'
   });
 
   // Helper function to get auth headers
@@ -29,46 +29,49 @@ const Planification_Inventaires = () => {
     
     return headers;
   };
+// Fetch inventories and destinations on component mount
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [inventoriesRes, magasinsRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
+          headers: getAuthHeaders(false)
+        }),
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
+          headers: getAuthHeaders(false)
+        })
+      ]);
 
-  // Fetch inventories and destinations on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [inventoriesRes, magasinsRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
-            headers: getAuthHeaders(false)
-          }),
-          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
-            headers: getAuthHeaders(false)
-          })
-        ]);
-
-        if (!inventoriesRes.ok) {
-          const errorData = await inventoriesRes.json();
-          throw new Error(errorData.message || 'Failed to fetch inventories');
-        }
-        
-        if (!magasinsRes.ok) {
-          const errorData = await magasinsRes.json();
-          throw new Error(errorData.message || 'Failed to fetch magasins');
-        }
-
-        const inventoriesData = await inventoriesRes.json();
-        const magasinsData = await magasinsRes.json();
-
-        setInventories(inventoriesData.data);
-        setDestinations(magasinsData.data.map(m => m.nomMagasin));
-        setLoading(false);
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err.message);
-        setLoading(false);
-        showErrorAlert(err.message);
+      if (!inventoriesRes.ok) {
+        const errorData = await inventoriesRes.json();
+        throw new Error(errorData.message || 'Failed to fetch inventories');
       }
-    };
+      
+      if (!magasinsRes.ok) {
+        const errorData = await magasinsRes.json();
+        throw new Error(errorData.message || 'Failed to fetch magasins');
+      }
 
-    fetchData();
-  }, []);
+      const inventoriesData = await inventoriesRes.json();
+      const magasinsData = await magasinsRes.json();
+
+      setInventories(inventoriesData.data);
+      
+      // Filtrer uniquement les magasins actifs
+      const activeMagasins = magasinsData.data.filter(m => m.statut === 'active');
+      setDestinations(activeMagasins.map(m => m.nomMagasin));
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError(err.message);
+      setLoading(false);
+      showErrorAlert(err.message);
+    }
+  };
+
+  fetchData();
+}, []);
 
   const showErrorAlert = (message) => {
     Swal.fire({
@@ -139,8 +142,8 @@ const Planification_Inventaires = () => {
 
       const createdInventory = await response.json();
       setInventories([...inventories, createdInventory.data]);
-      setNewInventory({ date: '', destination: '', comment: '', status: 'Planifié' });
-      showSuccessAlert('L\'inventaire a été planifié avec succès');
+      setNewInventory({ date: '', destination: '', comment: '', status: 'En attente' });
+      showSuccessAlert('L\'inventaire a été En attente avec succès');
     } catch (err) {
       console.error('Add inventory error:', err);
       showErrorAlert(err.message);
@@ -282,10 +285,10 @@ const Planification_Inventaires = () => {
           ).join('')}
         </select>
         <select id="swal-input-status" class="swal2-input custom-swal-input">
-          <option value="Planifié" ${inventory.status === 'Planifié' ? 'selected' : ''}>Planifié</option>
+          <option value="En attente" ${inventory.status === 'En attente' ? 'selected' : ''}>En attente</option>
           <option value="En cours" ${inventory.status === 'En cours' ? 'selected' : ''}>En cours</option>
-          <option value="Terminé" ${inventory.status === 'Terminé' ? 'selected' : ''}>Terminé</option>
-          <option value="Annulé" ${inventory.status === 'Annulé' ? 'selected' : ''}>Annulé</option>
+          <option value="Confirmé" ${inventory.status === 'Confirmé' ? 'selected' : ''}>Confirmé</option>
+          <option value="annulé" ${inventory.status === 'annulé' ? 'selected' : ''}>annulé</option>
         </select>
         <input id="swal-input-comment" type="text" class="swal2-input custom-swal-input" 
           value="${inventory.comment || ''}" placeholder="Commentaire (optionnel)">
@@ -428,10 +431,10 @@ const Planification_Inventaires = () => {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-lg"
               >
-                <option value="Planifié">Planifié</option>
+                <option value="En attente">En attente</option>
                 <option value="En cours">En cours</option>
-                <option value="Terminé">Terminé</option>
-                <option value="Annulé">Annulé</option>
+                <option value="Confirmé">Confirmé</option>
+                <option value="annulé">annulé</option>
               </select>
             </div>
             
@@ -459,7 +462,7 @@ const Planification_Inventaires = () => {
       <br />
       <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
         <h3 className="font-medium text-gray-700 mb-2 text-center">
-          Liste des Inventaires Planifiés
+          Liste des Inventaires En attentes
           <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${inventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
             {inventories.length}
           </span>
@@ -486,9 +489,9 @@ const Planification_Inventaires = () => {
                       {inventory.destination}
                     </td>
                     <td className={`px-4 py-2 whitespace-nowrap text-sm ${
-                      inventory.status === 'Planifié' ? 'text-orange-500' :
+                      inventory.status === 'En attente' ? 'text-orange-500' :
                       inventory.status === 'En cours' ? 'text-blue-600' :
-                      inventory.status === 'Terminé' ? 'text-green-600' :
+                      inventory.status === 'Confirmé' ? 'text-green-600' :
                       'text-red-600'
                     }`}>
                       {inventory.status}
@@ -519,7 +522,7 @@ const Planification_Inventaires = () => {
               ) : (
                 <tr>
                   <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
-                    Aucun inventaire planifié
+                    Aucun inventaire En attente
                   </td>
                 </tr>
               )}

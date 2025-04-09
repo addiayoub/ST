@@ -118,8 +118,8 @@ const togglePasswordVisibility = () => {
 
   const removeUtilisateur = async (id) => {
     Swal.fire({
-      background: 'transparent',
-      color: 'white',
+      background: 'white',
+      color: 'black',
       customClass: {
         popup: 'custom-swal-popup',
         confirmButton: 'custom-swal-confirm-button',
@@ -200,8 +200,8 @@ const togglePasswordVisibility = () => {
 
   const editUtilisateur = (utilisateur) => {
     Swal.fire({
-      background: '#007bff45',
-      color: 'white',
+      background: 'white',
+      color: 'black',
       customClass: {
         popup: 'custom-swal-popup',
         input: 'custom-swal-input',
@@ -213,8 +213,8 @@ const togglePasswordVisibility = () => {
         <style>
           .custom-swal-popup { border-radius: 50px; }
           .custom-swal-input { 
-            border: 1px solid white !important; 
-            color: white !important;
+            border: 1px solid black !important; 
+            color: black !important;
             background: transparent !important;
             margin-bottom: 10px;
           }

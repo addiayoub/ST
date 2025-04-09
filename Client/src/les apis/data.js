@@ -10,16 +10,16 @@ export const daysOfWeek = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
 
 // Options pour les selects
 export const transferOptions = {
-  fromOptions: ['stradi Casablanca', 'stradi Marrakech', 'stradi Morrocomoll', 'stradi Online','stradi Agadir','stradi Tanger'],
-  toOptions: ['stradi Casablanca', 'stradi Marrakech', 'stradi Morrocomoll', 'stradi Online','stradi Agadir','stradi Tanger'],
-  statusOptions: ['En cours', 'Confirmer', 'En attente', 'Annulé']
+  fromOptions: ['stradi Casablanca', 'stradi Marrakech', 'stradi Morocco-mall', 'stradi Rabat','stradi Agadir','stradi Tanger'],
+  toOptions: ['stradi Casablanca', 'stradi Marrakech', 'stradi Morocco-mall', 'stradi Rabat','stradi Agadir','stradi Tanger'],
+  statusOptions: ['En cours', 'Confirmé', 'En attente', 'Annulé']
 };
 
 export const destinations = [
   'stradi Casablanca', 
   'stradi Marrakech', 
-  'stradi Morrocomoll', 
-  'stradi Online'
+  'stradi Morocco-mall', 
+  'stradi Rabat'
   ,'stradi Agadir',
   'stradi Tanger'
 ];
@@ -30,29 +30,29 @@ export const transfersData = {
     "transfers": [
       {
         "id": 37,
-        "type": "yellow",
+        "type": "blue",
         "date": "01/01/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100037",
         "quantity": 12,
         "comment": "Sacs"
       },
       {
         "id": 38,
-        "type": "yellow",
+        "type": "orange",
         "date": "01/01/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100038",
         "quantity": 29,
         "comment": "Shorts"
       },
       {
         "id": 39,
-        "type": "blue",
+        "type": "orange",
         "date": "01/01/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -63,7 +63,7 @@ export const transfersData = {
       },
       {
         "id": 40,
-        "type": "yellow",
+        "type": "blue",
         "date": "01/01/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -74,11 +74,11 @@ export const transfersData = {
       },
       {
         "id": 41,
-        "type": "green",
+        "type": "blue",
         "date": "01/01/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100041",
         "quantity": 9,
         "comment": "T-shirts"
@@ -89,9 +89,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 42,
-        "type": "orange",
+        "type": "green",
         "date": "02/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100042",
@@ -100,18 +100,18 @@ export const transfersData = {
       },
       {
         "id": 43,
-        "type": "yellow",
+        "type": "orange",
         "date": "02/01/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100043",
         "quantity": 14,
         "comment": "Tops"
       },
       {
         "id": 44,
-        "type": "yellow",
+        "type": "blue",
         "date": "02/01/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -128,8 +128,8 @@ export const transfersData = {
         "id": 45,
         "type": "green",
         "date": "03/01/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100045",
         "quantity": 18,
@@ -145,9 +145,9 @@ export const transfersData = {
       },
       {
         "id": 47,
-        "type": "orange",
+        "type": "green",
         "date": "03/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Fès",
         "documentNumber": "100046",
@@ -192,7 +192,7 @@ export const transfersData = {
       },
       {
         "id": 52,
-        "type": "orange",
+        "type": "blue",
         "date": "04/01/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -215,7 +215,7 @@ export const transfersData = {
       },
       {
         "id": 54,
-        "type": "orange",
+        "type": "blue",
         "date": "05/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -226,11 +226,11 @@ export const transfersData = {
       },
       {
         "id": 55,
-        "type": "green",
+        "type": "blue",
         "date": "05/01/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100049",
         "quantity": 22,
         "comment": "Accessoires"
@@ -239,8 +239,8 @@ export const transfersData = {
         "id": 56,
         "type": "green",
         "date": "05/01/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100050",
         "quantity": 26,
@@ -260,7 +260,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 58,
-        "type": "yellow",
+        "type": "blue",
         "date": "06/01/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -274,7 +274,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "06/01/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -291,9 +291,9 @@ export const transfersData = {
       },
       {
         "id": 61,
-        "type": "yellow",
+        "type": "green",
         "date": "07/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Rabat",
         "documentNumber": "100052",
@@ -302,11 +302,11 @@ export const transfersData = {
       },
       {
         "id": 62,
-        "type": "yellow",
+        "type": "blue",
         "date": "07/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100053",
         "quantity": 26,
         "comment": "Tops"
@@ -317,11 +317,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 63,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/01/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100054",
         "quantity": 9,
         "comment": "T-shirts"
@@ -348,18 +348,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 66,
-        "type": "orange",
+        "type": "blue",
         "date": "09/01/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100055",
         "quantity": 13,
         "comment": "Pantalons"
       },
       {
         "id": 67,
-        "type": "green",
+        "type": "orange",
         "date": "09/01/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -384,8 +384,8 @@ export const transfersData = {
         "type": "blue",
         "date": "09/01/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100058",
         "quantity": 17,
         "comment": "T-shirts"
@@ -394,8 +394,8 @@ export const transfersData = {
         "id": 70,
         "type": "green",
         "date": "09/01/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100059",
         "quantity": 26,
@@ -407,10 +407,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 71,
-        "type": "yellow",
+        "type": "green",
         "date": "10/01/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100060",
         "quantity": 13,
@@ -418,10 +418,10 @@ export const transfersData = {
       },
       {
         "id": 72,
-        "type": "yellow",
+        "type": "orange",
         "date": "10/01/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100061",
         "quantity": 28,
@@ -429,11 +429,11 @@ export const transfersData = {
       },
       {
         "id": 73,
-        "type": "blue",
+        "type": "green",
         "date": "10/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100062",
         "quantity": 6,
         "comment": "Pantalons"
@@ -463,12 +463,12 @@ export const transfersData = {
         "type": "yellow",
         "date": "11/01/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 77,
-        "type": "green",
+        "type": "orange",
         "date": "11/01/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -491,20 +491,20 @@ export const transfersData = {
       },
       {
         "id": 79,
-        "type": "yellow",
+        "type": "green",
         "date": "12/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100064",
         "quantity": 12,
         "comment": "Pulls"
       },
       {
         "id": 80,
-        "type": "orange",
+        "type": "green",
         "date": "12/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Tanger",
         "documentNumber": "100065",
@@ -519,7 +519,7 @@ export const transfersData = {
         "id": 81,
         "type": "green",
         "date": "13/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Fès",
         "documentNumber": "100066",
@@ -532,17 +532,17 @@ export const transfersData = {
         "date": "13/01/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100067",
         "quantity": 23,
         "comment": "Chaussures"
       },
       {
         "id": 83,
-        "type": "yellow",
+        "type": "blue",
         "date": "13/01/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100068",
         "quantity": 12,
@@ -550,9 +550,9 @@ export const transfersData = {
       },
       {
         "id": 84,
-        "type": "blue",
+        "type": "green",
         "date": "13/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Rabat",
         "documentNumber": "100069",
@@ -568,14 +568,14 @@ export const transfersData = {
         "type": "yellow",
         "date": "14/01/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 86,
-        "type": "yellow",
+        "type": "green",
         "date": "14/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Agadir",
         "documentNumber": "100070",
@@ -586,7 +586,7 @@ export const transfersData = {
         "id": 87,
         "type": "green",
         "date": "14/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100071",
@@ -595,7 +595,7 @@ export const transfersData = {
       },
       {
         "id": 88,
-        "type": "yellow",
+        "type": "blue",
         "date": "14/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -610,10 +610,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 89,
-        "type": "blue",
+        "type": "orange",
         "date": "15/01/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100073",
         "quantity": 29,
@@ -625,7 +625,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 90,
-        "type": "yellow",
+        "type": "blue",
         "date": "16/01/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -642,9 +642,9 @@ export const transfersData = {
         "id": 91,
         "type": "green",
         "date": "17/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100075",
         "quantity": 20,
         "comment": "Pulls"
@@ -663,9 +663,9 @@ export const transfersData = {
       },
       {
         "id": 93,
-        "type": "orange",
+        "type": "green",
         "date": "18/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100076",
@@ -686,11 +686,11 @@ export const transfersData = {
       },
       {
         "id": 95,
-        "type": "green",
+        "type": "blue",
         "date": "19/01/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100077",
         "quantity": 27,
         "comment": "Pantalons"
@@ -724,7 +724,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 98,
-        "type": "green",
+        "type": "orange",
         "date": "21/01/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -735,7 +735,7 @@ export const transfersData = {
       },
       {
         "id": 99,
-        "type": "yellow",
+        "type": "orange",
         "date": "21/01/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -746,10 +746,10 @@ export const transfersData = {
       },
       {
         "id": 100,
-        "type": "yellow",
+        "type": "orange",
         "date": "21/01/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100081",
         "quantity": 9,
@@ -757,7 +757,7 @@ export const transfersData = {
       },
       {
         "id": 101,
-        "type": "blue",
+        "type": "orange",
         "date": "21/01/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -772,7 +772,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 102,
-        "type": "yellow",
+        "type": "orange",
         "date": "22/01/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -783,7 +783,7 @@ export const transfersData = {
       },
       {
         "id": 103,
-        "type": "orange",
+        "type": "blue",
         "date": "22/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -794,11 +794,11 @@ export const transfersData = {
       },
       {
         "id": 104,
-        "type": "yellow",
+        "type": "blue",
         "date": "22/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100085",
         "quantity": 29,
         "comment": "T-shirts"
@@ -817,10 +817,10 @@ export const transfersData = {
       },
       {
         "id": 106,
-        "type": "yellow",
+        "type": "green",
         "date": "23/01/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100086",
         "quantity": 24,
@@ -828,9 +828,9 @@ export const transfersData = {
       },
       {
         "id": 107,
-        "type": "blue",
+        "type": "green",
         "date": "23/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Casablanca",
         "documentNumber": "100087",
@@ -846,26 +846,26 @@ export const transfersData = {
         "type": "blue",
         "date": "24/01/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 109,
-        "type": "yellow",
+        "type": "green",
         "date": "24/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100088",
         "quantity": 20,
         "comment": "T-shirts"
       },
       {
         "id": 110,
-        "type": "green",
+        "type": "orange",
         "date": "24/01/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100089",
         "quantity": 8,
@@ -873,10 +873,10 @@ export const transfersData = {
       },
       {
         "id": 111,
-        "type": "green",
+        "type": "orange",
         "date": "24/01/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100090",
         "quantity": 7,
@@ -884,9 +884,9 @@ export const transfersData = {
       },
       {
         "id": 112,
-        "type": "yellow",
+        "type": "green",
         "date": "24/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100091",
@@ -901,7 +901,7 @@ export const transfersData = {
         "id": 113,
         "type": "green",
         "date": "25/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100092",
@@ -914,7 +914,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 114,
-        "type": "blue",
+        "type": "orange",
         "date": "26/01/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -925,11 +925,11 @@ export const transfersData = {
       },
       {
         "id": 115,
-        "type": "yellow",
+        "type": "green",
         "date": "26/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100094",
         "quantity": 6,
         "comment": "Robes"
@@ -939,7 +939,7 @@ export const transfersData = {
         "type": "blue",
         "date": "26/01/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -975,7 +975,7 @@ export const transfersData = {
         "type": "blue",
         "date": "27/01/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100095",
         "quantity": 9,
@@ -995,10 +995,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 122,
-        "type": "yellow",
+        "type": "blue",
         "date": "28/01/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100096",
         "quantity": 21,
@@ -1018,7 +1018,7 @@ export const transfersData = {
         "date": "28/01/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100097",
         "quantity": 9,
         "comment": "Shorts"
@@ -1052,11 +1052,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 127,
-        "type": "orange",
+        "type": "green",
         "date": "30/01/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100099",
         "quantity": 22,
         "comment": "Shorts"
@@ -1078,7 +1078,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 129,
-        "type": "green",
+        "type": "blue",
         "date": "31/01/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -1089,11 +1089,11 @@ export const transfersData = {
       },
       {
         "id": 130,
-        "type": "green",
+        "type": "blue",
         "date": "31/01/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100102",
         "quantity": 17,
         "comment": "Vestes"
@@ -1103,7 +1103,7 @@ export const transfersData = {
         "type": "green",
         "date": "31/01/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -1120,9 +1120,9 @@ export const transfersData = {
       },
       {
         "id": 133,
-        "type": "yellow",
+        "type": "green",
         "date": "01/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Marrakech",
         "documentNumber": "100103",
@@ -1131,7 +1131,7 @@ export const transfersData = {
       },
       {
         "id": 134,
-        "type": "green",
+        "type": "blue",
         "date": "01/02/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -1149,7 +1149,7 @@ export const transfersData = {
         "type": "blue",
         "date": "02/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100105",
         "quantity": 15,
@@ -1157,7 +1157,7 @@ export const transfersData = {
       },
       {
         "id": 136,
-        "type": "green",
+        "type": "orange",
         "date": "02/02/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -1174,7 +1174,7 @@ export const transfersData = {
         "id": 137,
         "type": "green",
         "date": "03/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100107",
@@ -1187,11 +1187,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 138,
-        "type": "blue",
+        "type": "orange",
         "date": "04/02/2025",
         "status": "En attente",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100108",
         "quantity": 8,
         "comment": "Accessoires"
@@ -1202,7 +1202,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 139,
-        "type": "green",
+        "type": "orange",
         "date": "05/02/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -1220,7 +1220,7 @@ export const transfersData = {
         "type": "blue",
         "date": "06/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100110",
         "quantity": 15,
@@ -1241,7 +1241,7 @@ export const transfersData = {
         "id": 142,
         "type": "green",
         "date": "06/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Rabat",
         "documentNumber": "100112",
@@ -1253,7 +1253,7 @@ export const transfersData = {
         "type": "blue",
         "date": "06/02/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100113",
         "quantity": 8,
@@ -1261,7 +1261,7 @@ export const transfersData = {
       },
       {
         "id": 144,
-        "type": "green",
+        "type": "orange",
         "date": "06/02/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -1276,7 +1276,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 145,
-        "type": "green",
+        "type": "blue",
         "date": "07/02/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -1287,7 +1287,7 @@ export const transfersData = {
       },
       {
         "id": 146,
-        "type": "green",
+        "type": "blue",
         "date": "07/02/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -1313,7 +1313,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 148,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/02/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -1332,10 +1332,10 @@ export const transfersData = {
       },
       {
         "id": 150,
-        "type": "blue",
+        "type": "orange",
         "date": "08/02/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100119",
         "quantity": 16,
@@ -1355,9 +1355,9 @@ export const transfersData = {
       },
       {
         "id": 152,
-        "type": "orange",
+        "type": "green",
         "date": "09/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Marrakech",
         "documentNumber": "100120",
@@ -1366,9 +1366,9 @@ export const transfersData = {
       },
       {
         "id": 153,
-        "type": "yellow",
+        "type": "green",
         "date": "09/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Agadir",
         "documentNumber": "100121",
@@ -1385,10 +1385,10 @@ export const transfersData = {
       },
       {
         "id": 155,
-        "type": "blue",
+        "type": "green",
         "date": "09/02/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100122",
         "quantity": 7,
@@ -1402,8 +1402,8 @@ export const transfersData = {
         "id": 156,
         "type": "green",
         "date": "10/02/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100123",
         "quantity": 28,
@@ -1411,10 +1411,10 @@ export const transfersData = {
       },
       {
         "id": 157,
-        "type": "orange",
+        "type": "blue",
         "date": "10/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100124",
         "quantity": 27,
@@ -1430,9 +1430,9 @@ export const transfersData = {
       },
       {
         "id": 159,
-        "type": "orange",
+        "type": "green",
         "date": "10/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100125",
@@ -1455,8 +1455,8 @@ export const transfersData = {
         "id": 161,
         "type": "green",
         "date": "11/02/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100126",
         "quantity": 13,
@@ -1466,7 +1466,7 @@ export const transfersData = {
         "id": 162,
         "type": "green",
         "date": "11/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100127",
@@ -1479,11 +1479,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 163,
-        "type": "green",
+        "type": "blue",
         "date": "12/02/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100128",
         "quantity": 8,
         "comment": "Sacs"
@@ -1494,9 +1494,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 164,
-        "type": "yellow",
+        "type": "green",
         "date": "13/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Casablanca",
         "documentNumber": "100129",
@@ -1505,7 +1505,7 @@ export const transfersData = {
       },
       {
         "id": 165,
-        "type": "blue",
+        "type": "orange",
         "date": "13/02/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -1528,7 +1528,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 167,
-        "type": "blue",
+        "type": "orange",
         "date": "14/02/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -1555,9 +1555,9 @@ export const transfersData = {
       },
       {
         "id": 170,
-        "type": "orange",
+        "type": "green",
         "date": "14/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100132",
@@ -1573,7 +1573,7 @@ export const transfersData = {
         "type": "blue",
         "date": "15/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100133",
         "quantity": 29,
@@ -1585,9 +1585,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 172,
-        "type": "blue",
+        "type": "green",
         "date": "16/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100134",
@@ -1596,9 +1596,9 @@ export const transfersData = {
       },
       {
         "id": 173,
-        "type": "orange",
+        "type": "green",
         "date": "16/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Casablanca",
         "documentNumber": "100135",
@@ -1607,7 +1607,7 @@ export const transfersData = {
       },
       {
         "id": 174,
-        "type": "blue",
+        "type": "orange",
         "date": "16/02/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -1622,9 +1622,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 175,
-        "type": "blue",
+        "type": "green",
         "date": "17/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100137",
@@ -1663,7 +1663,7 @@ export const transfersData = {
         "type": "blue",
         "date": "17/02/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -1672,7 +1672,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 180,
-        "type": "green",
+        "type": "orange",
         "date": "18/02/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -1683,7 +1683,7 @@ export const transfersData = {
       },
       {
         "id": 181,
-        "type": "green",
+        "type": "blue",
         "date": "18/02/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -1698,7 +1698,7 @@ export const transfersData = {
         "date": "18/02/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100141",
         "quantity": 17,
         "comment": "Chemises"
@@ -1709,11 +1709,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 183,
-        "type": "blue",
+        "type": "green",
         "date": "19/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100142",
         "quantity": 5,
         "comment": "Pantalons"
@@ -1736,11 +1736,11 @@ export const transfersData = {
       },
       {
         "id": 186,
-        "type": "green",
+        "type": "orange",
         "date": "19/02/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100143",
         "quantity": 16,
         "comment": "Ceintures"
@@ -1759,9 +1759,9 @@ export const transfersData = {
       },
       {
         "id": 188,
-        "type": "orange",
+        "type": "green",
         "date": "20/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100144",
@@ -1782,7 +1782,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 190,
-        "type": "green",
+        "type": "blue",
         "date": "21/02/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -1805,10 +1805,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 192,
-        "type": "yellow",
+        "type": "green",
         "date": "22/02/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100146",
         "quantity": 7,
@@ -1832,10 +1832,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 194,
-        "type": "yellow",
+        "type": "blue",
         "date": "24/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100147",
         "quantity": 21,
@@ -1847,7 +1847,7 @@ export const transfersData = {
         "date": "24/02/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100148",
         "quantity": 12,
         "comment": "Jeans"
@@ -1882,7 +1882,7 @@ export const transfersData = {
         "date": "26/02/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100149",
         "quantity": 23,
         "comment": "Jeans"
@@ -1891,7 +1891,7 @@ export const transfersData = {
         "id": 199,
         "type": "green",
         "date": "26/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Agadir",
         "documentNumber": "100150",
@@ -1912,21 +1912,21 @@ export const transfersData = {
       },
       {
         "id": 201,
-        "type": "green",
+        "type": "blue",
         "date": "27/02/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100151",
         "quantity": 27,
         "comment": "Accessoires"
       },
       {
         "id": 202,
-        "type": "blue",
+        "type": "orange",
         "date": "27/02/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100152",
         "quantity": 23,
@@ -1957,9 +1957,9 @@ export const transfersData = {
       },
       {
         "id": 205,
-        "type": "orange",
+        "type": "green",
         "date": "28/02/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100154",
@@ -1988,9 +1988,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 208,
-        "type": "blue",
+        "type": "green",
         "date": "01/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100155",
@@ -1999,7 +1999,7 @@ export const transfersData = {
       },
       {
         "id": 209,
-        "type": "green",
+        "type": "blue",
         "date": "01/03/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -2012,8 +2012,8 @@ export const transfersData = {
         "id": 210,
         "type": "green",
         "date": "01/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100157",
         "quantity": 16,
@@ -2025,7 +2025,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 211,
-        "type": "green",
+        "type": "blue",
         "date": "02/03/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -2039,12 +2039,12 @@ export const transfersData = {
         "type": "green",
         "date": "02/03/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 213,
-        "type": "yellow",
+        "type": "orange",
         "date": "02/03/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -2058,7 +2058,7 @@ export const transfersData = {
         "type": "orange",
         "date": "02/03/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -2069,7 +2069,7 @@ export const transfersData = {
         "id": 215,
         "type": "green",
         "date": "03/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100160",
@@ -2082,7 +2082,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 216,
-        "type": "orange",
+        "type": "blue",
         "date": "04/03/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -2119,10 +2119,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 219,
-        "type": "orange",
+        "type": "green",
         "date": "05/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100164",
         "quantity": 9,
@@ -2130,11 +2130,11 @@ export const transfersData = {
       },
       {
         "id": 220,
-        "type": "blue",
+        "type": "green",
         "date": "05/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100165",
         "quantity": 26,
         "comment": "Chemises"
@@ -2144,7 +2144,7 @@ export const transfersData = {
         "type": "orange",
         "date": "05/03/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100166",
         "quantity": 26,
@@ -2177,9 +2177,9 @@ export const transfersData = {
         "id": 224,
         "type": "green",
         "date": "06/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100168",
         "quantity": 9,
         "comment": "Vestes"
@@ -2194,9 +2194,9 @@ export const transfersData = {
       },
       {
         "id": 226,
-        "type": "blue",
+        "type": "green",
         "date": "06/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100169",
@@ -2209,10 +2209,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 227,
-        "type": "blue",
+        "type": "green",
         "date": "07/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100170",
         "quantity": 30,
@@ -2224,10 +2224,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 228,
-        "type": "orange",
+        "type": "blue",
         "date": "08/03/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100171",
         "quantity": 30,
@@ -2235,9 +2235,9 @@ export const transfersData = {
       },
       {
         "id": 229,
-        "type": "orange",
+        "type": "green",
         "date": "08/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100172",
@@ -2250,10 +2250,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 230,
-        "type": "green",
+        "type": "orange",
         "date": "09/03/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100173",
         "quantity": 20,
@@ -2268,7 +2268,7 @@ export const transfersData = {
         "type": "green",
         "date": "10/03/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -2277,7 +2277,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 232,
-        "type": "yellow",
+        "type": "blue",
         "date": "11/03/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -2288,7 +2288,7 @@ export const transfersData = {
       },
       {
         "id": 233,
-        "type": "orange",
+        "type": "blue",
         "date": "11/03/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -2299,10 +2299,10 @@ export const transfersData = {
       },
       {
         "id": 234,
-        "type": "orange",
+        "type": "blue",
         "date": "11/03/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100176",
         "quantity": 11,
@@ -2322,7 +2322,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 236,
-        "type": "yellow",
+        "type": "orange",
         "date": "12/03/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -2337,9 +2337,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 237,
-        "type": "orange",
+        "type": "green",
         "date": "13/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Agadir",
         "documentNumber": "100178",
@@ -2348,7 +2348,7 @@ export const transfersData = {
       },
       {
         "id": 238,
-        "type": "green",
+        "type": "orange",
         "date": "13/03/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -2366,7 +2366,7 @@ export const transfersData = {
         "type": "orange",
         "date": "14/03/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -2382,7 +2382,7 @@ export const transfersData = {
         "type": "green",
         "date": "14/03/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -2401,7 +2401,7 @@ export const transfersData = {
         "id": 243,
         "type": "green",
         "date": "15/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100180",
@@ -2410,18 +2410,18 @@ export const transfersData = {
       },
       {
         "id": 244,
-        "type": "green",
+        "type": "orange",
         "date": "15/03/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100181",
         "quantity": 29,
         "comment": "Chemises"
       },
       {
         "id": 245,
-        "type": "orange",
+        "type": "blue",
         "date": "15/03/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -2436,7 +2436,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 246,
-        "type": "green",
+        "type": "orange",
         "date": "16/03/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -2459,21 +2459,21 @@ export const transfersData = {
       },
       {
         "id": 248,
-        "type": "orange",
+        "type": "green",
         "date": "17/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100184",
         "quantity": 22,
         "comment": "Jeans"
       },
       {
         "id": 249,
-        "type": "green",
+        "type": "orange",
         "date": "17/03/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100185",
         "quantity": 17,
@@ -2485,9 +2485,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 250,
-        "type": "orange",
+        "type": "green",
         "date": "18/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100186",
@@ -2500,7 +2500,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 251,
-        "type": "green",
+        "type": "blue",
         "date": "19/03/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -2511,10 +2511,10 @@ export const transfersData = {
       },
       {
         "id": 252,
-        "type": "green",
+        "type": "orange",
         "date": "19/03/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100188",
         "quantity": 15,
@@ -2522,10 +2522,10 @@ export const transfersData = {
       },
       {
         "id": 253,
-        "type": "blue",
+        "type": "green",
         "date": "19/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100189",
         "quantity": 14,
@@ -2533,18 +2533,18 @@ export const transfersData = {
       },
       {
         "id": 254,
-        "type": "green",
+        "type": "blue",
         "date": "19/03/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100190",
         "quantity": 13,
         "comment": "Pulls"
       },
       {
         "id": 255,
-        "type": "yellow",
+        "type": "orange",
         "date": "19/03/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -2570,9 +2570,9 @@ export const transfersData = {
       },
       {
         "id": 257,
-        "type": "orange",
+        "type": "green",
         "date": "20/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100193",
@@ -2604,10 +2604,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 260,
-        "type": "green",
+        "type": "blue",
         "date": "21/03/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100195",
         "quantity": 28,
@@ -2615,9 +2615,9 @@ export const transfersData = {
       },
       {
         "id": 261,
-        "type": "orange",
+        "type": "green",
         "date": "21/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100196",
@@ -2626,10 +2626,10 @@ export const transfersData = {
       },
       {
         "id": 262,
-        "type": "orange",
+        "type": "blue",
         "date": "21/03/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100197",
         "quantity": 19,
@@ -2641,10 +2641,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 263,
-        "type": "orange",
+        "type": "green",
         "date": "22/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100198",
         "quantity": 16,
@@ -2652,7 +2652,7 @@ export const transfersData = {
       },
       {
         "id": 264,
-        "type": "green",
+        "type": "blue",
         "date": "22/03/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -2663,11 +2663,11 @@ export const transfersData = {
       },
       {
         "id": 265,
-        "type": "green",
+        "type": "orange",
         "date": "22/03/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100200",
         "quantity": 18,
         "comment": "Robes"
@@ -2678,18 +2678,18 @@ export const transfersData = {
         "date": "22/03/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100201",
         "quantity": 9,
         "comment": "Tops"
       },
       {
         "id": 267,
-        "type": "yellow",
+        "type": "green",
         "date": "22/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100202",
         "quantity": 7,
         "comment": "Shorts"
@@ -2700,10 +2700,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 268,
-        "type": "yellow",
+        "type": "green",
         "date": "23/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100203",
         "quantity": 11,
@@ -2711,9 +2711,9 @@ export const transfersData = {
       },
       {
         "id": 269,
-        "type": "blue",
+        "type": "green",
         "date": "23/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Marrakech",
         "documentNumber": "100204",
@@ -2722,10 +2722,10 @@ export const transfersData = {
       },
       {
         "id": 270,
-        "type": "blue",
+        "type": "green",
         "date": "23/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100205",
         "quantity": 5,
@@ -2735,7 +2735,7 @@ export const transfersData = {
         "id": 271,
         "type": "green",
         "date": "23/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Fès",
         "documentNumber": "100206",
@@ -2756,10 +2756,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 273,
-        "type": "yellow",
+        "type": "blue",
         "date": "24/03/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100207",
         "quantity": 11,
@@ -2767,7 +2767,7 @@ export const transfersData = {
       },
       {
         "id": 274,
-        "type": "green",
+        "type": "blue",
         "date": "24/03/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -2782,10 +2782,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 275,
-        "type": "green",
+        "type": "blue",
         "date": "25/03/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100209",
         "quantity": 11,
@@ -2805,7 +2805,7 @@ export const transfersData = {
       },
       {
         "id": 277,
-        "type": "yellow",
+        "type": "orange",
         "date": "26/03/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -2816,7 +2816,7 @@ export const transfersData = {
       },
       {
         "id": 278,
-        "type": "yellow",
+        "type": "orange",
         "date": "26/03/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -2827,10 +2827,10 @@ export const transfersData = {
       },
       {
         "id": 279,
-        "type": "orange",
+        "type": "green",
         "date": "26/03/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100212",
         "quantity": 9,
@@ -2841,7 +2841,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "26/03/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -2862,7 +2862,7 @@ export const transfersData = {
         "date": "27/03/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100213",
         "quantity": 24,
         "comment": "Ceintures"
@@ -2894,9 +2894,9 @@ export const transfersData = {
         "id": 285,
         "type": "green",
         "date": "28/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100215",
         "quantity": 23,
         "comment": "Tops"
@@ -2907,9 +2907,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 286,
-        "type": "orange",
+        "type": "green",
         "date": "29/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Fès",
         "documentNumber": "100216",
@@ -2924,7 +2924,7 @@ export const transfersData = {
         "id": 287,
         "type": "green",
         "date": "30/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100217",
@@ -2933,7 +2933,7 @@ export const transfersData = {
       },
       {
         "id": 288,
-        "type": "yellow",
+        "type": "blue",
         "date": "30/03/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -2944,9 +2944,9 @@ export const transfersData = {
       },
       {
         "id": 289,
-        "type": "orange",
+        "type": "green",
         "date": "30/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Rabat",
         "documentNumber": "100219",
@@ -2955,7 +2955,7 @@ export const transfersData = {
       },
       {
         "id": 290,
-        "type": "green",
+        "type": "blue",
         "date": "30/03/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -2969,7 +2969,7 @@ export const transfersData = {
         "type": "orange",
         "date": "30/03/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100221",
         "quantity": 26,
@@ -2989,9 +2989,9 @@ export const transfersData = {
       },
       {
         "id": 293,
-        "type": "yellow",
+        "type": "green",
         "date": "31/03/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Agadir",
         "documentNumber": "100222",
@@ -3000,7 +3000,7 @@ export const transfersData = {
       },
       {
         "id": 294,
-        "type": "yellow",
+        "type": "orange",
         "date": "31/03/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -3039,7 +3039,7 @@ export const transfersData = {
       },
       {
         "id": 298,
-        "type": "orange",
+        "type": "blue",
         "date": "01/04/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -3053,7 +3053,7 @@ export const transfersData = {
         "type": "orange",
         "date": "01/04/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100225",
         "quantity": 10,
@@ -3061,7 +3061,7 @@ export const transfersData = {
       },
       {
         "id": 300,
-        "type": "green",
+        "type": "blue",
         "date": "01/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -3091,7 +3091,7 @@ export const transfersData = {
         "date": "02/04/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100228",
         "quantity": 27,
         "comment": "Jeans"
@@ -3110,9 +3110,9 @@ export const transfersData = {
       },
       {
         "id": 304,
-        "type": "orange",
+        "type": "green",
         "date": "03/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100229",
@@ -3125,7 +3125,7 @@ export const transfersData = {
         "date": "03/04/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100230",
         "quantity": 8,
         "comment": "Sacs"
@@ -3136,7 +3136,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 306,
-        "type": "yellow",
+        "type": "blue",
         "date": "04/04/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -3151,7 +3151,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 307,
-        "type": "yellow",
+        "type": "blue",
         "date": "05/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -3166,18 +3166,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 308,
-        "type": "green",
+        "type": "blue",
         "date": "06/04/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100233",
         "quantity": 15,
         "comment": "Vestes"
       },
       {
         "id": 309,
-        "type": "green",
+        "type": "orange",
         "date": "06/04/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -3190,7 +3190,7 @@ export const transfersData = {
         "id": 310,
         "type": "green",
         "date": "06/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100235",
@@ -3199,7 +3199,7 @@ export const transfersData = {
       },
       {
         "id": 311,
-        "type": "orange",
+        "type": "blue",
         "date": "06/04/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -3218,7 +3218,7 @@ export const transfersData = {
         "date": "07/04/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100237",
         "quantity": 9,
         "comment": "Chemises"
@@ -3229,32 +3229,32 @@ export const transfersData = {
     "transfers": [
       {
         "id": 313,
-        "type": "yellow",
+        "type": "blue",
         "date": "08/04/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100238",
         "quantity": 11,
         "comment": "Chemises"
       },
       {
         "id": 314,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/04/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100239",
         "quantity": 18,
         "comment": "Vestes"
       },
       {
         "id": 315,
-        "type": "yellow",
+        "type": "green",
         "date": "08/04/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100240",
         "quantity": 26,
@@ -3262,10 +3262,10 @@ export const transfersData = {
       },
       {
         "id": 316,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/04/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100241",
         "quantity": 6,
@@ -3277,7 +3277,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 317,
-        "type": "green",
+        "type": "orange",
         "date": "09/04/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -3294,9 +3294,9 @@ export const transfersData = {
         "id": 318,
         "type": "green",
         "date": "10/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100243",
         "quantity": 5,
         "comment": "Accessoires"
@@ -3352,7 +3352,7 @@ export const transfersData = {
         "type": "blue",
         "date": "12/04/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100246",
         "quantity": 16,
@@ -3360,18 +3360,18 @@ export const transfersData = {
       },
       {
         "id": 324,
-        "type": "blue",
+        "type": "green",
         "date": "12/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100247",
         "quantity": 18,
         "comment": "Pulls"
       },
       {
         "id": 325,
-        "type": "blue",
+        "type": "orange",
         "date": "12/04/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -3385,7 +3385,7 @@ export const transfersData = {
         "type": "blue",
         "date": "12/04/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -3397,14 +3397,14 @@ export const transfersData = {
         "type": "orange",
         "date": "13/04/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 328,
-        "type": "yellow",
+        "type": "green",
         "date": "13/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100249",
@@ -3417,7 +3417,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 329,
-        "type": "green",
+        "type": "blue",
         "date": "14/04/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -3439,10 +3439,10 @@ export const transfersData = {
       },
       {
         "id": 331,
-        "type": "yellow",
+        "type": "orange",
         "date": "14/04/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100252",
         "quantity": 19,
@@ -3450,7 +3450,7 @@ export const transfersData = {
       },
       {
         "id": 332,
-        "type": "green",
+        "type": "orange",
         "date": "14/04/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -3468,7 +3468,7 @@ export const transfersData = {
         "type": "orange",
         "date": "15/04/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -3488,17 +3488,17 @@ export const transfersData = {
         "type": "orange",
         "date": "16/04/2025",
         "status": "En attente",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100254",
         "quantity": 30,
         "comment": "Robes"
       },
       {
         "id": 336,
-        "type": "orange",
+        "type": "green",
         "date": "16/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100255",
@@ -3511,10 +3511,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 337,
-        "type": "yellow",
+        "type": "orange",
         "date": "17/04/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100256",
         "quantity": 23,
@@ -3522,10 +3522,10 @@ export const transfersData = {
       },
       {
         "id": 338,
-        "type": "orange",
+        "type": "blue",
         "date": "17/04/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100257",
         "quantity": 10,
@@ -3537,10 +3537,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 339,
-        "type": "blue",
+        "type": "orange",
         "date": "18/04/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100258",
         "quantity": 21,
@@ -3559,7 +3559,7 @@ export const transfersData = {
       },
       {
         "id": 341,
-        "type": "green",
+        "type": "blue",
         "date": "18/04/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -3590,7 +3590,7 @@ export const transfersData = {
       },
       {
         "id": 344,
-        "type": "yellow",
+        "type": "orange",
         "date": "19/04/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -3605,7 +3605,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 345,
-        "type": "orange",
+        "type": "blue",
         "date": "20/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -3616,7 +3616,7 @@ export const transfersData = {
       },
       {
         "id": 346,
-        "type": "green",
+        "type": "blue",
         "date": "20/04/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -3629,7 +3629,7 @@ export const transfersData = {
         "id": 347,
         "type": "green",
         "date": "20/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100264",
@@ -3640,7 +3640,7 @@ export const transfersData = {
         "id": 348,
         "type": "green",
         "date": "20/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Rabat",
         "documentNumber": "100265",
@@ -3649,11 +3649,11 @@ export const transfersData = {
       },
       {
         "id": 349,
-        "type": "yellow",
+        "type": "green",
         "date": "20/04/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100266",
         "quantity": 25,
         "comment": "Shorts"
@@ -3664,7 +3664,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 350,
-        "type": "blue",
+        "type": "orange",
         "date": "21/04/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -3683,10 +3683,10 @@ export const transfersData = {
       },
       {
         "id": 352,
-        "type": "blue",
+        "type": "green",
         "date": "21/04/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100268",
         "quantity": 19,
@@ -3698,7 +3698,7 @@ export const transfersData = {
         "date": "21/04/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100269",
         "quantity": 22,
         "comment": "Chemises"
@@ -3721,7 +3721,7 @@ export const transfersData = {
         "date": "22/04/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100270",
         "quantity": 15,
         "comment": "Accessoires"
@@ -3730,9 +3730,9 @@ export const transfersData = {
         "id": 356,
         "type": "green",
         "date": "22/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100271",
         "quantity": 17,
         "comment": "Vestes"
@@ -3754,7 +3754,7 @@ export const transfersData = {
         "type": "blue",
         "date": "23/04/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -3820,7 +3820,7 @@ export const transfersData = {
       },
       {
         "id": 365,
-        "type": "blue",
+        "type": "orange",
         "date": "24/04/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -3842,7 +3842,7 @@ export const transfersData = {
         "type": "green",
         "date": "24/04/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -3851,32 +3851,32 @@ export const transfersData = {
     "transfers": [
       {
         "id": 368,
-        "type": "blue",
+        "type": "green",
         "date": "25/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100276",
         "quantity": 24,
         "comment": "T-shirts"
       },
       {
         "id": 369,
-        "type": "yellow",
+        "type": "blue",
         "date": "25/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100277",
         "quantity": 25,
         "comment": "Robes"
       },
       {
         "id": 370,
-        "type": "green",
+        "type": "orange",
         "date": "25/04/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100278",
         "quantity": 19,
@@ -3884,7 +3884,7 @@ export const transfersData = {
       },
       {
         "id": 371,
-        "type": "yellow",
+        "type": "blue",
         "date": "25/04/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -3897,9 +3897,9 @@ export const transfersData = {
         "id": 372,
         "type": "green",
         "date": "25/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100280",
         "quantity": 23,
         "comment": "Robes"
@@ -3910,21 +3910,21 @@ export const transfersData = {
     "transfers": [
       {
         "id": 373,
-        "type": "yellow",
+        "type": "blue",
         "date": "26/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100281",
         "quantity": 24,
         "comment": "Sacs"
       },
       {
         "id": 374,
-        "type": "green",
+        "type": "orange",
         "date": "26/04/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100282",
         "quantity": 30,
@@ -3932,11 +3932,11 @@ export const transfersData = {
       },
       {
         "id": 375,
-        "type": "orange",
+        "type": "green",
         "date": "26/04/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100283",
         "quantity": 25,
         "comment": "Chaussures"
@@ -3947,18 +3947,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 376,
-        "type": "yellow",
+        "type": "blue",
         "date": "27/04/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100284",
         "quantity": 20,
         "comment": "T-shirts"
       },
       {
         "id": 377,
-        "type": "green",
+        "type": "orange",
         "date": "27/04/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -3969,11 +3969,11 @@ export const transfersData = {
       },
       {
         "id": 378,
-        "type": "orange",
+        "type": "blue",
         "date": "27/04/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100286",
         "quantity": 9,
         "comment": "Pantalons"
@@ -3984,18 +3984,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 379,
-        "type": "yellow",
+        "type": "orange",
         "date": "28/04/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100287",
         "quantity": 12,
         "comment": "Pulls"
       },
       {
         "id": 380,
-        "type": "blue",
+        "type": "orange",
         "date": "28/04/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -4006,7 +4006,7 @@ export const transfersData = {
       },
       {
         "id": 381,
-        "type": "green",
+        "type": "orange",
         "date": "28/04/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -4025,9 +4025,9 @@ export const transfersData = {
       },
       {
         "id": 383,
-        "type": "orange",
+        "type": "green",
         "date": "28/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Tanger",
         "documentNumber": "100290",
@@ -4040,10 +4040,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 384,
-        "type": "green",
+        "type": "orange",
         "date": "29/04/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100291",
         "quantity": 27,
@@ -4051,7 +4051,7 @@ export const transfersData = {
       },
       {
         "id": 385,
-        "type": "green",
+        "type": "orange",
         "date": "29/04/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -4062,7 +4062,7 @@ export const transfersData = {
       },
       {
         "id": 386,
-        "type": "yellow",
+        "type": "blue",
         "date": "29/04/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -4077,22 +4077,22 @@ export const transfersData = {
     "transfers": [
       {
         "id": 387,
-        "type": "green",
+        "type": "orange",
         "date": "30/04/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100294",
         "quantity": 5,
         "comment": "Sacs"
       },
       {
         "id": 388,
-        "type": "blue",
+        "type": "green",
         "date": "30/04/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100295",
         "quantity": 24,
         "comment": "Vestes"
@@ -4103,7 +4103,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 389,
-        "type": "green",
+        "type": "orange",
         "date": "01/05/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -4114,21 +4114,21 @@ export const transfersData = {
       },
       {
         "id": 390,
-        "type": "green",
+        "type": "blue",
         "date": "01/05/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100297",
         "quantity": 27,
         "comment": "Pulls"
       },
       {
         "id": 391,
-        "type": "yellow",
+        "type": "green",
         "date": "01/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100298",
         "quantity": 20,
@@ -4140,11 +4140,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 392,
-        "type": "yellow",
+        "type": "blue",
         "date": "02/05/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100299",
         "quantity": 23,
         "comment": "Robes"
@@ -4167,10 +4167,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 394,
-        "type": "green",
+        "type": "blue",
         "date": "04/05/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100300",
         "quantity": 16,
@@ -4197,7 +4197,7 @@ export const transfersData = {
       },
       {
         "id": 397,
-        "type": "green",
+        "type": "orange",
         "date": "04/05/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -4220,7 +4220,7 @@ export const transfersData = {
       },
       {
         "id": 399,
-        "type": "yellow",
+        "type": "blue",
         "date": "05/05/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -4231,7 +4231,7 @@ export const transfersData = {
       },
       {
         "id": 400,
-        "type": "yellow",
+        "type": "blue",
         "date": "05/05/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -4254,7 +4254,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 402,
-        "type": "yellow",
+        "type": "blue",
         "date": "06/05/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -4265,10 +4265,10 @@ export const transfersData = {
       },
       {
         "id": 403,
-        "type": "blue",
+        "type": "green",
         "date": "06/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100306",
         "quantity": 10,
@@ -4276,7 +4276,7 @@ export const transfersData = {
       },
       {
         "id": 404,
-        "type": "green",
+        "type": "orange",
         "date": "06/05/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -4291,10 +4291,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 405,
-        "type": "blue",
+        "type": "orange",
         "date": "07/05/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100308",
         "quantity": 10,
@@ -4306,7 +4306,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 406,
-        "type": "blue",
+        "type": "orange",
         "date": "08/05/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -4317,9 +4317,9 @@ export const transfersData = {
       },
       {
         "id": 407,
-        "type": "yellow",
+        "type": "green",
         "date": "08/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Agadir",
         "documentNumber": "100310",
@@ -4334,9 +4334,9 @@ export const transfersData = {
         "id": 408,
         "type": "green",
         "date": "09/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100311",
         "quantity": 12,
         "comment": "Chemises"
@@ -4347,7 +4347,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 409,
-        "type": "yellow",
+        "type": "blue",
         "date": "10/05/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -4358,10 +4358,10 @@ export const transfersData = {
       },
       {
         "id": 410,
-        "type": "orange",
+        "type": "green",
         "date": "10/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100313",
         "quantity": 30,
@@ -4369,11 +4369,11 @@ export const transfersData = {
       },
       {
         "id": 411,
-        "type": "green",
+        "type": "orange",
         "date": "10/05/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100314",
         "quantity": 15,
         "comment": "Tops"
@@ -4384,7 +4384,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 412,
-        "type": "yellow",
+        "type": "orange",
         "date": "11/05/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -4403,9 +4403,9 @@ export const transfersData = {
       },
       {
         "id": 414,
-        "type": "orange",
+        "type": "green",
         "date": "11/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100316",
@@ -4421,12 +4421,12 @@ export const transfersData = {
         "type": "orange",
         "date": "12/05/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 416,
-        "type": "orange",
+        "type": "blue",
         "date": "12/05/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -4468,7 +4468,7 @@ export const transfersData = {
         "type": "orange",
         "date": "13/05/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100318",
         "quantity": 14,
@@ -4476,11 +4476,11 @@ export const transfersData = {
       },
       {
         "id": 421,
-        "type": "blue",
+        "type": "green",
         "date": "13/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100319",
         "quantity": 10,
         "comment": "Chaussures"
@@ -4491,11 +4491,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 422,
-        "type": "orange",
+        "type": "green",
         "date": "14/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100320",
         "quantity": 16,
         "comment": "Shorts"
@@ -4522,29 +4522,29 @@ export const transfersData = {
         "date": "16/05/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100321",
         "quantity": 25,
         "comment": "Pantalons"
       },
       {
         "id": 425,
-        "type": "blue",
+        "type": "orange",
         "date": "16/05/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100322",
         "quantity": 10,
         "comment": "Sacs"
       },
       {
         "id": 426,
-        "type": "blue",
+        "type": "green",
         "date": "16/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100323",
         "quantity": 26,
         "comment": "Chemises"
@@ -4555,20 +4555,20 @@ export const transfersData = {
     "transfers": [
       {
         "id": 427,
-        "type": "blue",
+        "type": "orange",
         "date": "17/05/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100324",
         "quantity": 7,
         "comment": "Accessoires"
       },
       {
         "id": 428,
-        "type": "yellow",
+        "type": "green",
         "date": "17/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100325",
@@ -4577,7 +4577,7 @@ export const transfersData = {
       },
       {
         "id": 429,
-        "type": "blue",
+        "type": "orange",
         "date": "17/05/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -4592,11 +4592,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 430,
-        "type": "blue",
+        "type": "orange",
         "date": "18/05/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100327",
         "quantity": 26,
         "comment": "T-shirts"
@@ -4606,7 +4606,7 @@ export const transfersData = {
         "type": "green",
         "date": "18/05/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -4615,7 +4615,7 @@ export const transfersData = {
         "date": "18/05/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100328",
         "quantity": 21,
         "comment": "Chemises"
@@ -4638,10 +4638,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 434,
-        "type": "blue",
+        "type": "green",
         "date": "20/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100329",
         "quantity": 19,
@@ -4653,11 +4653,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 435,
-        "type": "yellow",
+        "type": "green",
         "date": "21/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100330",
         "quantity": 10,
         "comment": "Pantalons"
@@ -4678,8 +4678,8 @@ export const transfersData = {
         "id": 437,
         "type": "green",
         "date": "22/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100331",
         "quantity": 19,
@@ -4687,7 +4687,7 @@ export const transfersData = {
       },
       {
         "id": 438,
-        "type": "green",
+        "type": "blue",
         "date": "22/05/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -4701,7 +4701,7 @@ export const transfersData = {
         "type": "green",
         "date": "22/05/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -4710,18 +4710,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 440,
-        "type": "green",
+        "type": "orange",
         "date": "23/05/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100333",
         "quantity": 23,
         "comment": "Accessoires"
       },
       {
         "id": 441,
-        "type": "green",
+        "type": "orange",
         "date": "23/05/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -4732,10 +4732,10 @@ export const transfersData = {
       },
       {
         "id": 442,
-        "type": "blue",
+        "type": "green",
         "date": "23/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100335",
         "quantity": 6,
@@ -4743,10 +4743,10 @@ export const transfersData = {
       },
       {
         "id": 443,
-        "type": "yellow",
+        "type": "green",
         "date": "23/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100336",
         "quantity": 15,
@@ -4758,10 +4758,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 444,
-        "type": "green",
+        "type": "orange",
         "date": "24/05/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100337",
         "quantity": 23,
@@ -4781,10 +4781,10 @@ export const transfersData = {
       },
       {
         "id": 446,
-        "type": "blue",
+        "type": "orange",
         "date": "25/05/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100338",
         "quantity": 16,
@@ -4800,11 +4800,11 @@ export const transfersData = {
       },
       {
         "id": 448,
-        "type": "green",
+        "type": "orange",
         "date": "25/05/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100339",
         "quantity": 23,
         "comment": "Vestes"
@@ -4817,9 +4817,9 @@ export const transfersData = {
         "id": 449,
         "type": "green",
         "date": "26/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100340",
         "quantity": 18,
         "comment": "T-shirts"
@@ -4844,8 +4844,8 @@ export const transfersData = {
         "type": "blue",
         "date": "27/05/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100342",
         "quantity": 26,
         "comment": "Chemises"
@@ -4856,9 +4856,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 452,
-        "type": "yellow",
+        "type": "green",
         "date": "28/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100343",
@@ -4890,7 +4890,7 @@ export const transfersData = {
       },
       {
         "id": 455,
-        "type": "blue",
+        "type": "orange",
         "date": "29/05/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -4901,11 +4901,11 @@ export const transfersData = {
       },
       {
         "id": 456,
-        "type": "orange",
+        "type": "blue",
         "date": "29/05/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100346",
         "quantity": 24,
         "comment": "Sacs"
@@ -4924,7 +4924,7 @@ export const transfersData = {
       },
       {
         "id": 458,
-        "type": "orange",
+        "type": "blue",
         "date": "30/05/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -4943,11 +4943,11 @@ export const transfersData = {
       },
       {
         "id": 460,
-        "type": "orange",
+        "type": "green",
         "date": "30/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100348",
         "quantity": 18,
         "comment": "Tops"
@@ -4958,7 +4958,7 @@ export const transfersData = {
         "date": "30/05/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100349",
         "quantity": 15,
         "comment": "Jeans"
@@ -4969,29 +4969,29 @@ export const transfersData = {
     "transfers": [
       {
         "id": 462,
-        "type": "blue",
+        "type": "green",
         "date": "31/05/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100350",
         "quantity": 16,
         "comment": "Robes"
       },
       {
         "id": 463,
-        "type": "blue",
+        "type": "green",
         "date": "31/05/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100351",
         "quantity": 15,
         "comment": "Tops"
       },
       {
         "id": 464,
-        "type": "green",
+        "type": "orange",
         "date": "31/05/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -5006,10 +5006,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 465,
-        "type": "blue",
+        "type": "green",
         "date": "01/06/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100353",
         "quantity": 8,
@@ -5029,10 +5029,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 467,
-        "type": "green",
+        "type": "orange",
         "date": "02/06/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100354",
         "quantity": 30,
@@ -5043,12 +5043,12 @@ export const transfersData = {
         "type": "blue",
         "date": "02/06/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 469,
-        "type": "orange",
+        "type": "blue",
         "date": "02/06/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -5059,21 +5059,21 @@ export const transfersData = {
       },
       {
         "id": 470,
-        "type": "yellow",
+        "type": "blue",
         "date": "02/06/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100356",
         "quantity": 19,
         "comment": "Chaussures"
       },
       {
         "id": 471,
-        "type": "orange",
+        "type": "blue",
         "date": "02/06/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100357",
         "quantity": 11,
@@ -5101,7 +5101,7 @@ export const transfersData = {
       },
       {
         "id": 474,
-        "type": "green",
+        "type": "blue",
         "date": "03/06/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -5112,11 +5112,11 @@ export const transfersData = {
       },
       {
         "id": 475,
-        "type": "green",
+        "type": "orange",
         "date": "03/06/2025",
         "status": "En attente",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100359",
         "quantity": 8,
         "comment": "Pantalons"
@@ -5127,11 +5127,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 476,
-        "type": "green",
+        "type": "blue",
         "date": "04/06/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100360",
         "quantity": 21,
         "comment": "Jeans"
@@ -5142,10 +5142,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 477,
-        "type": "yellow",
+        "type": "orange",
         "date": "05/06/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100361",
         "quantity": 9,
@@ -5153,9 +5153,9 @@ export const transfersData = {
       },
       {
         "id": 478,
-        "type": "yellow",
+        "type": "green",
         "date": "05/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Rabat",
         "documentNumber": "100362",
@@ -5172,18 +5172,18 @@ export const transfersData = {
       },
       {
         "id": 480,
-        "type": "green",
+        "type": "orange",
         "date": "05/06/2025",
         "status": "En attente",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100363",
         "quantity": 18,
         "comment": "T-shirts"
       },
       {
         "id": 481,
-        "type": "orange",
+        "type": "blue",
         "date": "05/06/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -5221,15 +5221,15 @@ export const transfersData = {
         "type": "yellow",
         "date": "07/06/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 485,
-        "type": "blue",
+        "type": "green",
         "date": "07/06/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100365",
         "quantity": 20,
@@ -5241,10 +5241,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 486,
-        "type": "green",
+        "type": "blue",
         "date": "08/06/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100366",
         "quantity": 6,
@@ -5256,7 +5256,7 @@ export const transfersData = {
         "date": "08/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100367",
         "quantity": 28,
         "comment": "Sacs"
@@ -5266,14 +5266,14 @@ export const transfersData = {
         "type": "green",
         "date": "08/06/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 489,
-        "type": "orange",
+        "type": "green",
         "date": "08/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100368",
@@ -5286,7 +5286,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 490,
-        "type": "blue",
+        "type": "orange",
         "date": "09/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -5300,12 +5300,12 @@ export const transfersData = {
         "type": "green",
         "date": "09/06/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 492,
-        "type": "yellow",
+        "type": "blue",
         "date": "09/06/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -5316,11 +5316,11 @@ export const transfersData = {
       },
       {
         "id": 493,
-        "type": "yellow",
+        "type": "green",
         "date": "09/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100371",
         "quantity": 29,
         "comment": "Vestes"
@@ -5331,11 +5331,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 494,
-        "type": "yellow",
+        "type": "green",
         "date": "10/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100372",
         "quantity": 26,
         "comment": "Vestes"
@@ -5354,7 +5354,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 496,
-        "type": "green",
+        "type": "blue",
         "date": "11/06/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -5373,7 +5373,7 @@ export const transfersData = {
       },
       {
         "id": 498,
-        "type": "green",
+        "type": "blue",
         "date": "11/06/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -5403,9 +5403,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 500,
-        "type": "orange",
+        "type": "green",
         "date": "13/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100376",
@@ -5414,9 +5414,9 @@ export const transfersData = {
       },
       {
         "id": 501,
-        "type": "orange",
+        "type": "green",
         "date": "13/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100377",
@@ -5425,7 +5425,7 @@ export const transfersData = {
       },
       {
         "id": 502,
-        "type": "yellow",
+        "type": "orange",
         "date": "13/06/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -5436,10 +5436,10 @@ export const transfersData = {
       },
       {
         "id": 503,
-        "type": "green",
+        "type": "orange",
         "date": "13/06/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100379",
         "quantity": 17,
@@ -5447,11 +5447,11 @@ export const transfersData = {
       },
       {
         "id": 504,
-        "type": "green",
+        "type": "orange",
         "date": "13/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100380",
         "quantity": 18,
         "comment": "Robes"
@@ -5462,7 +5462,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 505,
-        "type": "yellow",
+        "type": "orange",
         "date": "14/06/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -5473,10 +5473,10 @@ export const transfersData = {
       },
       {
         "id": 506,
-        "type": "blue",
+        "type": "green",
         "date": "14/06/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100382",
         "quantity": 25,
@@ -5487,12 +5487,12 @@ export const transfersData = {
         "type": "blue",
         "date": "14/06/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 508,
-        "type": "green",
+        "type": "orange",
         "date": "14/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -5507,9 +5507,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 509,
-        "type": "orange",
+        "type": "green",
         "date": "15/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100384",
@@ -5518,11 +5518,11 @@ export const transfersData = {
       },
       {
         "id": 510,
-        "type": "orange",
+        "type": "green",
         "date": "15/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100385",
         "quantity": 27,
         "comment": "Tops"
@@ -5531,9 +5531,9 @@ export const transfersData = {
         "id": 511,
         "type": "green",
         "date": "15/06/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100386",
         "quantity": 24,
         "comment": "Sacs"
@@ -5543,12 +5543,12 @@ export const transfersData = {
         "type": "orange",
         "date": "15/06/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 513,
-        "type": "yellow",
+        "type": "blue",
         "date": "15/06/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -5575,11 +5575,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 515,
-        "type": "yellow",
+        "type": "green",
         "date": "17/06/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100388",
         "quantity": 13,
         "comment": "Chemises"
@@ -5597,7 +5597,7 @@ export const transfersData = {
       },
       {
         "id": 517,
-        "type": "yellow",
+        "type": "orange",
         "date": "17/06/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -5608,7 +5608,7 @@ export const transfersData = {
       },
       {
         "id": 518,
-        "type": "green",
+        "type": "blue",
         "date": "17/06/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -5619,7 +5619,7 @@ export const transfersData = {
       },
       {
         "id": 519,
-        "type": "yellow",
+        "type": "orange",
         "date": "17/06/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -5638,14 +5638,14 @@ export const transfersData = {
         "date": "18/06/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100393",
         "quantity": 6,
         "comment": "Pantalons"
       },
       {
         "id": 521,
-        "type": "green",
+        "type": "blue",
         "date": "18/06/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -5660,7 +5660,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 522,
-        "type": "yellow",
+        "type": "blue",
         "date": "19/06/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -5671,7 +5671,7 @@ export const transfersData = {
       },
       {
         "id": 523,
-        "type": "blue",
+        "type": "orange",
         "date": "19/06/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -5690,7 +5690,7 @@ export const transfersData = {
       },
       {
         "id": 525,
-        "type": "yellow",
+        "type": "orange",
         "date": "19/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -5705,7 +5705,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 526,
-        "type": "orange",
+        "type": "blue",
         "date": "20/06/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -5732,7 +5732,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 528,
-        "type": "green",
+        "type": "orange",
         "date": "22/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -5743,7 +5743,7 @@ export const transfersData = {
       },
       {
         "id": 529,
-        "type": "yellow",
+        "type": "orange",
         "date": "22/06/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -5758,7 +5758,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 530,
-        "type": "blue",
+        "type": "orange",
         "date": "23/06/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -5769,32 +5769,32 @@ export const transfersData = {
       },
       {
         "id": 531,
-        "type": "yellow",
+        "type": "orange",
         "date": "23/06/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100402",
         "quantity": 21,
         "comment": "Tops"
       },
       {
         "id": 532,
-        "type": "orange",
+        "type": "green",
         "date": "23/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100403",
         "quantity": 30,
         "comment": "Robes"
       },
       {
         "id": 533,
-        "type": "green",
+        "type": "blue",
         "date": "23/06/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100404",
         "quantity": 26,
@@ -5806,9 +5806,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 534,
-        "type": "blue",
+        "type": "green",
         "date": "24/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100405",
@@ -5821,10 +5821,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 535,
-        "type": "yellow",
+        "type": "orange",
         "date": "25/06/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100406",
         "quantity": 9,
@@ -5832,21 +5832,21 @@ export const transfersData = {
       },
       {
         "id": 536,
-        "type": "yellow",
+        "type": "orange",
         "date": "25/06/2025",
         "status": "En attente",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100407",
         "quantity": 28,
         "comment": "Jeans"
       },
       {
         "id": 537,
-        "type": "green",
+        "type": "orange",
         "date": "25/06/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100408",
         "quantity": 13,
@@ -5862,7 +5862,7 @@ export const transfersData = {
       },
       {
         "id": 539,
-        "type": "green",
+        "type": "blue",
         "date": "25/06/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -5877,9 +5877,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 540,
-        "type": "orange",
+        "type": "green",
         "date": "26/06/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Agadir",
         "documentNumber": "100410",
@@ -5888,11 +5888,11 @@ export const transfersData = {
       },
       {
         "id": 541,
-        "type": "yellow",
+        "type": "blue",
         "date": "26/06/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100411",
         "quantity": 9,
         "comment": "Robes"
@@ -5911,10 +5911,10 @@ export const transfersData = {
       },
       {
         "id": 543,
-        "type": "green",
+        "type": "blue",
         "date": "27/06/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100412",
         "quantity": 17,
@@ -5922,11 +5922,11 @@ export const transfersData = {
       },
       {
         "id": 544,
-        "type": "yellow",
+        "type": "orange",
         "date": "27/06/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100413",
         "quantity": 30,
         "comment": "T-shirts"
@@ -5937,7 +5937,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 545,
-        "type": "yellow",
+        "type": "blue",
         "date": "28/06/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -5948,7 +5948,7 @@ export const transfersData = {
       },
       {
         "id": 546,
-        "type": "green",
+        "type": "blue",
         "date": "28/06/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -5971,7 +5971,7 @@ export const transfersData = {
       },
       {
         "id": 548,
-        "type": "orange",
+        "type": "blue",
         "date": "29/06/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -5986,7 +5986,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 549,
-        "type": "orange",
+        "type": "blue",
         "date": "30/06/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -5997,10 +5997,10 @@ export const transfersData = {
       },
       {
         "id": 550,
-        "type": "green",
+        "type": "blue",
         "date": "30/06/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100418",
         "quantity": 28,
@@ -6023,10 +6023,10 @@ export const transfersData = {
       },
       {
         "id": 552,
-        "type": "yellow",
+        "type": "green",
         "date": "01/07/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100420",
         "quantity": 14,
@@ -6034,11 +6034,11 @@ export const transfersData = {
       },
       {
         "id": 553,
-        "type": "blue",
+        "type": "green",
         "date": "01/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100421",
         "quantity": 11,
         "comment": "Sacs"
@@ -6053,7 +6053,7 @@ export const transfersData = {
       },
       {
         "id": 555,
-        "type": "green",
+        "type": "blue",
         "date": "01/07/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -6068,10 +6068,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 556,
-        "type": "green",
+        "type": "orange",
         "date": "02/07/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100423",
         "quantity": 20,
@@ -6079,9 +6079,9 @@ export const transfersData = {
       },
       {
         "id": 557,
-        "type": "yellow",
+        "type": "green",
         "date": "02/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100424",
@@ -6124,7 +6124,7 @@ export const transfersData = {
       },
       {
         "id": 561,
-        "type": "blue",
+        "type": "orange",
         "date": "03/07/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -6135,7 +6135,7 @@ export const transfersData = {
       },
       {
         "id": 562,
-        "type": "yellow",
+        "type": "blue",
         "date": "03/07/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -6146,9 +6146,9 @@ export const transfersData = {
       },
       {
         "id": 563,
-        "type": "blue",
+        "type": "green",
         "date": "03/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100429",
@@ -6161,10 +6161,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 564,
-        "type": "green",
+        "type": "blue",
         "date": "04/07/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100430",
         "quantity": 29,
@@ -6172,9 +6172,9 @@ export const transfersData = {
       },
       {
         "id": 565,
-        "type": "yellow",
+        "type": "green",
         "date": "04/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100431",
@@ -6183,10 +6183,10 @@ export const transfersData = {
       },
       {
         "id": 566,
-        "type": "green",
+        "type": "blue",
         "date": "04/07/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100432",
         "quantity": 24,
@@ -6194,10 +6194,10 @@ export const transfersData = {
       },
       {
         "id": 567,
-        "type": "green",
+        "type": "orange",
         "date": "04/07/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100433",
         "quantity": 8,
@@ -6205,10 +6205,10 @@ export const transfersData = {
       },
       {
         "id": 568,
-        "type": "green",
+        "type": "blue",
         "date": "04/07/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100434",
         "quantity": 23,
@@ -6220,7 +6220,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 569,
-        "type": "yellow",
+        "type": "orange",
         "date": "05/07/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -6231,18 +6231,18 @@ export const transfersData = {
       },
       {
         "id": 570,
-        "type": "green",
+        "type": "blue",
         "date": "05/07/2025",
         "status": "En cours",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100436",
         "quantity": 23,
         "comment": "Pantalons"
       },
       {
         "id": 571,
-        "type": "yellow",
+        "type": "orange",
         "date": "05/07/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -6261,10 +6261,10 @@ export const transfersData = {
       },
       {
         "id": 573,
-        "type": "yellow",
+        "type": "orange",
         "date": "05/07/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100438",
         "quantity": 5,
@@ -6278,9 +6278,9 @@ export const transfersData = {
         "id": 574,
         "type": "green",
         "date": "06/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100439",
         "quantity": 28,
         "comment": "Pulls"
@@ -6290,7 +6290,7 @@ export const transfersData = {
         "type": "orange",
         "date": "06/07/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100440",
         "quantity": 26,
@@ -6310,7 +6310,7 @@ export const transfersData = {
         "date": "06/07/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100441",
         "quantity": 18,
         "comment": "Jeans"
@@ -6324,7 +6324,7 @@ export const transfersData = {
         "type": "orange",
         "date": "07/07/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -6333,9 +6333,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 579,
-        "type": "blue",
+        "type": "green",
         "date": "08/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100442",
@@ -6344,7 +6344,7 @@ export const transfersData = {
       },
       {
         "id": 580,
-        "type": "yellow",
+        "type": "blue",
         "date": "08/07/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -6355,11 +6355,11 @@ export const transfersData = {
       },
       {
         "id": 581,
-        "type": "blue",
+        "type": "orange",
         "date": "08/07/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100444",
         "quantity": 23,
         "comment": "Ceintures"
@@ -6369,7 +6369,7 @@ export const transfersData = {
         "type": "orange",
         "date": "08/07/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100445",
         "quantity": 10,
@@ -6384,7 +6384,7 @@ export const transfersData = {
         "type": "blue",
         "date": "09/07/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -6402,7 +6402,7 @@ export const transfersData = {
         "id": 585,
         "type": "green",
         "date": "09/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100447",
@@ -6414,15 +6414,15 @@ export const transfersData = {
         "type": "orange",
         "date": "09/07/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 587,
         "type": "green",
         "date": "09/07/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100448",
         "quantity": 7,
@@ -6442,9 +6442,9 @@ export const transfersData = {
       },
       {
         "id": 589,
-        "type": "blue",
+        "type": "green",
         "date": "10/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100449",
@@ -6457,7 +6457,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 590,
-        "type": "green",
+        "type": "orange",
         "date": "11/07/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -6468,9 +6468,9 @@ export const transfersData = {
       },
       {
         "id": 591,
-        "type": "blue",
+        "type": "green",
         "date": "11/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Casablanca",
         "documentNumber": "100451",
@@ -6479,7 +6479,7 @@ export const transfersData = {
       },
       {
         "id": 592,
-        "type": "yellow",
+        "type": "orange",
         "date": "11/07/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -6517,7 +6517,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 595,
-        "type": "blue",
+        "type": "orange",
         "date": "13/07/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -6528,10 +6528,10 @@ export const transfersData = {
       },
       {
         "id": 596,
-        "type": "yellow",
+        "type": "blue",
         "date": "13/07/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100455",
         "quantity": 27,
@@ -6539,9 +6539,9 @@ export const transfersData = {
       },
       {
         "id": 597,
-        "type": "blue",
+        "type": "green",
         "date": "13/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100456",
@@ -6550,9 +6550,9 @@ export const transfersData = {
       },
       {
         "id": 598,
-        "type": "yellow",
+        "type": "green",
         "date": "13/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Casablanca",
         "documentNumber": "100457",
@@ -6561,9 +6561,9 @@ export const transfersData = {
       },
       {
         "id": 599,
-        "type": "orange",
+        "type": "green",
         "date": "13/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Fès",
         "documentNumber": "100458",
@@ -6588,10 +6588,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 601,
-        "type": "orange",
+        "type": "green",
         "date": "15/07/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100459",
         "quantity": 22,
@@ -6611,7 +6611,7 @@ export const transfersData = {
       },
       {
         "id": 603,
-        "type": "green",
+        "type": "blue",
         "date": "16/07/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -6622,7 +6622,7 @@ export const transfersData = {
       },
       {
         "id": 604,
-        "type": "orange",
+        "type": "blue",
         "date": "16/07/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -6641,11 +6641,11 @@ export const transfersData = {
       },
       {
         "id": 606,
-        "type": "yellow",
+        "type": "orange",
         "date": "16/07/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100462",
         "quantity": 19,
         "comment": "Chemises"
@@ -6656,7 +6656,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 607,
-        "type": "orange",
+        "type": "blue",
         "date": "17/07/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -6667,9 +6667,9 @@ export const transfersData = {
       },
       {
         "id": 608,
-        "type": "orange",
+        "type": "green",
         "date": "17/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100464",
@@ -6692,7 +6692,7 @@ export const transfersData = {
         "type": "green",
         "date": "17/07/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -6711,9 +6711,9 @@ export const transfersData = {
         "id": 612,
         "type": "green",
         "date": "18/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100466",
         "quantity": 23,
         "comment": "Vestes"
@@ -6723,7 +6723,7 @@ export const transfersData = {
         "type": "blue",
         "date": "18/07/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100467",
         "quantity": 24,
@@ -6757,23 +6757,23 @@ export const transfersData = {
         "type": "blue",
         "date": "19/07/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 617,
-        "type": "blue",
+        "type": "orange",
         "date": "19/07/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100469",
         "quantity": 18,
         "comment": "Robes"
       },
       {
         "id": 618,
-        "type": "yellow",
+        "type": "blue",
         "date": "19/07/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -6784,11 +6784,11 @@ export const transfersData = {
       },
       {
         "id": 619,
-        "type": "orange",
+        "type": "green",
         "date": "19/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100471",
         "quantity": 22,
         "comment": "Shorts"
@@ -6807,11 +6807,11 @@ export const transfersData = {
       },
       {
         "id": 621,
-        "type": "orange",
+        "type": "blue",
         "date": "20/07/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100472",
         "quantity": 10,
         "comment": "T-shirts"
@@ -6830,31 +6830,31 @@ export const transfersData = {
       },
       {
         "id": 623,
-        "type": "yellow",
+        "type": "green",
         "date": "21/07/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100473",
         "quantity": 24,
         "comment": "Robes"
       },
       {
         "id": 624,
-        "type": "blue",
+        "type": "green",
         "date": "21/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100474",
         "quantity": 5,
         "comment": "Tops"
       },
       {
         "id": 625,
-        "type": "yellow",
+        "type": "green",
         "date": "21/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100475",
@@ -6883,7 +6883,7 @@ export const transfersData = {
       },
       {
         "id": 628,
-        "type": "orange",
+        "type": "blue",
         "date": "22/07/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -6894,7 +6894,7 @@ export const transfersData = {
       },
       {
         "id": 629,
-        "type": "blue",
+        "type": "orange",
         "date": "22/07/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -6905,7 +6905,7 @@ export const transfersData = {
       },
       {
         "id": 630,
-        "type": "green",
+        "type": "blue",
         "date": "22/07/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -6916,7 +6916,7 @@ export const transfersData = {
       },
       {
         "id": 631,
-        "type": "yellow",
+        "type": "blue",
         "date": "22/07/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -6931,9 +6931,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 632,
-        "type": "orange",
+        "type": "green",
         "date": "23/07/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100480",
@@ -6942,7 +6942,7 @@ export const transfersData = {
       },
       {
         "id": 633,
-        "type": "yellow",
+        "type": "blue",
         "date": "23/07/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -6961,10 +6961,10 @@ export const transfersData = {
       },
       {
         "id": 635,
-        "type": "yellow",
+        "type": "orange",
         "date": "23/07/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100482",
         "quantity": 5,
@@ -6984,10 +6984,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 637,
-        "type": "orange",
+        "type": "blue",
         "date": "24/07/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100483",
         "quantity": 28,
@@ -7002,7 +7002,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "25/07/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -7015,11 +7015,11 @@ export const transfersData = {
       },
       {
         "id": 640,
-        "type": "yellow",
+        "type": "blue",
         "date": "25/07/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100484",
         "quantity": 12,
         "comment": "Sacs"
@@ -7030,11 +7030,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 641,
-        "type": "yellow",
+        "type": "orange",
         "date": "26/07/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100485",
         "quantity": 28,
         "comment": "Vestes"
@@ -7056,7 +7056,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 643,
-        "type": "yellow",
+        "type": "blue",
         "date": "27/07/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -7075,7 +7075,7 @@ export const transfersData = {
         "date": "28/07/2025",
         "status": "En cours",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100488",
         "quantity": 24,
         "comment": "Shorts"
@@ -7085,7 +7085,7 @@ export const transfersData = {
         "type": "blue",
         "date": "28/07/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100489",
         "quantity": 13,
@@ -7116,10 +7116,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 648,
-        "type": "blue",
+        "type": "green",
         "date": "29/07/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100491",
         "quantity": 15,
@@ -7139,11 +7139,11 @@ export const transfersData = {
       },
       {
         "id": 650,
-        "type": "yellow",
+        "type": "orange",
         "date": "30/07/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100492",
         "quantity": 22,
         "comment": "Chaussures"
@@ -7153,7 +7153,7 @@ export const transfersData = {
         "type": "blue",
         "date": "30/07/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -7190,9 +7190,9 @@ export const transfersData = {
       },
       {
         "id": 655,
-        "type": "blue",
+        "type": "green",
         "date": "01/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Rabat",
         "documentNumber": "100493",
@@ -7204,7 +7204,7 @@ export const transfersData = {
         "type": "blue",
         "date": "01/08/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100494",
         "quantity": 10,
@@ -7219,7 +7219,7 @@ export const transfersData = {
         "type": "orange",
         "date": "02/08/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100495",
         "quantity": 8,
@@ -7230,12 +7230,12 @@ export const transfersData = {
         "type": "blue",
         "date": "02/08/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 659,
-        "type": "green",
+        "type": "blue",
         "date": "02/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7261,7 +7261,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 661,
-        "type": "orange",
+        "type": "blue",
         "date": "03/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7272,10 +7272,10 @@ export const transfersData = {
       },
       {
         "id": 662,
-        "type": "blue",
+        "type": "orange",
         "date": "03/08/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100499",
         "quantity": 11,
@@ -7291,7 +7291,7 @@ export const transfersData = {
       },
       {
         "id": 664,
-        "type": "green",
+        "type": "blue",
         "date": "03/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7306,7 +7306,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 665,
-        "type": "blue",
+        "type": "orange",
         "date": "04/08/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -7320,14 +7320,14 @@ export const transfersData = {
         "type": "orange",
         "date": "04/08/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 667,
         "type": "green",
         "date": "04/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100502",
@@ -7336,9 +7336,9 @@ export const transfersData = {
       },
       {
         "id": 668,
-        "type": "orange",
+        "type": "green",
         "date": "04/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100503",
@@ -7353,7 +7353,7 @@ export const transfersData = {
         "id": 669,
         "type": "green",
         "date": "05/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Agadir",
         "documentNumber": "100504",
@@ -7362,10 +7362,10 @@ export const transfersData = {
       },
       {
         "id": 670,
-        "type": "orange",
+        "type": "green",
         "date": "05/08/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100505",
         "quantity": 22,
@@ -7385,9 +7385,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 672,
-        "type": "orange",
+        "type": "green",
         "date": "06/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Rabat",
         "documentNumber": "100506",
@@ -7396,9 +7396,9 @@ export const transfersData = {
       },
       {
         "id": 673,
-        "type": "orange",
+        "type": "green",
         "date": "06/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100507",
@@ -7411,18 +7411,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 674,
-        "type": "green",
+        "type": "blue",
         "date": "07/08/2025",
         "status": "En cours",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100508",
         "quantity": 7,
         "comment": "Pantalons"
       },
       {
         "id": 675,
-        "type": "orange",
+        "type": "blue",
         "date": "07/08/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -7433,7 +7433,7 @@ export const transfersData = {
       },
       {
         "id": 676,
-        "type": "blue",
+        "type": "orange",
         "date": "07/08/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -7467,14 +7467,14 @@ export const transfersData = {
         "type": "yellow",
         "date": "08/08/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 680,
-        "type": "yellow",
+        "type": "green",
         "date": "08/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Marrakech",
         "documentNumber": "100511",
@@ -7483,9 +7483,9 @@ export const transfersData = {
       },
       {
         "id": 681,
-        "type": "blue",
+        "type": "green",
         "date": "08/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Tanger",
         "documentNumber": "100512",
@@ -7506,7 +7506,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 683,
-        "type": "green",
+        "type": "blue",
         "date": "09/08/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -7517,7 +7517,7 @@ export const transfersData = {
       },
       {
         "id": 684,
-        "type": "orange",
+        "type": "blue",
         "date": "09/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7528,9 +7528,9 @@ export const transfersData = {
       },
       {
         "id": 685,
-        "type": "orange",
+        "type": "green",
         "date": "09/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100515",
@@ -7543,9 +7543,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 686,
-        "type": "blue",
+        "type": "green",
         "date": "10/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Agadir",
         "documentNumber": "100516",
@@ -7557,15 +7557,15 @@ export const transfersData = {
         "type": "blue",
         "date": "10/08/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 688,
-        "type": "blue",
+        "type": "green",
         "date": "10/08/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100517",
         "quantity": 5,
@@ -7573,7 +7573,7 @@ export const transfersData = {
       },
       {
         "id": 689,
-        "type": "green",
+        "type": "blue",
         "date": "10/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7587,7 +7587,7 @@ export const transfersData = {
         "type": "orange",
         "date": "10/08/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100519",
         "quantity": 29,
@@ -7599,9 +7599,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 691,
-        "type": "blue",
+        "type": "green",
         "date": "11/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100520",
@@ -7610,10 +7610,10 @@ export const transfersData = {
       },
       {
         "id": 692,
-        "type": "yellow",
+        "type": "orange",
         "date": "11/08/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100521",
         "quantity": 27,
@@ -7623,7 +7623,7 @@ export const transfersData = {
         "id": 693,
         "type": "green",
         "date": "11/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100522",
@@ -7632,7 +7632,7 @@ export const transfersData = {
       },
       {
         "id": 694,
-        "type": "yellow",
+        "type": "blue",
         "date": "11/08/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -7650,7 +7650,7 @@ export const transfersData = {
         "type": "orange",
         "date": "12/08/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100524",
         "quantity": 24,
@@ -7658,9 +7658,9 @@ export const transfersData = {
       },
       {
         "id": 696,
-        "type": "yellow",
+        "type": "green",
         "date": "12/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Tanger",
         "documentNumber": "100525",
@@ -7669,10 +7669,10 @@ export const transfersData = {
       },
       {
         "id": 697,
-        "type": "blue",
+        "type": "orange",
         "date": "12/08/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100526",
         "quantity": 15,
@@ -7680,7 +7680,7 @@ export const transfersData = {
       },
       {
         "id": 698,
-        "type": "yellow",
+        "type": "blue",
         "date": "12/08/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -7695,7 +7695,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 699,
-        "type": "blue",
+        "type": "orange",
         "date": "13/08/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -7709,7 +7709,7 @@ export const transfersData = {
         "type": "orange",
         "date": "13/08/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -7718,9 +7718,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 701,
-        "type": "yellow",
+        "type": "green",
         "date": "14/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100529",
@@ -7741,9 +7741,9 @@ export const transfersData = {
       },
       {
         "id": 703,
-        "type": "yellow",
+        "type": "green",
         "date": "15/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100530",
@@ -7752,7 +7752,7 @@ export const transfersData = {
       },
       {
         "id": 704,
-        "type": "green",
+        "type": "orange",
         "date": "15/08/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -7786,7 +7786,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 707,
-        "type": "orange",
+        "type": "blue",
         "date": "16/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -7801,7 +7801,7 @@ export const transfersData = {
         "date": "16/08/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100534",
         "quantity": 14,
         "comment": "Chaussures"
@@ -7812,9 +7812,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 709,
-        "type": "blue",
+        "type": "green",
         "date": "17/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Fès",
         "documentNumber": "100535",
@@ -7827,10 +7827,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 710,
-        "type": "orange",
+        "type": "green",
         "date": "18/08/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100536",
         "quantity": 20,
@@ -7841,15 +7841,15 @@ export const transfersData = {
         "type": "green",
         "date": "18/08/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 712,
-        "type": "green",
+        "type": "blue",
         "date": "18/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100537",
         "quantity": 5,
@@ -7861,9 +7861,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 713,
-        "type": "blue",
+        "type": "green",
         "date": "19/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100538",
@@ -7884,9 +7884,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 715,
-        "type": "yellow",
+        "type": "green",
         "date": "20/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Tanger",
         "documentNumber": "100539",
@@ -7895,9 +7895,9 @@ export const transfersData = {
       },
       {
         "id": 716,
-        "type": "yellow",
+        "type": "green",
         "date": "20/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100540",
@@ -7912,7 +7912,7 @@ export const transfersData = {
         "id": 717,
         "type": "green",
         "date": "21/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100541",
@@ -7921,7 +7921,7 @@ export const transfersData = {
       },
       {
         "id": 718,
-        "type": "yellow",
+        "type": "blue",
         "date": "21/08/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -7936,7 +7936,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 719,
-        "type": "yellow",
+        "type": "orange",
         "date": "22/08/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -7950,7 +7950,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "22/08/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -7966,10 +7966,10 @@ export const transfersData = {
       },
       {
         "id": 722,
-        "type": "yellow",
+        "type": "blue",
         "date": "22/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100545",
         "quantity": 10,
@@ -7981,7 +7981,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 723,
-        "type": "green",
+        "type": "orange",
         "date": "23/08/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -7992,20 +7992,20 @@ export const transfersData = {
       },
       {
         "id": 724,
-        "type": "yellow",
+        "type": "orange",
         "date": "23/08/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100547",
         "quantity": 30,
         "comment": "Accessoires"
       },
       {
         "id": 725,
-        "type": "blue",
+        "type": "green",
         "date": "23/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100548",
@@ -8021,7 +8021,7 @@ export const transfersData = {
         "type": "blue",
         "date": "24/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100549",
         "quantity": 5,
@@ -8029,7 +8029,7 @@ export const transfersData = {
       },
       {
         "id": 727,
-        "type": "green",
+        "type": "blue",
         "date": "24/08/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -8040,10 +8040,10 @@ export const transfersData = {
       },
       {
         "id": 728,
-        "type": "blue",
+        "type": "orange",
         "date": "24/08/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100551",
         "quantity": 27,
@@ -8061,7 +8061,7 @@ export const transfersData = {
         "id": 730,
         "type": "green",
         "date": "24/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100552",
@@ -8082,29 +8082,29 @@ export const transfersData = {
       },
       {
         "id": 732,
-        "type": "green",
+        "type": "blue",
         "date": "25/08/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100553",
         "quantity": 13,
         "comment": "Vestes"
       },
       {
         "id": 733,
-        "type": "orange",
+        "type": "blue",
         "date": "25/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100554",
         "quantity": 29,
         "comment": "Shorts"
       },
       {
         "id": 734,
-        "type": "yellow",
+        "type": "orange",
         "date": "25/08/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -8119,22 +8119,22 @@ export const transfersData = {
     "transfers": [
       {
         "id": 735,
-        "type": "blue",
+        "type": "green",
         "date": "26/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100556",
         "quantity": 15,
         "comment": "T-shirts"
       },
       {
         "id": 736,
-        "type": "yellow",
+        "type": "blue",
         "date": "26/08/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100557",
         "quantity": 18,
         "comment": "Chemises"
@@ -8148,7 +8148,7 @@ export const transfersData = {
         "type": "green",
         "date": "27/08/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -8172,9 +8172,9 @@ export const transfersData = {
       },
       {
         "id": 740,
-        "type": "orange",
+        "type": "green",
         "date": "27/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100559",
@@ -8186,7 +8186,7 @@ export const transfersData = {
         "type": "blue",
         "date": "27/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100560",
         "quantity": 7,
@@ -8201,7 +8201,7 @@ export const transfersData = {
         "type": "orange",
         "date": "28/08/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100561",
         "quantity": 16,
@@ -8228,9 +8228,9 @@ export const transfersData = {
       },
       {
         "id": 745,
-        "type": "orange",
+        "type": "green",
         "date": "28/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100563",
@@ -8246,7 +8246,7 @@ export const transfersData = {
         "type": "blue",
         "date": "29/08/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100564",
         "quantity": 22,
@@ -8254,9 +8254,9 @@ export const transfersData = {
       },
       {
         "id": 747,
-        "type": "blue",
+        "type": "green",
         "date": "29/08/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Agadir",
         "documentNumber": "100565",
@@ -8269,10 +8269,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 748,
-        "type": "blue",
+        "type": "orange",
         "date": "30/08/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100566",
         "quantity": 8,
@@ -8292,7 +8292,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 750,
-        "type": "green",
+        "type": "blue",
         "date": "31/08/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -8307,7 +8307,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 751,
-        "type": "yellow",
+        "type": "orange",
         "date": "01/09/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -8336,7 +8336,7 @@ export const transfersData = {
         "id": 754,
         "type": "green",
         "date": "01/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Rabat",
         "documentNumber": "100569",
@@ -8345,10 +8345,10 @@ export const transfersData = {
       },
       {
         "id": 755,
-        "type": "blue",
+        "type": "green",
         "date": "01/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100570",
         "quantity": 12,
@@ -8360,10 +8360,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 756,
-        "type": "orange",
+        "type": "blue",
         "date": "02/09/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100571",
         "quantity": 16,
@@ -8371,7 +8371,7 @@ export const transfersData = {
       },
       {
         "id": 757,
-        "type": "green",
+        "type": "blue",
         "date": "02/09/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -8382,9 +8382,9 @@ export const transfersData = {
       },
       {
         "id": 758,
-        "type": "yellow",
+        "type": "green",
         "date": "02/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Rabat",
         "documentNumber": "100573",
@@ -8395,7 +8395,7 @@ export const transfersData = {
         "id": 759,
         "type": "green",
         "date": "02/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Rabat",
         "documentNumber": "100574",
@@ -8418,8 +8418,8 @@ export const transfersData = {
         "id": 761,
         "type": "green",
         "date": "03/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100575",
         "quantity": 9,
@@ -8439,10 +8439,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 763,
-        "type": "blue",
+        "type": "orange",
         "date": "04/09/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100576",
         "quantity": 16,
@@ -8453,7 +8453,7 @@ export const transfersData = {
         "type": "blue",
         "date": "04/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -8477,7 +8477,7 @@ export const transfersData = {
         "type": "blue",
         "date": "04/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -8486,10 +8486,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 768,
-        "type": "green",
+        "type": "blue",
         "date": "05/09/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100577",
         "quantity": 26,
@@ -8497,7 +8497,7 @@ export const transfersData = {
       },
       {
         "id": 769,
-        "type": "green",
+        "type": "orange",
         "date": "05/09/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -8508,7 +8508,7 @@ export const transfersData = {
       },
       {
         "id": 770,
-        "type": "green",
+        "type": "orange",
         "date": "05/09/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -8548,7 +8548,7 @@ export const transfersData = {
         "id": 773,
         "type": "green",
         "date": "07/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100581",
@@ -8557,7 +8557,7 @@ export const transfersData = {
       },
       {
         "id": 774,
-        "type": "green",
+        "type": "blue",
         "date": "07/09/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -8571,7 +8571,7 @@ export const transfersData = {
         "type": "orange",
         "date": "07/09/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100583",
         "quantity": 25,
@@ -8591,21 +8591,21 @@ export const transfersData = {
     "transfers": [
       {
         "id": 777,
-        "type": "yellow",
+        "type": "green",
         "date": "08/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100584",
         "quantity": 9,
         "comment": "T-shirts"
       },
       {
         "id": 778,
-        "type": "green",
+        "type": "blue",
         "date": "08/09/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100585",
         "quantity": 25,
@@ -8613,7 +8613,7 @@ export const transfersData = {
       },
       {
         "id": 779,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/09/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -8626,7 +8626,7 @@ export const transfersData = {
         "id": 780,
         "type": "green",
         "date": "08/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Agadir",
         "documentNumber": "100587",
@@ -8647,7 +8647,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 782,
-        "type": "yellow",
+        "type": "blue",
         "date": "09/09/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -8682,9 +8682,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 785,
-        "type": "orange",
+        "type": "green",
         "date": "11/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100589",
@@ -8693,9 +8693,9 @@ export const transfersData = {
       },
       {
         "id": 786,
-        "type": "orange",
+        "type": "green",
         "date": "11/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100590",
@@ -8707,27 +8707,27 @@ export const transfersData = {
         "type": "orange",
         "date": "11/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 788,
-        "type": "green",
+        "type": "orange",
         "date": "11/09/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100591",
         "quantity": 20,
         "comment": "Pantalons"
       },
       {
         "id": 789,
-        "type": "orange",
+        "type": "blue",
         "date": "11/09/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100592",
         "quantity": 7,
         "comment": "Robes"
@@ -8738,10 +8738,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 790,
-        "type": "yellow",
+        "type": "orange",
         "date": "12/09/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100593",
         "quantity": 25,
@@ -8749,11 +8749,11 @@ export const transfersData = {
       },
       {
         "id": 791,
-        "type": "blue",
+        "type": "orange",
         "date": "12/09/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100594",
         "quantity": 5,
         "comment": "Robes"
@@ -8763,7 +8763,7 @@ export const transfersData = {
         "type": "orange",
         "date": "12/09/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100595",
         "quantity": 6,
@@ -8771,7 +8771,7 @@ export const transfersData = {
       },
       {
         "id": 793,
-        "type": "yellow",
+        "type": "blue",
         "date": "12/09/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -8794,9 +8794,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 795,
-        "type": "blue",
+        "type": "green",
         "date": "13/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100597",
@@ -8837,11 +8837,11 @@ export const transfersData = {
       },
       {
         "id": 799,
-        "type": "yellow",
+        "type": "orange",
         "date": "15/09/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100598",
         "quantity": 25,
         "comment": "Accessoires"
@@ -8852,7 +8852,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 800,
-        "type": "green",
+        "type": "blue",
         "date": "16/09/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -8863,7 +8863,7 @@ export const transfersData = {
       },
       {
         "id": 801,
-        "type": "yellow",
+        "type": "orange",
         "date": "16/09/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -8878,7 +8878,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 802,
-        "type": "green",
+        "type": "orange",
         "date": "17/09/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -8889,11 +8889,11 @@ export const transfersData = {
       },
       {
         "id": 803,
-        "type": "yellow",
+        "type": "green",
         "date": "17/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100602",
         "quantity": 24,
         "comment": "Ceintures"
@@ -8907,7 +8907,7 @@ export const transfersData = {
         "type": "orange",
         "date": "18/09/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -8924,10 +8924,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 806,
-        "type": "blue",
+        "type": "green",
         "date": "19/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100603",
         "quantity": 24,
@@ -8935,9 +8935,9 @@ export const transfersData = {
       },
       {
         "id": 807,
-        "type": "yellow",
+        "type": "green",
         "date": "19/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100604",
@@ -8946,9 +8946,9 @@ export const transfersData = {
       },
       {
         "id": 808,
-        "type": "blue",
+        "type": "green",
         "date": "19/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Tanger",
         "documentNumber": "100605",
@@ -8961,7 +8961,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 809,
-        "type": "green",
+        "type": "orange",
         "date": "20/09/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -8979,7 +8979,7 @@ export const transfersData = {
         "type": "blue",
         "date": "21/09/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -8987,7 +8987,7 @@ export const transfersData = {
         "type": "orange",
         "date": "21/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -8995,7 +8995,7 @@ export const transfersData = {
         "type": "blue",
         "date": "21/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -9014,8 +9014,8 @@ export const transfersData = {
         "id": 814,
         "type": "green",
         "date": "22/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100607",
         "quantity": 25,
@@ -9027,10 +9027,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 815,
-        "type": "yellow",
+        "type": "blue",
         "date": "23/09/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100608",
         "quantity": 14,
@@ -9041,7 +9041,7 @@ export const transfersData = {
         "type": "blue",
         "date": "23/09/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100609",
         "quantity": 27,
@@ -9052,7 +9052,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "23/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -9071,7 +9071,7 @@ export const transfersData = {
         "id": 819,
         "type": "green",
         "date": "24/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Fès",
         "documentNumber": "100610",
@@ -9088,7 +9088,7 @@ export const transfersData = {
         "date": "25/09/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100611",
         "quantity": 30,
         "comment": "Chaussures"
@@ -9106,7 +9106,7 @@ export const transfersData = {
       },
       {
         "id": 822,
-        "type": "yellow",
+        "type": "orange",
         "date": "25/09/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -9117,7 +9117,7 @@ export const transfersData = {
       },
       {
         "id": 823,
-        "type": "blue",
+        "type": "orange",
         "date": "25/09/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -9131,7 +9131,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "25/09/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -9152,7 +9152,7 @@ export const transfersData = {
         "date": "26/09/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100615",
         "quantity": 14,
         "comment": "Robes"
@@ -9171,7 +9171,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 828,
-        "type": "green",
+        "type": "blue",
         "date": "27/09/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -9182,11 +9182,11 @@ export const transfersData = {
       },
       {
         "id": 829,
-        "type": "green",
+        "type": "orange",
         "date": "27/09/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100617",
         "quantity": 27,
         "comment": "Tops"
@@ -9197,7 +9197,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 830,
-        "type": "blue",
+        "type": "orange",
         "date": "28/09/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -9223,10 +9223,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 832,
-        "type": "orange",
+        "type": "green",
         "date": "29/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100620",
         "quantity": 23,
@@ -9234,10 +9234,10 @@ export const transfersData = {
       },
       {
         "id": 833,
-        "type": "yellow",
+        "type": "blue",
         "date": "29/09/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100621",
         "quantity": 21,
@@ -9245,7 +9245,7 @@ export const transfersData = {
       },
       {
         "id": 834,
-        "type": "orange",
+        "type": "blue",
         "date": "29/09/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -9258,8 +9258,8 @@ export const transfersData = {
         "id": 835,
         "type": "green",
         "date": "29/09/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100623",
         "quantity": 23,
@@ -9271,9 +9271,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 836,
-        "type": "blue",
+        "type": "green",
         "date": "30/09/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Marrakech",
         "documentNumber": "100624",
@@ -9286,7 +9286,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 837,
-        "type": "blue",
+        "type": "orange",
         "date": "01/10/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -9314,9 +9314,9 @@ export const transfersData = {
         "id": 839,
         "type": "green",
         "date": "02/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100627",
         "quantity": 11,
         "comment": "Vestes"
@@ -9331,10 +9331,10 @@ export const transfersData = {
       },
       {
         "id": 841,
-        "type": "yellow",
+        "type": "green",
         "date": "02/10/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100628",
         "quantity": 9,
@@ -9354,10 +9354,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 843,
-        "type": "blue",
+        "type": "orange",
         "date": "03/10/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100629",
         "quantity": 15,
@@ -9365,7 +9365,7 @@ export const transfersData = {
       },
       {
         "id": 844,
-        "type": "green",
+        "type": "orange",
         "date": "03/10/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -9395,16 +9395,16 @@ export const transfersData = {
         "date": "04/10/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100632",
         "quantity": 23,
         "comment": "Chaussures"
       },
       {
         "id": 847,
-        "type": "blue",
+        "type": "green",
         "date": "04/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100633",
@@ -9413,11 +9413,11 @@ export const transfersData = {
       },
       {
         "id": 848,
-        "type": "orange",
+        "type": "blue",
         "date": "04/10/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100634",
         "quantity": 24,
         "comment": "Chemises"
@@ -9428,9 +9428,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 849,
-        "type": "orange",
+        "type": "green",
         "date": "05/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Marrakech",
         "documentNumber": "100635",
@@ -9439,10 +9439,10 @@ export const transfersData = {
       },
       {
         "id": 850,
-        "type": "green",
+        "type": "orange",
         "date": "05/10/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100636",
         "quantity": 15,
@@ -9469,9 +9469,9 @@ export const transfersData = {
       },
       {
         "id": 853,
-        "type": "yellow",
+        "type": "green",
         "date": "05/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100638",
@@ -9484,10 +9484,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 854,
-        "type": "blue",
+        "type": "green",
         "date": "06/10/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100639",
         "quantity": 17,
@@ -9495,9 +9495,9 @@ export const transfersData = {
       },
       {
         "id": 855,
-        "type": "blue",
+        "type": "green",
         "date": "06/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Casablanca",
         "documentNumber": "100640",
@@ -9537,9 +9537,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 859,
-        "type": "blue",
+        "type": "green",
         "date": "07/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100642",
@@ -9550,9 +9550,9 @@ export const transfersData = {
         "id": 860,
         "type": "green",
         "date": "07/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100643",
         "quantity": 11,
         "comment": "Pulls"
@@ -9570,7 +9570,7 @@ export const transfersData = {
       },
       {
         "id": 862,
-        "type": "green",
+        "type": "blue",
         "date": "07/10/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -9593,18 +9593,18 @@ export const transfersData = {
     "transfers": [
       {
         "id": 864,
-        "type": "yellow",
+        "type": "green",
         "date": "08/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100646",
         "quantity": 9,
         "comment": "Ceintures"
       },
       {
         "id": 865,
-        "type": "green",
+        "type": "orange",
         "date": "08/10/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -9615,7 +9615,7 @@ export const transfersData = {
       },
       {
         "id": 866,
-        "type": "yellow",
+        "type": "orange",
         "date": "08/10/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -9628,7 +9628,7 @@ export const transfersData = {
         "id": 867,
         "type": "green",
         "date": "08/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100649",
@@ -9645,7 +9645,7 @@ export const transfersData = {
         "date": "09/10/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100650",
         "quantity": 8,
         "comment": "Jeans"
@@ -9664,7 +9664,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 870,
-        "type": "green",
+        "type": "orange",
         "date": "10/10/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -9679,7 +9679,7 @@ export const transfersData = {
         "date": "10/10/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100652",
         "quantity": 15,
         "comment": "Vestes"
@@ -9694,11 +9694,11 @@ export const transfersData = {
       },
       {
         "id": 873,
-        "type": "orange",
+        "type": "green",
         "date": "10/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100653",
         "quantity": 28,
         "comment": "T-shirts"
@@ -9707,7 +9707,7 @@ export const transfersData = {
         "id": 874,
         "type": "green",
         "date": "10/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100654",
@@ -9720,7 +9720,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 875,
-        "type": "yellow",
+        "type": "blue",
         "date": "11/10/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -9731,7 +9731,7 @@ export const transfersData = {
       },
       {
         "id": 876,
-        "type": "green",
+        "type": "blue",
         "date": "11/10/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -9771,12 +9771,12 @@ export const transfersData = {
         "type": "orange",
         "date": "12/10/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 880,
-        "type": "yellow",
+        "type": "orange",
         "date": "12/10/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -9790,7 +9790,7 @@ export const transfersData = {
         "type": "orange",
         "date": "12/10/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
@@ -9818,7 +9818,7 @@ export const transfersData = {
       },
       {
         "id": 884,
-        "type": "blue",
+        "type": "orange",
         "date": "13/10/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -9833,11 +9833,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 885,
-        "type": "green",
+        "type": "orange",
         "date": "14/10/2025",
         "status": "En attente",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100662",
         "quantity": 19,
         "comment": "Ceintures"
@@ -9847,7 +9847,7 @@ export const transfersData = {
         "type": "blue",
         "date": "14/10/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100663",
         "quantity": 7,
@@ -9855,10 +9855,10 @@ export const transfersData = {
       },
       {
         "id": 887,
-        "type": "green",
+        "type": "blue",
         "date": "14/10/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100664",
         "quantity": 12,
@@ -9886,11 +9886,11 @@ export const transfersData = {
       },
       {
         "id": 890,
-        "type": "yellow",
+        "type": "blue",
         "date": "15/10/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100665",
         "quantity": 5,
         "comment": "Pantalons"
@@ -9901,7 +9901,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 891,
-        "type": "yellow",
+        "type": "blue",
         "date": "16/10/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -9939,7 +9939,7 @@ export const transfersData = {
       },
       {
         "id": 894,
-        "type": "orange",
+        "type": "blue",
         "date": "18/10/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -9950,7 +9950,7 @@ export const transfersData = {
       },
       {
         "id": 895,
-        "type": "orange",
+        "type": "blue",
         "date": "18/10/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -9968,7 +9968,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "19/10/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -9979,9 +9979,9 @@ export const transfersData = {
         "id": 897,
         "type": "green",
         "date": "20/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100670",
         "quantity": 22,
         "comment": "T-shirts"
@@ -9998,7 +9998,7 @@ export const transfersData = {
         "id": 899,
         "type": "green",
         "date": "20/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100671",
@@ -10011,22 +10011,22 @@ export const transfersData = {
     "transfers": [
       {
         "id": 900,
-        "type": "orange",
+        "type": "green",
         "date": "21/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100672",
         "quantity": 30,
         "comment": "Chaussures"
       },
       {
         "id": 901,
-        "type": "orange",
+        "type": "blue",
         "date": "21/10/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100673",
         "quantity": 20,
         "comment": "Jeans"
@@ -10041,10 +10041,10 @@ export const transfersData = {
       },
       {
         "id": 903,
-        "type": "yellow",
+        "type": "blue",
         "date": "21/10/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100674",
         "quantity": 29,
@@ -10052,7 +10052,7 @@ export const transfersData = {
       },
       {
         "id": 904,
-        "type": "orange",
+        "type": "blue",
         "date": "21/10/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -10067,10 +10067,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 905,
-        "type": "green",
+        "type": "orange",
         "date": "22/10/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100676",
         "quantity": 27,
@@ -10082,10 +10082,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 906,
-        "type": "orange",
+        "type": "blue",
         "date": "23/10/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100677",
         "quantity": 13,
@@ -10097,11 +10097,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 907,
-        "type": "yellow",
+        "type": "blue",
         "date": "24/10/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100678",
         "quantity": 6,
         "comment": "Ceintures"
@@ -10112,10 +10112,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 908,
-        "type": "yellow",
+        "type": "blue",
         "date": "25/10/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100679",
         "quantity": 27,
@@ -10123,10 +10123,10 @@ export const transfersData = {
       },
       {
         "id": 909,
-        "type": "yellow",
+        "type": "orange",
         "date": "25/10/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100680",
         "quantity": 13,
@@ -10138,11 +10138,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 910,
-        "type": "blue",
+        "type": "green",
         "date": "26/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100681",
         "quantity": 9,
         "comment": "Chemises"
@@ -10164,11 +10164,11 @@ export const transfersData = {
       },
       {
         "id": 912,
-        "type": "orange",
+        "type": "blue",
         "date": "27/10/2025",
         "status": "En cours",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100683",
         "quantity": 6,
         "comment": "Robes"
@@ -10190,7 +10190,7 @@ export const transfersData = {
         "type": "blue",
         "date": "28/10/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100684",
         "quantity": 16,
@@ -10198,9 +10198,9 @@ export const transfersData = {
       },
       {
         "id": 915,
-        "type": "blue",
+        "type": "green",
         "date": "28/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100685",
@@ -10209,11 +10209,11 @@ export const transfersData = {
       },
       {
         "id": 916,
-        "type": "orange",
+        "type": "green",
         "date": "28/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100686",
         "quantity": 8,
         "comment": "Robes"
@@ -10222,7 +10222,7 @@ export const transfersData = {
         "id": 917,
         "type": "green",
         "date": "28/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100687",
@@ -10235,7 +10235,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 918,
-        "type": "green",
+        "type": "blue",
         "date": "29/10/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -10250,7 +10250,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 919,
-        "type": "blue",
+        "type": "orange",
         "date": "30/10/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -10263,9 +10263,9 @@ export const transfersData = {
         "id": 920,
         "type": "green",
         "date": "30/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100690",
         "quantity": 18,
         "comment": "Sacs"
@@ -10274,8 +10274,8 @@ export const transfersData = {
         "id": 921,
         "type": "green",
         "date": "30/10/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100691",
         "quantity": 29,
@@ -10283,9 +10283,9 @@ export const transfersData = {
       },
       {
         "id": 922,
-        "type": "orange",
+        "type": "green",
         "date": "30/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Tanger",
         "documentNumber": "100692",
@@ -10298,20 +10298,20 @@ export const transfersData = {
     "transfers": [
       {
         "id": 923,
-        "type": "blue",
+        "type": "green",
         "date": "31/10/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100693",
         "quantity": 21,
         "comment": "Accessoires"
       },
       {
         "id": 924,
-        "type": "blue",
+        "type": "green",
         "date": "31/10/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100694",
@@ -10320,11 +10320,11 @@ export const transfersData = {
       },
       {
         "id": 925,
-        "type": "green",
+        "type": "orange",
         "date": "31/10/2025",
         "status": "En attente",
-        "from": "stradi Online",
-        "to": "stradi Casa",
+        "from": "stradi Rabat",
+        "to": "stradi Casablanca",
         "documentNumber": "100695",
         "quantity": 28,
         "comment": "Accessoires"
@@ -10343,7 +10343,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 927,
-        "type": "yellow",
+        "type": "blue",
         "date": "01/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -10362,7 +10362,7 @@ export const transfersData = {
       },
       {
         "id": 929,
-        "type": "yellow",
+        "type": "blue",
         "date": "01/11/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -10375,7 +10375,7 @@ export const transfersData = {
         "id": 930,
         "type": "green",
         "date": "01/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Fès",
         "documentNumber": "100698",
@@ -10384,7 +10384,7 @@ export const transfersData = {
       },
       {
         "id": 931,
-        "type": "orange",
+        "type": "blue",
         "date": "01/11/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -10407,11 +10407,11 @@ export const transfersData = {
       },
       {
         "id": 933,
-        "type": "orange",
+        "type": "blue",
         "date": "02/11/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100700",
         "quantity": 29,
         "comment": "T-shirts"
@@ -10421,7 +10421,7 @@ export const transfersData = {
         "type": "orange",
         "date": "02/11/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100701",
         "quantity": 29,
@@ -10429,7 +10429,7 @@ export const transfersData = {
       },
       {
         "id": 935,
-        "type": "orange",
+        "type": "blue",
         "date": "02/11/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -10444,7 +10444,7 @@ export const transfersData = {
         "date": "02/11/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100703",
         "quantity": 8,
         "comment": "Sacs"
@@ -10455,10 +10455,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 937,
-        "type": "orange",
+        "type": "blue",
         "date": "03/11/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100704",
         "quantity": 22,
@@ -10466,11 +10466,11 @@ export const transfersData = {
       },
       {
         "id": 938,
-        "type": "blue",
+        "type": "green",
         "date": "03/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100705",
         "quantity": 9,
         "comment": "Pulls"
@@ -10481,10 +10481,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 939,
-        "type": "orange",
+        "type": "blue",
         "date": "04/11/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100706",
         "quantity": 30,
@@ -10492,7 +10492,7 @@ export const transfersData = {
       },
       {
         "id": 940,
-        "type": "green",
+        "type": "blue",
         "date": "04/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -10503,11 +10503,11 @@ export const transfersData = {
       },
       {
         "id": 941,
-        "type": "blue",
+        "type": "green",
         "date": "04/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100708",
         "quantity": 29,
         "comment": "Accessoires"
@@ -10525,9 +10525,9 @@ export const transfersData = {
       },
       {
         "id": 943,
-        "type": "orange",
+        "type": "green",
         "date": "04/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100710",
@@ -10544,7 +10544,7 @@ export const transfersData = {
         "date": "05/11/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100711",
         "quantity": 9,
         "comment": "Vestes"
@@ -10562,7 +10562,7 @@ export const transfersData = {
         "type": "blue",
         "date": "05/11/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100712",
         "quantity": 18,
@@ -10570,11 +10570,11 @@ export const transfersData = {
       },
       {
         "id": 947,
-        "type": "orange",
+        "type": "green",
         "date": "05/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100713",
         "quantity": 23,
         "comment": "Jeans"
@@ -10599,14 +10599,14 @@ export const transfersData = {
         "type": "green",
         "date": "06/11/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
         "id": 950,
-        "type": "orange",
+        "type": "green",
         "date": "06/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Casablanca",
         "documentNumber": "100715",
@@ -10617,7 +10617,7 @@ export const transfersData = {
         "id": 951,
         "type": "green",
         "date": "06/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Casablanca",
         "documentNumber": "100716",
@@ -10630,21 +10630,21 @@ export const transfersData = {
     "transfers": [
       {
         "id": 952,
-        "type": "yellow",
+        "type": "blue",
         "date": "07/11/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100717",
         "quantity": 5,
         "comment": "Robes"
       },
       {
         "id": 953,
-        "type": "green",
+        "type": "blue",
         "date": "07/11/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100718",
         "quantity": 15,
@@ -10656,10 +10656,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 954,
-        "type": "green",
+        "type": "orange",
         "date": "08/11/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100719",
         "quantity": 20,
@@ -10671,10 +10671,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 955,
-        "type": "blue",
+        "type": "orange",
         "date": "09/11/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100720",
         "quantity": 15,
@@ -10682,7 +10682,7 @@ export const transfersData = {
       },
       {
         "id": 956,
-        "type": "yellow",
+        "type": "orange",
         "date": "09/11/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -10693,11 +10693,11 @@ export const transfersData = {
       },
       {
         "id": 957,
-        "type": "yellow",
+        "type": "green",
         "date": "09/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100722",
         "quantity": 13,
         "comment": "Ceintures"
@@ -10729,9 +10729,9 @@ export const transfersData = {
         "id": 960,
         "type": "green",
         "date": "10/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100724",
         "quantity": 5,
         "comment": "Jeans"
@@ -10760,7 +10760,7 @@ export const transfersData = {
         "id": 963,
         "type": "green",
         "date": "11/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100725",
@@ -10792,7 +10792,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 966,
-        "type": "green",
+        "type": "orange",
         "date": "12/11/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -10807,11 +10807,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 967,
-        "type": "green",
+        "type": "orange",
         "date": "13/11/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100728",
         "quantity": 14,
         "comment": "Chaussures"
@@ -10833,10 +10833,10 @@ export const transfersData = {
       },
       {
         "id": 969,
-        "type": "green",
+        "type": "blue",
         "date": "14/11/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100730",
         "quantity": 13,
@@ -10844,9 +10844,9 @@ export const transfersData = {
       },
       {
         "id": 970,
-        "type": "orange",
+        "type": "green",
         "date": "14/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
         "to": "stradi Rabat",
         "documentNumber": "100731",
@@ -10855,7 +10855,7 @@ export const transfersData = {
       },
       {
         "id": 971,
-        "type": "yellow",
+        "type": "blue",
         "date": "14/11/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -10870,7 +10870,7 @@ export const transfersData = {
         "date": "14/11/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100733",
         "quantity": 22,
         "comment": "Sacs"
@@ -10881,7 +10881,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 973,
-        "type": "blue",
+        "type": "orange",
         "date": "15/11/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -10892,7 +10892,7 @@ export const transfersData = {
       },
       {
         "id": 974,
-        "type": "yellow",
+        "type": "blue",
         "date": "15/11/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -10903,11 +10903,11 @@ export const transfersData = {
       },
       {
         "id": 975,
-        "type": "orange",
+        "type": "blue",
         "date": "15/11/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100736",
         "quantity": 12,
         "comment": "Tops"
@@ -10921,7 +10921,7 @@ export const transfersData = {
         "type": "orange",
         "date": "16/11/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -10930,7 +10930,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 977,
-        "type": "orange",
+        "type": "blue",
         "date": "17/11/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -10941,7 +10941,7 @@ export const transfersData = {
       },
       {
         "id": 978,
-        "type": "blue",
+        "type": "orange",
         "date": "17/11/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -10963,7 +10963,7 @@ export const transfersData = {
         "type": "orange",
         "date": "17/11/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100739",
         "quantity": 16,
@@ -10977,7 +10977,7 @@ export const transfersData = {
         "id": 981,
         "type": "green",
         "date": "18/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Casablanca",
         "documentNumber": "100740",
@@ -10986,11 +10986,11 @@ export const transfersData = {
       },
       {
         "id": 982,
-        "type": "yellow",
+        "type": "orange",
         "date": "18/11/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100741",
         "quantity": 14,
         "comment": "Vestes"
@@ -11000,7 +11000,7 @@ export const transfersData = {
         "type": "blue",
         "date": "18/11/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -11008,7 +11008,7 @@ export const transfersData = {
         "type": "yellow",
         "date": "18/11/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       },
       {
@@ -11033,18 +11033,18 @@ export const transfersData = {
       },
       {
         "id": 987,
-        "type": "blue",
+        "type": "green",
         "date": "19/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100742",
         "quantity": 20,
         "comment": "Vestes"
       },
       {
         "id": 988,
-        "type": "orange",
+        "type": "blue",
         "date": "19/11/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -11055,22 +11055,22 @@ export const transfersData = {
       },
       {
         "id": 989,
-        "type": "blue",
+        "type": "green",
         "date": "19/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100744",
         "quantity": 18,
         "comment": "Sacs"
       },
       {
         "id": 990,
-        "type": "blue",
+        "type": "green",
         "date": "19/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100745",
         "quantity": 6,
         "comment": "Pantalons"
@@ -11083,19 +11083,19 @@ export const transfersData = {
         "id": 991,
         "type": "green",
         "date": "20/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100746",
         "quantity": 17,
         "comment": "Shorts"
       },
       {
         "id": 992,
-        "type": "yellow",
+        "type": "orange",
         "date": "20/11/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100747",
         "quantity": 14,
@@ -11103,22 +11103,22 @@ export const transfersData = {
       },
       {
         "id": 993,
-        "type": "yellow",
+        "type": "blue",
         "date": "20/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100748",
         "quantity": 28,
         "comment": "Accessoires"
       },
       {
         "id": 994,
-        "type": "blue",
+        "type": "green",
         "date": "20/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100749",
         "quantity": 12,
         "comment": "Accessoires"
@@ -11129,7 +11129,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 995,
-        "type": "yellow",
+        "type": "blue",
         "date": "21/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -11143,7 +11143,7 @@ export const transfersData = {
         "type": "orange",
         "date": "21/11/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100751",
         "quantity": 9,
@@ -11166,11 +11166,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 998,
-        "type": "blue",
+        "type": "orange",
         "date": "22/11/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100753",
         "quantity": 11,
         "comment": "Robes"
@@ -11180,7 +11180,7 @@ export const transfersData = {
         "type": "orange",
         "date": "22/11/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100754",
         "quantity": 5,
@@ -11188,10 +11188,10 @@ export const transfersData = {
       },
       {
         "id": 1000,
-        "type": "blue",
+        "type": "green",
         "date": "22/11/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100755",
         "quantity": 6,
@@ -11199,7 +11199,7 @@ export const transfersData = {
       },
       {
         "id": 1001,
-        "type": "yellow",
+        "type": "blue",
         "date": "22/11/2025",
         "status": "En cours",
         "from": "stradi Fès",
@@ -11225,20 +11225,20 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1003,
-        "type": "green",
+        "type": "blue",
         "date": "23/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100758",
         "quantity": 10,
         "comment": "Tops"
       },
       {
         "id": 1004,
-        "type": "yellow",
+        "type": "green",
         "date": "23/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Tanger",
         "documentNumber": "100759",
@@ -11247,18 +11247,18 @@ export const transfersData = {
       },
       {
         "id": 1005,
-        "type": "yellow",
+        "type": "blue",
         "date": "23/11/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100760",
         "quantity": 21,
         "comment": "Chemises"
       },
       {
         "id": 1006,
-        "type": "yellow",
+        "type": "blue",
         "date": "23/11/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -11295,7 +11295,7 @@ export const transfersData = {
       },
       {
         "id": 1009,
-        "type": "blue",
+        "type": "orange",
         "date": "24/11/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
@@ -11306,7 +11306,7 @@ export const transfersData = {
       },
       {
         "id": 1010,
-        "type": "yellow",
+        "type": "blue",
         "date": "24/11/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -11317,10 +11317,10 @@ export const transfersData = {
       },
       {
         "id": 1011,
-        "type": "green",
+        "type": "blue",
         "date": "24/11/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100766",
         "quantity": 22,
@@ -11348,21 +11348,21 @@ export const transfersData = {
       },
       {
         "id": 1014,
-        "type": "green",
+        "type": "orange",
         "date": "25/11/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100767",
         "quantity": 8,
         "comment": "Pulls"
       },
       {
         "id": 1015,
-        "type": "blue",
+        "type": "green",
         "date": "25/11/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100768",
         "quantity": 19,
@@ -11370,10 +11370,10 @@ export const transfersData = {
       },
       {
         "id": 1016,
-        "type": "green",
+        "type": "orange",
         "date": "25/11/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100769",
         "quantity": 5,
@@ -11396,11 +11396,11 @@ export const transfersData = {
       },
       {
         "id": 1018,
-        "type": "green",
+        "type": "orange",
         "date": "26/11/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100771",
         "quantity": 23,
         "comment": "Pulls"
@@ -11415,11 +11415,11 @@ export const transfersData = {
       },
       {
         "id": 1020,
-        "type": "blue",
+        "type": "green",
         "date": "26/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100772",
         "quantity": 15,
         "comment": "Shorts"
@@ -11430,7 +11430,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1021,
-        "type": "blue",
+        "type": "orange",
         "date": "27/11/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -11441,7 +11441,7 @@ export const transfersData = {
       },
       {
         "id": 1022,
-        "type": "orange",
+        "type": "blue",
         "date": "27/11/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -11452,21 +11452,21 @@ export const transfersData = {
       },
       {
         "id": 1023,
-        "type": "orange",
+        "type": "green",
         "date": "27/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100775",
         "quantity": 10,
         "comment": "Jeans"
       },
       {
         "id": 1024,
-        "type": "yellow",
+        "type": "orange",
         "date": "27/11/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100776",
         "quantity": 9,
@@ -11478,7 +11478,7 @@ export const transfersData = {
         "date": "27/11/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100777",
         "quantity": 30,
         "comment": "Chaussures"
@@ -11491,7 +11491,7 @@ export const transfersData = {
         "id": 1026,
         "type": "green",
         "date": "28/11/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100778",
@@ -11504,10 +11504,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1027,
-        "type": "orange",
+        "type": "blue",
         "date": "29/11/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100779",
         "quantity": 16,
@@ -11522,15 +11522,15 @@ export const transfersData = {
         "type": "green",
         "date": "30/11/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 1029,
-        "type": "yellow",
+        "type": "green",
         "date": "30/11/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100780",
         "quantity": 25,
@@ -11550,10 +11550,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1031,
-        "type": "green",
+        "type": "orange",
         "date": "01/12/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100781",
         "quantity": 17,
@@ -11561,7 +11561,7 @@ export const transfersData = {
       },
       {
         "id": 1032,
-        "type": "blue",
+        "type": "orange",
         "date": "01/12/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -11575,7 +11575,7 @@ export const transfersData = {
         "type": "blue",
         "date": "01/12/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100783",
         "quantity": 13,
@@ -11586,7 +11586,7 @@ export const transfersData = {
         "type": "orange",
         "date": "01/12/2025",
         "status": "Inventaire",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "showBoxIcon": true
       }
     ]
@@ -11595,31 +11595,31 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1035,
-        "type": "yellow",
+        "type": "green",
         "date": "02/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100784",
         "quantity": 5,
         "comment": "Ceintures"
       },
       {
         "id": 1036,
-        "type": "orange",
+        "type": "green",
         "date": "02/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100785",
         "quantity": 9,
         "comment": "Chemises"
       },
       {
         "id": 1037,
-        "type": "blue",
+        "type": "green",
         "date": "02/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Tanger",
         "documentNumber": "100786",
@@ -11628,7 +11628,7 @@ export const transfersData = {
       },
       {
         "id": 1038,
-        "type": "yellow",
+        "type": "orange",
         "date": "02/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -11651,11 +11651,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1040,
-        "type": "green",
+        "type": "orange",
         "date": "03/12/2025",
         "status": "En attente",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100788",
         "quantity": 30,
         "comment": "Shorts"
@@ -11674,7 +11674,7 @@ export const transfersData = {
       },
       {
         "id": 1042,
-        "type": "green",
+        "type": "orange",
         "date": "04/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -11685,20 +11685,20 @@ export const transfersData = {
       },
       {
         "id": 1043,
-        "type": "yellow",
+        "type": "orange",
         "date": "04/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100790",
         "quantity": 14,
         "comment": "Chaussures"
       },
       {
         "id": 1044,
-        "type": "blue",
+        "type": "green",
         "date": "04/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100791",
@@ -11713,20 +11713,20 @@ export const transfersData = {
         "id": 1045,
         "type": "green",
         "date": "05/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100792",
         "quantity": 27,
         "comment": "T-shirts"
       },
       {
         "id": 1046,
-        "type": "green",
+        "type": "orange",
         "date": "05/12/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100793",
         "quantity": 5,
         "comment": "Pantalons"
@@ -11740,7 +11740,7 @@ export const transfersData = {
         "type": "blue",
         "date": "06/12/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100794",
         "quantity": 16,
@@ -11748,21 +11748,21 @@ export const transfersData = {
       },
       {
         "id": 1048,
-        "type": "yellow",
+        "type": "green",
         "date": "06/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100795",
         "quantity": 22,
         "comment": "Pantalons"
       },
       {
         "id": 1049,
-        "type": "yellow",
+        "type": "orange",
         "date": "06/12/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100796",
         "quantity": 16,
@@ -11770,9 +11770,9 @@ export const transfersData = {
       },
       {
         "id": 1050,
-        "type": "blue",
+        "type": "green",
         "date": "06/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100797",
@@ -11808,11 +11808,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1053,
-        "type": "blue",
+        "type": "green",
         "date": "08/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100799",
         "quantity": 17,
         "comment": "Jeans"
@@ -11822,7 +11822,7 @@ export const transfersData = {
         "type": "orange",
         "date": "08/12/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100800",
         "quantity": 13,
@@ -11830,9 +11830,9 @@ export const transfersData = {
       },
       {
         "id": 1055,
-        "type": "blue",
+        "type": "green",
         "date": "08/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Casablanca",
         "documentNumber": "100801",
@@ -11847,19 +11847,19 @@ export const transfersData = {
         "id": 1056,
         "type": "green",
         "date": "09/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100802",
         "quantity": 17,
         "comment": "Accessoires"
       },
       {
         "id": 1057,
-        "type": "green",
+        "type": "orange",
         "date": "09/12/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Casablanca",
         "documentNumber": "100803",
         "quantity": 18,
@@ -11871,9 +11871,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1058,
-        "type": "blue",
+        "type": "green",
         "date": "10/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100804",
@@ -11890,7 +11890,7 @@ export const transfersData = {
       },
       {
         "id": 1060,
-        "type": "blue",
+        "type": "orange",
         "date": "10/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -11901,9 +11901,9 @@ export const transfersData = {
       },
       {
         "id": 1061,
-        "type": "blue",
+        "type": "green",
         "date": "10/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Marrakech",
         "documentNumber": "100806",
@@ -11916,9 +11916,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1062,
-        "type": "yellow",
+        "type": "green",
         "date": "11/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
         "to": "stradi Casablanca",
         "documentNumber": "100807",
@@ -11939,10 +11939,10 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1064,
-        "type": "green",
+        "type": "orange",
         "date": "12/12/2025",
         "status": "En attente",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100808",
         "quantity": 23,
@@ -11953,15 +11953,15 @@ export const transfersData = {
         "type": "yellow",
         "date": "12/12/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 1066,
-        "type": "yellow",
+        "type": "green",
         "date": "12/12/2025",
-        "status": "Confirmer",
-        "from": "stradi Casa",
+        "status": "Confirmé",
+        "from": "stradi Casablanca",
         "to": "stradi Fès",
         "documentNumber": "100809",
         "quantity": 28,
@@ -11971,16 +11971,16 @@ export const transfersData = {
         "id": 1067,
         "type": "green",
         "date": "12/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100810",
         "quantity": 14,
         "comment": "Ceintures"
       },
       {
         "id": 1068,
-        "type": "green",
+        "type": "blue",
         "date": "12/12/2025",
         "status": "En cours",
         "from": "stradi Agadir",
@@ -11995,7 +11995,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1069,
-        "type": "yellow",
+        "type": "orange",
         "date": "13/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -12009,7 +12009,7 @@ export const transfersData = {
         "type": "green",
         "date": "13/12/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -12018,9 +12018,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1071,
-        "type": "yellow",
+        "type": "green",
         "date": "14/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Tanger",
         "documentNumber": "100813",
@@ -12029,7 +12029,7 @@ export const transfersData = {
       },
       {
         "id": 1072,
-        "type": "orange",
+        "type": "blue",
         "date": "14/12/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -12068,7 +12068,7 @@ export const transfersData = {
         "date": "16/12/2025",
         "status": "En attente",
         "from": "stradi Agadir",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100815",
         "quantity": 21,
         "comment": "Tops"
@@ -12083,11 +12083,11 @@ export const transfersData = {
       },
       {
         "id": 1077,
-        "type": "orange",
+        "type": "blue",
         "date": "16/12/2025",
         "status": "En cours",
-        "from": "stradi Casa",
-        "to": "stradi Online",
+        "from": "stradi Casablanca",
+        "to": "stradi Rabat",
         "documentNumber": "100816",
         "quantity": 18,
         "comment": "Accessoires"
@@ -12097,15 +12097,15 @@ export const transfersData = {
         "type": "green",
         "date": "16/12/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       },
       {
         "id": 1079,
-        "type": "orange",
+        "type": "blue",
         "date": "16/12/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100817",
         "quantity": 23,
@@ -12128,10 +12128,10 @@ export const transfersData = {
       },
       {
         "id": 1081,
-        "type": "blue",
+        "type": "orange",
         "date": "17/12/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100819",
         "quantity": 8,
@@ -12139,11 +12139,11 @@ export const transfersData = {
       },
       {
         "id": 1082,
-        "type": "orange",
+        "type": "green",
         "date": "17/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100820",
         "quantity": 29,
         "comment": "Vestes"
@@ -12153,7 +12153,7 @@ export const transfersData = {
         "type": "blue",
         "date": "17/12/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100821",
         "quantity": 23,
@@ -12165,7 +12165,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1084,
-        "type": "green",
+        "type": "orange",
         "date": "18/12/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -12182,9 +12182,9 @@ export const transfersData = {
         "id": 1085,
         "type": "green",
         "date": "19/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100823",
         "quantity": 27,
         "comment": "Jeans"
@@ -12202,7 +12202,7 @@ export const transfersData = {
       },
       {
         "id": 1087,
-        "type": "green",
+        "type": "blue",
         "date": "19/12/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
@@ -12213,7 +12213,7 @@ export const transfersData = {
       },
       {
         "id": 1088,
-        "type": "green",
+        "type": "orange",
         "date": "19/12/2025",
         "status": "En attente",
         "from": "stradi Agadir",
@@ -12228,7 +12228,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1089,
-        "type": "green",
+        "type": "blue",
         "date": "20/12/2025",
         "status": "En cours",
         "from": "stradi Tanger",
@@ -12243,9 +12243,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1090,
-        "type": "yellow",
+        "type": "green",
         "date": "21/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Agadir",
         "documentNumber": "100828",
@@ -12254,18 +12254,18 @@ export const transfersData = {
       },
       {
         "id": 1091,
-        "type": "orange",
+        "type": "blue",
         "date": "21/12/2025",
         "status": "En cours",
         "from": "stradi Marrakech",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100829",
         "quantity": 15,
         "comment": "Sacs"
       },
       {
         "id": 1092,
-        "type": "blue",
+        "type": "orange",
         "date": "21/12/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -12276,7 +12276,7 @@ export const transfersData = {
       },
       {
         "id": 1093,
-        "type": "yellow",
+        "type": "orange",
         "date": "21/12/2025",
         "status": "En attente",
         "from": "stradi Fès",
@@ -12291,7 +12291,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1094,
-        "type": "blue",
+        "type": "orange",
         "date": "22/12/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -12302,7 +12302,7 @@ export const transfersData = {
       },
       {
         "id": 1095,
-        "type": "yellow",
+        "type": "orange",
         "date": "22/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -12313,9 +12313,9 @@ export const transfersData = {
       },
       {
         "id": 1096,
-        "type": "blue",
+        "type": "green",
         "date": "22/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Agadir",
         "to": "stradi Tanger",
         "documentNumber": "100834",
@@ -12326,9 +12326,9 @@ export const transfersData = {
         "id": 1097,
         "type": "green",
         "date": "22/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100835",
         "quantity": 23,
         "comment": "Accessoires"
@@ -12342,7 +12342,7 @@ export const transfersData = {
         "type": "orange",
         "date": "23/12/2025",
         "status": "En attente",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100836",
         "quantity": 22,
@@ -12360,7 +12360,7 @@ export const transfersData = {
         "id": 1100,
         "type": "green",
         "date": "23/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100837",
@@ -12369,7 +12369,7 @@ export const transfersData = {
       },
       {
         "id": 1101,
-        "type": "blue",
+        "type": "orange",
         "date": "23/12/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -12380,9 +12380,9 @@ export const transfersData = {
       },
       {
         "id": 1102,
-        "type": "blue",
+        "type": "green",
         "date": "23/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Marrakech",
         "documentNumber": "100839",
@@ -12395,9 +12395,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1103,
-        "type": "orange",
+        "type": "green",
         "date": "24/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Fès",
         "to": "stradi Rabat",
         "documentNumber": "100840",
@@ -12410,14 +12410,14 @@ export const transfersData = {
         "date": "24/12/2025",
         "status": "En attente",
         "from": "stradi Fès",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100841",
         "quantity": 18,
         "comment": "Vestes"
       },
       {
         "id": 1105,
-        "type": "yellow",
+        "type": "blue",
         "date": "24/12/2025",
         "status": "En cours",
         "from": "stradi Rabat",
@@ -12428,11 +12428,11 @@ export const transfersData = {
       },
       {
         "id": 1106,
-        "type": "yellow",
+        "type": "orange",
         "date": "24/12/2025",
         "status": "En attente",
         "from": "stradi Tanger",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100843",
         "quantity": 26,
         "comment": "Tops"
@@ -12457,7 +12457,7 @@ export const transfersData = {
         "type": "blue",
         "date": "25/12/2025",
         "status": "Inventaire",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "showBoxIcon": true
       }
     ]
@@ -12477,7 +12477,7 @@ export const transfersData = {
         "type": "blue",
         "date": "26/12/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Tanger",
         "documentNumber": "100845",
         "quantity": 9,
@@ -12488,7 +12488,7 @@ export const transfersData = {
         "type": "blue",
         "date": "26/12/2025",
         "status": "En cours",
-        "from": "stradi Online",
+        "from": "stradi Rabat",
         "to": "stradi Fès",
         "documentNumber": "100846",
         "quantity": 22,
@@ -12499,7 +12499,7 @@ export const transfersData = {
         "type": "blue",
         "date": "26/12/2025",
         "status": "En cours",
-        "from": "stradi Casa",
+        "from": "stradi Casablanca",
         "to": "stradi Marrakech",
         "documentNumber": "100847",
         "quantity": 15,
@@ -12534,11 +12534,11 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1115,
-        "type": "blue",
+        "type": "orange",
         "date": "28/12/2025",
         "status": "En attente",
         "from": "stradi Rabat",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100849",
         "quantity": 5,
         "comment": "Robes"
@@ -12549,9 +12549,9 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1116,
-        "type": "orange",
+        "type": "green",
         "date": "29/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Agadir",
         "documentNumber": "100850",
@@ -12568,9 +12568,9 @@ export const transfersData = {
       },
       {
         "id": 1118,
-        "type": "orange",
+        "type": "red",
         "date": "29/12/2025",
-        "status": "Confirmer",
+        "status": "annulé",
         "from": "stradi Rabat",
         "to": "stradi Marrakech",
         "documentNumber": "100851",
@@ -12579,21 +12579,21 @@ export const transfersData = {
       },
       {
         "id": 1119,
-        "type": "green",
+        "type": "blue",
         "date": "29/12/2025",
         "status": "En cours",
         "from": "stradi Agadir",
-        "to": "stradi Online",
+        "to": "stradi Rabat",
         "documentNumber": "100852",
         "quantity": 16,
         "comment": "Chaussures"
       },
       {
         "id": 1120,
-        "type": "yellow",
+        "type": "green",
         "date": "29/12/2025",
-        "status": "Confirmer",
-        "from": "stradi Online",
+        "status": "Confirmé",
+        "from": "stradi Rabat",
         "to": "stradi Rabat",
         "documentNumber": "100853",
         "quantity": 18,
@@ -12605,7 +12605,7 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1121,
-        "type": "yellow",
+        "type": "orange",
         "date": "30/12/2025",
         "status": "En attente",
         "from": "stradi Casablanca",
@@ -12616,7 +12616,7 @@ export const transfersData = {
       },
       {
         "id": 1122,
-        "type": "green",
+        "type": "orange",
         "date": "30/12/2025",
         "status": "En attente",
         "from": "stradi Tanger",
@@ -12635,9 +12635,9 @@ export const transfersData = {
       },
       {
         "id": 1124,
-        "type": "orange",
+        "type": "green",
         "date": "30/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Casablanca",
         "to": "stradi Rabat",
         "documentNumber": "100856",
@@ -12646,7 +12646,7 @@ export const transfersData = {
       },
       {
         "id": 1125,
-        "type": "yellow",
+        "type": "blue",
         "date": "30/12/2025",
         "status": "En cours",
         "from": "stradi Casablanca",
@@ -12661,20 +12661,20 @@ export const transfersData = {
     "transfers": [
       {
         "id": 1126,
-        "type": "green",
+        "type": "orange",
         "date": "31/12/2025",
         "status": "En attente",
         "from": "stradi Marrakech",
-        "to": "stradi Casa",
+        "to": "stradi Casablanca",
         "documentNumber": "100858",
         "quantity": 7,
         "comment": "Chemises"
       },
       {
         "id": 1127,
-        "type": "orange",
+        "type": "green",
         "date": "31/12/2025",
-        "status": "Confirmer",
+        "status": "Confirmé",
         "from": "stradi Rabat",
         "to": "stradi Casablanca",
         "documentNumber": "100859",
@@ -12691,7 +12691,7 @@ export const transfersData = {
       },
       {
         "id": 1129,
-        "type": "blue",
+        "type": "orange",
         "date": "31/12/2025",
         "status": "En attente",
         "from": "stradi Rabat",
@@ -12707,46 +12707,5 @@ export const transfersData = {
 export const defaultDate = new Date(2021, 1, 25); // 25 février 2021
 
 // Fonctions utilitaires pour les couleurs
-export const colorUtils = {
-  getDotColor: (type) => {
-    switch (type) {
-      case 'blue': return 'bg-blue-500';
-      case 'green': return 'bg-green-500';
-      case 'orange': return 'bg-orange-500';
-      case 'red': return 'bg-red-500';
-      case 'yellow': return 'bg-yellow-500';
-      default: return '';
-    }
-  },
-  
-  getBorderColor: (type) => {
-    switch (type) {
-      case 'blue': return 'border-blue-500';
-      case 'green': return 'border-green-500';
-      case 'orange': return 'border-orange-500';
-      case 'red': return 'border-red-500';
-      case 'yellow': return 'border-yellow-500';
-      default: return '';
-    }
-  },
-  
-  getBgColor: (type) => {
-    switch (type) {
-      case 'red': return 'bg-red-50';
-      case 'blue': return 'bg-blue-50';
-      case 'orange': return 'bg-orange-50';
-      case 'green': return 'bg-green-50';
-      case 'yellow': return 'bg-yellow-50';
-      default: return '';
-    }
-  }
-};
 
-// Légende des types de transferts
-export const transferLegend = [
-  { type: 'blue', label: 'En cours' },
-  { type: 'green', label: 'Confirmer' },
-  { type: 'orange', label: 'En attente' },
-  { type: 'red', label: 'Annuler' },
-  { type: 'yellow', label: 'Inventaire' }
-];
+

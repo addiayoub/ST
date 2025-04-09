@@ -16,8 +16,8 @@ const inventorySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Planifié',
-    enum: ['Planifié', 'En cours', 'Terminé', 'Annulé']
+    default: 'En attente',
+    enum: ['En attente', 'En cours', 'Confirmé', 'annulé']
   },
   createdBy: {
     type: mongoose.Schema.ObjectId,

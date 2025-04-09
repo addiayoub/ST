@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Warehouse, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { destinations } from '../calendrier_transfert/data';
+import { getMagasins } from "../les apis/magasinService";
 
 const MultiSelectWarehouse = ({ 
   selectedWarehouses = [], 
@@ -10,11 +10,56 @@ const MultiSelectWarehouse = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
   
-  const filteredWarehouses = destinations.filter(
-    warehouse => warehouse.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+// Dans MultiSelectWarehouse.js
+useEffect(() => {
+  const fetchActiveWarehouses = async () => {
+    try {
+      setLoading(true); 
+      const response = await getMagasins('/api/magasins');
+      
+      // Ajouter un console.log pour voir la structure de la réponse
+      console.log('Response structure:', response);
+      
+      // Vérifier si response.data existe et si c'est un tableau
+      let warehouseData = [];
+      
+      if (response && response.data) {
+        // Si c'est un objet avec une propriété data (structure { success: true, data: [...] })
+        if (Array.isArray(response.data.data)) {
+          warehouseData = response.data.data;
+        } 
+        // Si c'est directement un tableau
+        else if (Array.isArray(response.data)) {
+          warehouseData = response.data;
+        }
+      }
+      
+      // Filtrer pour ne garder que les magasins actifs
+      const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
+      
+      setWarehouses(activeWarehouses);
+      setError(null);
+    } catch (err) {
+      console.error('Erreur lors de la récupération des magasins:', err);
+      setError('Impossible de charger les magasins');
+      setWarehouses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchActiveWarehouses();
+}, []);
+
+ // Modifiez filteredWarehouses pour utiliser les propriétés de l'objet
+const filteredWarehouses = warehouses.filter(
+  warehouse => warehouse.nomMagasin.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,7 +81,7 @@ const MultiSelectWarehouse = ({
   };
 
   const toggleSelectAll = () => {
-    onChange(selectedWarehouses.length === destinations.length ? [] : [...destinations]);
+    onChange(selectedWarehouses.length === warehouses.length ? [] : [...warehouses]);
   };
 
   const removeWarehouse = (warehouse, e) => {
@@ -59,10 +104,10 @@ const MultiSelectWarehouse = ({
           ) : selectedWarehouses.length <= 3 ? (
             selectedWarehouses.map(warehouse => (
               <div 
-                key={warehouse} 
+                key={warehouse.id} 
                 className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center space-x-1 transition-all hover:bg-blue-200"
               >
-                <span className="truncate max-w-[120px]">{warehouse}</span>
+                <span className="truncate max-w-[120px]">{warehouse.nomMagasin}</span>
                 <X 
                   size={14} 
                   className="flex-shrink-0 cursor-pointer text-blue-600 hover:text-blue-800" 
@@ -119,61 +164,78 @@ const MultiSelectWarehouse = ({
             </div>
           </div>
 
-          {/* Select all option */}
-          <div 
-            className="p-2 hover:bg-blue-50 cursor-pointer transition-colors"
-            onClick={toggleSelectAll}
-          >
-            <label className="flex items-center cursor-pointer px-2 py-1.5">
-              <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                selectedWarehouses.length === destinations.length 
-                  ? "bg-blue-500 border-blue-500" 
-                  : "border-gray-300"
-              }`}>
-                {selectedWarehouses.length === destinations.length && (
-                  <Check size={14} className="text-white" />
+          {/* Gestion des états de chargement et d'erreur */}
+          {loading && (
+            <div className="p-4 text-center text-gray-500 text-sm">
+              Chargement des magasins...
+            </div>
+          )}
+          
+          {error && (
+            <div className="p-4 text-center text-red-500 text-sm">
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && (
+            <>
+              {/* Select all option */}
+              <div 
+                className="p-2 hover:bg-blue-50 cursor-pointer transition-colors"
+                onClick={toggleSelectAll}
+              >
+                <label className="flex items-center cursor-pointer px-2 py-1.5">
+                  <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
+                    selectedWarehouses.length === warehouses.length 
+                      ? "bg-blue-500 border-blue-500" 
+                      : "border-gray-300"
+                  }`}>
+                    {selectedWarehouses.length === warehouses.length && (
+                      <Check size={14} className="text-white" />
+                    )}
+                  </div>
+                  <span className="text-sm font-medium">Sélectionner tout</span>
+                </label>
+              </div>
+
+              {/* List of warehouses */}
+              <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
+                {filteredWarehouses.length > 0 ? (
+          filteredWarehouses.map((warehouse) => (
+            <div 
+              key={warehouse.id} 
+              className={`px-2 py-1.5 hover:bg-blue-50 cursor-pointer transition-colors ${
+                selectedWarehouses.some(w => w.id === warehouse.id) ? "bg-blue-50" : ""
+              }`}
+              onClick={() => toggleWarehouse(warehouse)}
+            >
+              <div className="flex items-center px-2 py-1.5">
+                <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
+                  selectedWarehouses.some(w => w.id === warehouse.id)
+                    ? "bg-blue-500 border-blue-500"
+                    : "border-gray-300"
+                }`}>
+                  {selectedWarehouses.some(w => w.id === warehouse.id) && (
+                    <Check size={14} className="text-white" />
+                  )}
+                </div>
+                <span className="text-sm flex-1">{warehouse.nomMagasin}</span>
+              </div>
+            </div>
+          ))
+                ) : (
+                  <div className="p-4 text-center text-gray-500 text-sm">
+                    Aucun magasin trouvé
+                  </div>
                 )}
               </div>
-              <span className="text-sm font-medium">Sélectionner tout</span>
-            </label>
-          </div>
-
-          {/* List of warehouses */}
-          <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
-            {filteredWarehouses.length > 0 ? (
-              filteredWarehouses.map((warehouse) => (
-                <div 
-                  key={warehouse} 
-                  className={`px-2 py-1.5 hover:bg-blue-50 cursor-pointer transition-colors ${
-                    selectedWarehouses.includes(warehouse) ? "bg-blue-50" : ""
-                  }`}
-                  onClick={() => toggleWarehouse(warehouse)}
-                >
-                  <div className="flex items-center px-2 py-1.5">
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                      selectedWarehouses.includes(warehouse)
-                        ? "bg-blue-500 border-blue-500"
-                        : "border-gray-300"
-                    }`}>
-                      {selectedWarehouses.includes(warehouse) && (
-                        <Check size={14} className="text-white" />
-                      )}
-                    </div>
-                    <span className="text-sm flex-1">{warehouse}</span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-4 text-center text-gray-500 text-sm">
-                Aucun magasin trouvé
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       )}
 
       {/* Animation styles */}
-      <style jsx>{`
+      <style >{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-5px); }
           to { opacity: 1; transform: translateY(0); }
