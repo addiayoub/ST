@@ -23,7 +23,6 @@ useEffect(() => {
       const response = await getMagasins('/api/magasins');
       
       // Ajouter un console.log pour voir la structure de la réponse
-      console.log('Response structure:', response);
       
       // Vérifier si response.data existe et si c'est un tableau
       let warehouseData = [];

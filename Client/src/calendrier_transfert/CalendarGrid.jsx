@@ -21,7 +21,6 @@
           const response = await getMagasins();
           
           // Ajouter un console.log pour voir la structure de la réponse
-          console.log('Response structure:', response);
           
           // Vérifier si response.data existe et si c'est un tableau
           let warehouseData = [];
@@ -43,7 +42,6 @@
           
           // Filtrer pour ne garder que les magasins actifs
           const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
-          console.log('Magasins actifs:', activeWarehouses);
           
           const magasinNames = activeWarehouses.map(magasin => {
             // Supprime "stradi " si déjà présent pour éviter les doublons
@@ -51,7 +49,6 @@
             return `stradi ${nom}`;
           });
           
-          console.log('Noms de magasins actifs:', magasinNames);
           
           setTransferOptions(prev => ({
             ...prev,

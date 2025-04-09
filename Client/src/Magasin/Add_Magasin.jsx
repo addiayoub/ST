@@ -465,7 +465,7 @@ const Add_Magasin = () => {
       <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
         {loading ? (
           <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900 mx-auto"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700 mx-auto"></div>
             <p className="mt-2 text-gray-600">Chargement des magasins...</p>
           </div>
         ) : error ? (
