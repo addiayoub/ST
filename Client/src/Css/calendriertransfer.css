@@ -10,6 +10,30 @@
   box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5) ;
 
 }
+#viewdocument{
+  background:rgba(128, 128, 128, 0.283);
+  color: white;
+  border-radius: 50px;
+  transition: 0.5s;
+}
+#viewdocument:hover{
+  background-color: grey;
+  cursor: pointer;
+}
+.custom-swal-ferme-button{
+  color: white;
+  background-color: red;
+  border-radius: 50px;
+  transition: 0.5s;
+}
+.custom-swal-ferme-button:hover{
+  color: white;
+  background-color: red;
+  border-radius: 50px;
+  transition: 0.5s;
+  transform: scale(1.3);
+
+}
 #rediusboxes {
     border-top-right-radius: 50px;  /* Arrondi en haut à droite */
     border-bottom-right-radius: 50px;  /* Arrondi en bas à droite */
@@ -18,6 +42,20 @@
     background: linear-gradient( #1A5B5B, #297F7F ,#297f7f79 );
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5) ;
 
+  }
+  .edit_trans{
+    background:rgba(255, 166, 0, 0.394) ;
+    color: white;
+    padding: 7px;
+    transition: 0.5s;
+    border-radius: 50px;
+  }
+  .edit_trans:hover{
+    background:orange;
+    cursor: pointer;
+    color: white;
+    transform: scale(1.3);
+  
   }
 #calendrier_text {
     font-size: 40px;

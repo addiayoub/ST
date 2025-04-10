@@ -1,6 +1,6 @@
-import React from 'react';
-import { ChevronLeft, ChevronRight, Boxes } from 'lucide-react';
-import MultiSelectWarehouse from '../calendrier_transfert/MultiSelectWarehouse'; // Import the new component
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Boxes, Menu, X, Calendar as CalendarIcon } from 'lucide-react';
+import MultiSelectWarehouse from '../calendrier_transfert/MultiSelectWarehouse';
 
 const FilterComponent = ({ 
   goToPrevWeek, 
@@ -16,8 +16,19 @@ const FilterComponent = ({
   currentMonth,
   filterDirection,
   setFilterDirection,
-  selectedWarehouses = [], // Change to array for multiple selections
+  selectedWarehouses = [],
 }) => {
+  const [menuVisible, setMenuVisible] = useState(true);
+  const [rotating, setRotating] = useState(false);
+  
+  const toggleMenu = () => {
+    setRotating(true);
+    setTimeout(() => {
+      setRotating(false);
+      setMenuVisible(!menuVisible);
+    }, 300);
+  };
+
   const getWeekNumber = (date) => {
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
     const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
@@ -49,35 +60,62 @@ const FilterComponent = ({
     
     return weeks;
   };
+
   const handleDirectionChange = (direction) => {
     setFilterDirection(prev => ({
       ...prev,
       [direction]: !prev[direction]
     }));
   };
+
   const handleWeekSelect = (weekStart) => {
     onWeekSelect(weekStart);
   };
 
+  const ToggleIcon = menuVisible ? X : CalendarIcon;
+
   return (
-    <div className="flex flex-col">
-      <br />
-      {/* Rangée des boutons de semaine */}
-      <div className="flex flex-wrap gap-1 p-2">
-        {generateWeekButtons().map((week, index) => (
+    <div className="flex flex-col relative">
+      {/* Bouton de toggle pour les semaines */}
+      <div className="flex justify-end pr-2">
+        <div className="relative group">
           <button
-            key={index}
-            className={`px-2 py-1 text-xs rounded border ${
-              week.isCurrent 
-                ? 'bg-blue-900 text-white font-medium border-blue-900' 
-                : 'border-gray-300 hover:bg-gray-200 cursor-pointer'
-            }`}
-            onClick={() => handleWeekSelect(week.start)}
+            onClick={toggleMenu}
+            className={`w-10 h-10 mt-1 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 cursor-pointer
+              transition-transform duration-300 ${rotating ? 'rotate-180' : ''}`}
           >
-            S{week.weekNumber}
+            <ToggleIcon className="text-gray-700" size={20} />
           </button>
-        ))}
+          <span className="hidden group-hover:block absolute z-10 right-full top-1/2 transform -translate-y-1/2 bg-blue-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap mr-2 pointer-events-none">
+            {menuVisible ? 'Masquer les semaines' : 'Afficher les semaines'}
+          </span>
+        </div>
       </div>
+
+      {/* Rangée des boutons de semaine - Position absolue */}
+      {menuVisible && (
+        <div id='All_calendar' className="absolute right-2 top-12 z-50 bg-white p-4 rounded-lg shadow-lg">
+          <div className="flex flex-wrap gap-1 ">
+            {generateWeekButtons().map((week, index) => (
+              <div key={index} className="relative group">
+                <button
+                  className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-colors duration-200 relative ${
+                    week.isCurrent 
+                      ? 'bg-blue-900 text-white' 
+                      : 'bg-white text-gray-600 hover:bg-gray-100 cursor-pointer'
+                  }`}
+                  onClick={() => handleWeekSelect(week.start)}
+                >
+                  S{week.weekNumber}
+                </button>
+                <span className="hidden group-hover:block absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 bg-blue-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap mb-2">
+                  Semaine {week.weekNumber}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Barre de navigation principale */}
       <div className="flex items-center p-3 bg-white">
@@ -129,7 +167,6 @@ const FilterComponent = ({
           {formatSelectedDate()}
         </div> 
         
-     
         {/* Filtres */}
         <div className='flex items-center ml-auto space-x-2'>
           {/* Conteneur pour la sélection des magasins et les checkboxes */}

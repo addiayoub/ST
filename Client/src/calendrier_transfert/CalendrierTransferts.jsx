@@ -1142,7 +1142,6 @@ const updateInventory = async (id, inventoryData) => {
         </div>
       </div>
       
-      <SideToolsComponent />
     </div>
   );
 };
