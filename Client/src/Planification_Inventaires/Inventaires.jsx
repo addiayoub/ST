@@ -12,19 +12,7 @@ const Inventaires = () => {
       <div className="p-3 flex justify-center">
         <Planification_Inventaires />
       </div>
-           <div className="flex flex-col items-center justify-center">
-                 <div className="font-medium ">
-                 </div>
-                 <div className="h-12">
-                   <img 
-                     src={logo} 
-                     alt="IDOA TECH" 
-                     className="h-full object-contain"
-                   />
-                   
-                 </div>
-                 
-               </div>
+         
     </div>
   )
 }

@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Boxes, Edit, X } from 'lucide-react';
+import MiniCalendar_inventaires from './MiniCalendar_inventaires';
+import { Boxes, Edit, RotateCcw, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 import '../Css/Planification_Inventaires.css';
+import logo from "/Logo-nesk-investment@2x.png";
 
-const Planification_Inventaires = () => {
+const Inventaires = () => {
   const [inventories, setInventories] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedStore, setSelectedStore] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
 
+  // États pour le mini calendrier
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [miniCalendarDays, setMiniCalendarDays] = useState([]);
+  
   const [newInventory, setNewInventory] = useState({
     date: '',
     destination: '',
@@ -29,49 +37,222 @@ const Planification_Inventaires = () => {
     
     return headers;
   };
-// Fetch inventories and destinations on component mount
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [inventoriesRes, magasinsRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
-          headers: getAuthHeaders(false)
-        }),
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
-          headers: getAuthHeaders(false)
-        })
-      ]);
 
-      if (!inventoriesRes.ok) {
-        const errorData = await inventoriesRes.json();
-        throw new Error(errorData.message || 'Failed to fetch inventories');
-      }
-      
-      if (!magasinsRes.ok) {
-        const errorData = await magasinsRes.json();
-        throw new Error(errorData.message || 'Failed to fetch magasins');
-      }
-
-      const inventoriesData = await inventoriesRes.json();
-      const magasinsData = await magasinsRes.json();
-
-      setInventories(inventoriesData.data);
-      
-      // Filtrer uniquement les magasins actifs
-      const activeMagasins = magasinsData.data.filter(m => m.statut === 'active');
-      setDestinations(activeMagasins.map(m => m.nomMagasin));
-      
-      setLoading(false);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError(err.message);
-      setLoading(false);
-      showErrorAlert(err.message);
-    }
+  // Formater le mois pour l'affichage
+  const formatMonth = (date) => {
+    const options = { month: 'long', year: 'numeric' };
+    const formatted = date.toLocaleDateString('fr-FR', options);
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
-  fetchData();
-}, []);
+  // Générer les jours pour le mini calendrier
+  const generateCalendarDays = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    
+    const startDay = firstDayOfMonth.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
+    const daysInMonth = lastDayOfMonth.getDate();
+    
+    // Obtenir le dernier jour du mois précédent
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    const weeks = [];
+    let days = [];
+    
+    // Ajouter les jours du mois précédent
+    for (let i = startDay - 1; i >= 0; i--) {
+      const day = daysInPrevMonth - i;
+      days.push({
+        day,
+        month: 'prev',
+        isCurrentDay: false,
+        hasEvent: false,
+        hasInventory: false,
+        transferCount: 0,
+        inventoryCount: 0
+      });
+    }
+    
+    // Marquer les jours qui ont des inventaires
+    const today = new Date();
+    const isToday = (year === today.getFullYear() && month === today.getMonth());
+    
+    // Ajouter les jours du mois courant
+    for (let i = 1; i <= daysInMonth; i++) {
+      const isCurrentDay = isToday && i === today.getDate();
+      
+      // Vérifier si ce jour a des inventaires
+      const inventoriesOnThisDay = inventories.filter(inv => {
+        const invDate = new Date(inv.date);
+        return invDate.getDate() === i && 
+               invDate.getMonth() === month && 
+               invDate.getFullYear() === year;
+      });
+      
+      days.push({
+        day: i,
+        month: 'current',
+        isCurrentDay,
+        hasEvent: inventoriesOnThisDay.length > 0,
+        hasInventory: inventoriesOnThisDay.length > 0,
+        transferCount: 0,
+        inventoryCount: inventoriesOnThisDay.length
+      });
+      
+      if (days.length === 7) {
+        weeks.push([...days]);
+        days = [];
+      }
+    }
+    
+    // Ajouter les jours du mois suivant
+    let nextMonthDay = 1;
+    while (days.length < 7) {
+      days.push({
+        day: nextMonthDay++,
+        month: 'next',
+        isCurrentDay: false,
+        hasEvent: false,
+        hasInventory: false,
+        transferCount: 0,
+        inventoryCount: 0
+      });
+    }
+    
+    weeks.push(days);
+    
+    // Assurer que nous avons 6 semaines pour une apparence uniforme
+    while (weeks.length < 6) {
+      days = [];
+      for (let i = 0; i < 7; i++) {
+        days.push({
+          day: nextMonthDay++,
+          month: 'next',
+          isCurrentDay: false,
+          hasEvent: false,
+          hasInventory: false,
+          transferCount: 0,
+          inventoryCount: 0
+        });
+      }
+      weeks.push(days);
+    }
+    
+    return weeks;
+  };
+
+  // Navigation du calendrier
+  const goToPrevMonth = () => {
+    const date = new Date(currentMonth);
+    date.setMonth(date.getMonth() - 1);
+    setCurrentMonth(date);
+  };
+
+  const goToNextMonth = () => {
+    const date = new Date(currentMonth);
+    date.setMonth(date.getMonth() + 1);
+    setCurrentMonth(date);
+  };
+
+  const selectDay = (day, monthType) => {
+    let date = new Date(currentMonth);
+    
+    if (monthType === 'prev') {
+      date.setMonth(date.getMonth() - 1);
+    } else if (monthType === 'next') {
+      date.setMonth(date.getMonth() + 1);
+    }
+    
+    date.setDate(day);
+    
+    // Formater la date pour le input de type date (YYYY-MM-DD)
+    const formattedDate = date.toISOString().split('T')[0];
+    
+    setNewInventory(prev => ({
+      ...prev,
+      date: formattedDate
+    }));
+    
+    // Stocker le jour sélectionné pour le style
+    setSelectedDate(date);
+  };
+
+  // Mettre à jour le mois et l'année
+  const handleMonthYearChange = (newDate) => {
+    setCurrentMonth(newDate);
+  };
+
+  // Filtrer les inventaires
+  const filteredInventories = inventories.filter(inventory => {
+    // Filtre par magasin
+    if (selectedStore && inventory.destination !== selectedStore) {
+      return false;
+    }
+    
+    // Filtre par date
+    if (selectedDate) {
+      const invDate = new Date(inventory.date);
+      return (
+        invDate.getDate() === selectedDate.getDate() &&
+        invDate.getMonth() === selectedDate.getMonth() &&
+        invDate.getFullYear() === selectedDate.getFullYear()
+      );
+    }
+    
+    return true;
+  });
+
+  // Fetch inventories and destinations on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [inventoriesRes, magasinsRes] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
+            headers: getAuthHeaders(false)
+          }),
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
+            headers: getAuthHeaders(false)
+          })
+        ]);
+
+        if (!inventoriesRes.ok) {
+          const errorData = await inventoriesRes.json();
+          throw new Error(errorData.message || 'Failed to fetch inventories');
+        }
+        
+        if (!magasinsRes.ok) {
+          const errorData = await magasinsRes.json();
+          throw new Error(errorData.message || 'Failed to fetch magasins');
+        }
+
+        const inventoriesData = await inventoriesRes.json();
+        const magasinsData = await magasinsRes.json();
+
+        setInventories(inventoriesData.data);
+        
+        // Filtrer uniquement les magasins actifs
+        const activeMagasins = magasinsData.data.filter(m => m.statut === 'active');
+        setDestinations(activeMagasins.map(m => m.nomMagasin));
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+        setLoading(false);
+        showErrorAlert(err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Mettre à jour le miniCalendarDays lorsque les inventaires ou le mois courant changent
+  useEffect(() => {
+    setMiniCalendarDays(generateCalendarDays(currentMonth));
+  }, [inventories, currentMonth]);
 
   const showErrorAlert = (message) => {
     Swal.fire({
@@ -143,7 +324,10 @@ useEffect(() => {
       const createdInventory = await response.json();
       setInventories([...inventories, createdInventory.data]);
       setNewInventory({ date: '', destination: '', comment: '', status: 'En attente' });
-      showSuccessAlert('L\'inventaire a été En attente avec succès');
+      showSuccessAlert('L\'inventaire a été planifié avec succès');
+      
+      // Mettre à jour le calendrier après l'ajout
+      setMiniCalendarDays(generateCalendarDays(currentMonth));
     } catch (err) {
       console.error('Add inventory error:', err);
       showErrorAlert(err.message);
@@ -228,6 +412,9 @@ useEffect(() => {
 
           setInventories(inventories.filter(inv => inv._id !== id));
           showSuccessAlert('L\'inventaire a été supprimé');
+          
+          // Mettre à jour le calendrier après la suppression
+          setMiniCalendarDays(generateCalendarDays(currentMonth));
         } catch (err) {
           console.error('Delete inventory error:', err);
           showErrorAlert(err.message);
@@ -358,6 +545,9 @@ useEffect(() => {
             inv._id === inventory._id ? updatedInventory.data : inv
           ));
           showSuccessAlert('Les modifications ont été enregistrées');
+          
+          // Mettre à jour le calendrier après la modification
+          setMiniCalendarDays(generateCalendarDays(currentMonth));
         } catch (err) {
           console.error('Update inventory error:', err);
           showErrorAlert(err.message);
@@ -391,147 +581,203 @@ useEffect(() => {
   }
 
   return (
-    <div className="w-300 relative">
-      <div className="bg-white rounded-2xl text-blue-900 border-3 p-4 text-center">
-        <div className="mb-4">
-          <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
-          
-          <div className="mb-3 grid grid-cols-4 gap-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-              <input
-                type="date"
-                name="date"
-                value={newInventory.date}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-lg"
-              />
+    <div className='ALL_Import'>
+      
+      <div className="p-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Mini Calendrier */}
+        
+        <div className="minicalendarinv rounded-2xl text-white border-3 p-4 shadow-lg">
+           <div className="flex flex-col items-center justify-center pt-6">
+              <div className="h-12">
+                <img 
+                  src={logo} 
+                  alt="IDOA TECH" 
+                  className="h-full object-contain"
+                />
+              </div>
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
-              <select
-                name="destination"
-                value={newInventory.destination}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-lg"
+          <MiniCalendar_inventaires
+            currentMonth={currentMonth}
+            miniCalendarDays={miniCalendarDays}
+            goToPrevMonth={goToPrevMonth}
+            goToNextMonth={goToNextMonth}
+            selectDay={selectDay}
+            formatMonth={formatMonth}
+            onMonthYearChange={handleMonthYearChange}
+          />
+        </div>
+        
+        {/* Formulaire d'inventaire */}
+        <div className="md:col-span-2">
+          <div className="bg-white rounded-2xl text-blue-900 border-3 p-4 text-center mb-4">
+            <div className="mb-4">
+              <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
+              
+              <div className="mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={newInventory.date}
+                    readOnly
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                  <select
+                    name="destination"
+                    value={newInventory.destination}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">Sélectionnez une destination</option>
+                    {destinations.map((dest, index) => (
+                      <option key={index} value={dest}>{dest}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                  <select
+                    name="status"
+                    value={newInventory.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="En attente">En attente</option>
+                    <option value="En cours">En cours</option>
+                    <option value="Confirmé">Confirmé</option>
+                    <option value="Annulé">Annulé</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                  <input
+                    type="text"
+                    name="comment"
+                    value={newInventory.comment}
+                    onChange={handleInputChange}
+                    placeholder="Optionnel"
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={addInventory}
+                className="addInventory_btn"
               >
-                <option value="">Sélectionnez une destination</option>
+                Planifier Inventaire
+              </button>
+            </div>
+          </div>
+          
+          {/* Liste des inventaires */}
+          <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium text-gray-700 mb-2">
+                Liste des Inventaires
+                <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${filteredInventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
+                  {filteredInventories.length}
+                </span>
+              </h3>
+              
+              <select
+                value={selectedStore}
+                onChange={(e) => setSelectedStore(e.target.value)}
+                className="px-3 py-2 border rounded-lg text-sm"
+              >
+                <option value="">Tous les magasins</option>
                 {destinations.map((dest, index) => (
                   <option key={index} value={dest}>{dest}</option>
                 ))}
               </select>
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-              <select
-                name="status"
-                value={newInventory.status}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-lg"
+
+            {selectedStore || selectedDate ? (
+              <button
+                onClick={() => {
+                  setSelectedStore('');
+                  setSelectedDate(null);
+                }}
+                className="text-blue-800 text-sm underline mt-2 mb-2 RotateCcw"
               >
-                <option value="En attente">En attente</option>
-                <option value="En cours">En cours</option>
-                <option value="Confirmé">Confirmé</option>
-                <option value="Annulé">Annulé</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
-              <input
-                type="text"
-                name="comment"
-                value={newInventory.comment}
-                onChange={handleInputChange}
-                placeholder="Optionnel"
-                className="w-full px-3 py-2 border rounded-lg"
-              />
+                <RotateCcw/> Réinitialiser les filtres
+              </button>
+            ) : null}
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
+                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200 text-center">
+                  {filteredInventories.length > 0 ? (
+                    filteredInventories.map((inventory) => (
+                      <tr key={inventory._id}>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          {inventory.date ? new Date(inventory.date).toLocaleDateString() : 'Non spécifiée'}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          {inventory.destination}
+                        </td>
+                        <td className={`px-4 py-2 whitespace-nowrap text-sm ${
+                          inventory.status === 'En attente' ? 'text-orange-500' :
+                          inventory.status === 'En cours' ? 'text-blue-600' :
+                          inventory.status === 'Confirmé' ? 'text-green-600' :
+                          'text-red-600'
+                        }`}>
+                          {inventory.status}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          {inventory.comment || '-'}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex items-center justify-center space-x-2">
+                            <button
+                              onClick={() => editInventory(inventory)}
+                              className="edit_Inv p-1 rounded-full hover:bg-blue-100"
+                              title="Modifier"
+                            >
+                              <Edit size={16}  />
+                            </button>
+                            <button
+                              onClick={() => removeInventory(inventory._id)}
+                              className="remove_Inv p-1 rounded-full hover:bg-red-100"
+                              title="Supprimer"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
+                        Aucun inventaire trouvé
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-
-          <button
-            onClick={addInventory}
-            className="addInventory_btn"
-          >
-            Planifier Inventaire
-          </button>
-        </div>
-      </div>
-      <br />
-      <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
-        <h3 className="font-medium text-gray-700 mb-2 text-center">
-          Liste des Inventaires En attentes
-          <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${inventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
-            {inventories.length}
-          </span>
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
-                <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 text-center">
-              {inventories.length > 0 ? (
-                inventories.map((inventory) => (
-                  <tr key={inventory._id}>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {inventory.date ? new Date(inventory.date).toLocaleDateString() : 'Non spécifiée'}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {inventory.destination}
-                    </td>
-                    <td className={`px-4 py-2 whitespace-nowrap text-sm ${
-                      inventory.status === 'En attente' ? 'text-orange-500' :
-                      inventory.status === 'En cours' ? 'text-blue-600' :
-                      inventory.status === 'Confirmé' ? 'text-green-600' :
-                      'text-red-600'
-                    }`}>
-                      {inventory.status}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {inventory.comment || '-'}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() => editInventory(inventory)}
-                          className="edit_Inv p-1 rounded-full hover:bg-blue-100"
-                          title="Modifier"
-                        >
-                          <Edit size={16}  />
-                        </button>
-                        <button
-                          onClick={() => removeInventory(inventory._id)}
-                          className="remove_Inv p-1 rounded-full hover:bg-red-100"
-                          title="Supprimer"
-                        >
-                          <X size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="px-4 py-4 text-center text-sm text-gray-500">
-                    Aucun inventaire En attente
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
   );
 };
 
-export default Planification_Inventaires;
+export default Inventaires;
