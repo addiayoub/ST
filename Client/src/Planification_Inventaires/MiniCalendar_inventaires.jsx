@@ -28,7 +28,13 @@ const MiniCalendar_inventaires = ({
     }
     return years;
   });
-
+  const goToCurrentDate = () => {
+    const now = new Date();
+    onMonthYearChange(now);
+    setSelectedMonth(now.getMonth());
+    setShowMonthYearSelector(false);
+    setShowYearSelector(false);
+  };
   const months = [
     { value: 0, label: 'janv.' },
     { value: 1, label: 'févr.' },
@@ -114,25 +120,32 @@ const MiniCalendar_inventaires = ({
         )}
       </div>
     )}
-    
-    {!showMonthYearSelector && !showYearSelector ? (
-      <div className="flex space-x-1">
-        <button 
-          onClick={goToPrevMonth} 
-          className="p-1 rounded-full hover:bg-gray-500 cursor-pointer duration-500"
-          aria-label="Mois précédent"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button 
-          onClick={goToNextMonth} 
-          className="p-1 rounded-full hover:bg-gray-500 cursor-pointer duration-500"
-          aria-label="Mois suivant"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
-    ) : showMonthYearSelector ? (
+  {!showMonthYearSelector && !showYearSelector ? (
+  <div className="flex space-x-1 items-center">
+    <button 
+      onClick={goToPrevMonth} 
+      className="p-1 rounded-full hover:bg-gray-500 cursor-pointer duration-500"
+      aria-label="Mois précédent"
+    >
+      <ChevronLeft size={20} />
+    </button>
+    <button 
+      onClick={goToCurrentDate} 
+      className="p-1 rounded-full hover:bg-gray-500 cursor-pointer duration-500 text-xs flex items-center justify-center"
+      aria-label="Aujourd'hui"
+      title="Aller à aujourd'hui"
+    >
+      <Circle size={16} />
+    </button>
+    <button 
+      onClick={goToNextMonth} 
+      className="p-1 rounded-full hover:bg-gray-500 cursor-pointer duration-500"
+      aria-label="Mois suivant"
+    >
+      <ChevronRight size={20} />
+    </button>
+  </div>
+) : showMonthYearSelector ?  (
       <div className="flex space-x-2">
       
       </div>

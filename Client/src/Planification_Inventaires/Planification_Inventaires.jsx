@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import MiniCalendar_inventaires from './MiniCalendar_inventaires';
-import { Boxes, Edit, RotateCcw, X } from 'lucide-react';
+import { Boxes, Edit, RotateCcw, X, ChevronUp, ChevronDown } from 'lucide-react';
 import Swal from 'sweetalert2';
 import '../Css/Planification_Inventaires.css';
 import logo from "/Logo-nesk-investment@2x.png";
 
-const Inventaires = () => {
+const Planification_Inventaires = () => {
   const [inventories, setInventories] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStore, setSelectedStore] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
+  
+  // Toggle states for sections
+  const [showCreateForm, setShowCreateForm] = useState(true);
+  const [showInventoryList, setShowInventoryList] = useState(true);
 
   // États pour le mini calendrier
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -564,6 +568,15 @@ const Inventaires = () => {
     }));
   };
 
+  // Toggle handlers
+  const toggleCreateForm = () => {
+    setShowCreateForm(!showCreateForm);
+  };
+
+  const toggleInventoryList = () => {
+    setShowInventoryList(!showInventoryList);
+  };
+
   if (loading) {
     return (
       <div className="w-300 relative flex justify-center items-center h-64">
@@ -586,142 +599,171 @@ const Inventaires = () => {
       <div className="p-3 grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Mini Calendrier */}
         
-        <div className="minicalendarinv rounded-2xl text-white border-3 p-4 shadow-lg">
-           <div className="flex flex-col items-center justify-center pt-6">
-              <div className="h-12">
-                <img 
-                  src={logo} 
-                  alt="IDOA TECH" 
-                  className="h-full object-contain"
-                />
-              </div>
-            </div>
-          <MiniCalendar_inventaires
-            currentMonth={currentMonth}
-            miniCalendarDays={miniCalendarDays}
-            goToPrevMonth={goToPrevMonth}
-            goToNextMonth={goToNextMonth}
-            selectDay={selectDay}
-            formatMonth={formatMonth}
-            onMonthYearChange={handleMonthYearChange}
-          />
-        </div>
+        {/* Mini Calendrier */}
+<div className="minicalendarinv rounded-2xl text-white border-3 p-4 shadow-lg h-[600px] overflow-hidden">
+   <div className="flex flex-col items-center justify-center pt-6">
+      <div className="h-12">
+        <img 
+          src={logo} 
+          alt="IDOA TECH" 
+          className="h-full object-contain"
+        />
+      </div>
+    </div>
+  <MiniCalendar_inventaires
+    currentMonth={currentMonth}
+    miniCalendarDays={miniCalendarDays}
+    goToPrevMonth={goToPrevMonth}
+    goToNextMonth={goToNextMonth}
+    selectDay={selectDay}
+    formatMonth={formatMonth}
+    onMonthYearChange={handleMonthYearChange}
+  />
+</div>
         
         {/* Formulaire d'inventaire */}
         <div className="md:col-span-2">
           <div className="bg-white rounded-2xl text-blue-900 border-3 p-4 text-center mb-4">
-            <div className="mb-4">
-              <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
-              
-              <div className="mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={newInventory.date}
-                    readOnly
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
-                  <select
-                    name="destination"
-                    value={newInventory.destination}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="">Sélectionnez une destination</option>
-                    {destinations.map((dest, index) => (
-                      <option key={index} value={dest}>{dest}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                  <select
-                    name="status"
-                    value={newInventory.status}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="En attente">En attente</option>
-                    <option value="En cours">En cours</option>
-                    <option value="Confirmé">Confirmé</option>
-                    <option value="Annulé">Annulé</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
-                  <input
-                    type="text"
-                    name="comment"
-                    value={newInventory.comment}
-                    onChange={handleInputChange}
-                    placeholder="Optionnel"
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={addInventory}
-                className="addInventory_btn"
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-medium text-lg">Création d'inventaire</h3>
+              <button 
+                onClick={toggleCreateForm}
+                className="p-2 rounded-full hover:bg-gray-100 cursor-pointer transition-all duration-300"
+                aria-label={showCreateForm ? "Masquer le formulaire" : "Afficher le formulaire"}
               >
-                Planifier Inventaire
+                {showCreateForm ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
               </button>
+            </div>
+            
+            <div 
+              className={`transition-all duration-500 ${showCreateForm ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+            >
+              <div className="mb-4">
+                <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
+                
+                <div className="mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      value={newInventory.date}
+                      readOnly
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                    <select
+                      name="destination"
+                      value={newInventory.destination}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      <option value="">Sélectionnez une destination</option>
+                      {destinations.map((dest, index) => (
+                        <option key={index} value={dest}>{dest}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                    <select
+                      name="status"
+                      value={newInventory.status}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      <option value="En attente">En attente</option>
+                      <option value="En cours">En cours</option>
+                      <option value="Confirmé">Confirmé</option>
+                      <option value="Annulé">Annulé</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                    <input
+                      type="text"
+                      name="comment"
+                      value={newInventory.comment}
+                      onChange={handleInputChange}
+                      placeholder="Optionnel"
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={addInventory}
+                  className="addInventory_btn"
+                >
+                  Planifier Inventaire
+                </button>
+              </div>
             </div>
           </div>
           
           {/* Liste des inventaires */}
-          <div className="bg-white rounded-2xl border-3 p-4 mb-4 max-h-96 overflow-y-auto text-blue-900">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-gray-700 mb-2">
+          <div className="bg-white rounded-2xl border-3 p-4 mb-4 text-blue-900">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-medium text-lg">
                 Liste des Inventaires
                 <span className={`ml-2 px-2 py-1 rounded-full text-xs text-white ${filteredInventories.length === 0 ? 'bg-red-500' : 'bg-green-500'}`}>
                   {filteredInventories.length}
                 </span>
               </h3>
               
-              <select
-                value={selectedStore}
-                onChange={(e) => setSelectedStore(e.target.value)}
-                className="px-3 py-2 border rounded-lg text-sm"
-              >
-                <option value="">Tous les magasins</option>
-                {destinations.map((dest, index) => (
-                  <option key={index} value={dest}>{dest}</option>
-                ))}
-              </select>
+              <div className="flex items-center ">
+                <select
+                  value={selectedStore}
+                  onChange={(e) => setSelectedStore(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm mr-2 cursor-pointer"
+                >
+                  <option value="">Tous les magasins</option>
+                  {destinations.map((dest, index) => (
+                    <option key={index} value={dest}>{dest}</option>
+                  ))}
+                </select>
+                
+                <button 
+                  onClick={toggleInventoryList}
+                  className="p-2 rounded-full hover:bg-gray-100 cursor-pointer transition-all duration-300"
+                  aria-label={showInventoryList ? "Masquer la liste" : "Afficher la liste"}
+                >
+                  {showInventoryList ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+              </div>
             </div>
 
-            {selectedStore || selectedDate ? (
-              <button
-                onClick={() => {
-                  setSelectedStore('');
-                  setSelectedDate(null);
-                }}
-                className="text-blue-800 text-sm underline mt-2 mb-2 RotateCcw"
-              >
-                <RotateCcw/> Réinitialiser les filtres
-              </button>
-            ) : null}
+            <div 
+              className={`transition-all duration-500  ${showInventoryList ? 'max-h-96 opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'}`}
+            >
+              {selectedStore || selectedDate ? (
+                <button 
+                  onClick={() => {
+                    setSelectedStore('');
+                    setSelectedDate(null);
+                  }}
+                  className="text-blue-800 text-sm underline mt-2 mb-2 flex items-center cursor-pointer "
+                >
+                  <RotateCcw size={16} className="mr-1"/> Réinitialiser les filtres
+                </button>
+              ) : null}
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
-                    <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                      <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                      <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                      <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
+                      <th className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
                 <tbody className="bg-white divide-y divide-gray-200 text-center">
                   {filteredInventories.length > 0 ? (
                     filteredInventories.map((inventory) => (
@@ -776,8 +818,9 @@ const Inventaires = () => {
           </div>
         </div>
       </div>
+      </div>
     </div>
   );
 };
 
-export default Inventaires;
+export default Planification_Inventaires;
