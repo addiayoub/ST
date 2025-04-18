@@ -86,47 +86,6 @@ const CalendrierTransferts = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeLegend, setActiveLegend] = useState(null);
 
-  
-// Fonction pour formater les données des transferts dans la structure attendue
-const formatTransfersData = (response) => {
-  // Check if we're getting the expected response structure
-  if (!response || typeof response !== 'object') {
-    console.error('Invalid response format:', response);
-    return {};
-  }
-  
-  // If response has data property and it's already in the right format, return it directly
-  if (response.success && response.data && typeof response.data === 'object') {
-    return response.data; // This is already in the expected format
-  }
-  
-  // If we're dealing with an array of transfers (legacy format), convert it to the new format
-  if (Array.isArray(response)) {
-    const formattedData = {};
-    
-    response.forEach(transfer => {
-      const dateStr = formatDateToKey(transfer.date);
-      
-      if (!formattedData[dateStr]) {
-        formattedData[dateStr] = {
-          date: new Date(transfer.date).getDate().toString(),
-          transfers: []
-        };
-      }
-      
-      formattedData[dateStr].transfers.push({
-        ...transfer,
-        documentNumber: transfer.documentNumber || '',
-        showBoxIcon: transfer.status === 'Inventaire'
-      });
-    });
-    
-    return formattedData;
-  }
-  
-  console.error('Unrecognized data format:', response);
-  return {};
-};
   // Configurer l'instance axios avec token
   const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,

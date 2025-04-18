@@ -10,11 +10,39 @@ const Add_Magasin = () => {
   const [error, setError] = useState(null);
 
   const [newMagasin, setNewMagasin] = useState({
-    codeInditex: '',
-    nomMagasin: '',
-    codeFutura: '',
+    codeInditex: 'IND',
+    nomMagasin: 'Stradi ',
+    codeFutura: 'FUT',
     statut: 'active'
   });
+// Ajoutez ce useEffect en haut de votre composant
+useEffect(() => {
+  // Récupérer le magasin depuis l'URL ou localStorage
+  const queryParams = new URLSearchParams(window.location.search);
+  const magasinFromUrl = queryParams.get('nom');
+  
+  const magasinFromStorage = localStorage.getItem('magasinToAdd');
+  
+  // Priorité à l'URL puis au localStorage
+  const magasinToPreFill = magasinFromUrl || magasinFromStorage;
+  
+  if (magasinToPreFill) {
+    // S'assurer que le nom contient "Stradi"
+    const nomAvecStradi = magasinToPreFill.includes('Stradi') 
+      ? magasinToPreFill 
+      : `Stradi ${magasinToPreFill}`;
+    
+    setNewMagasin(prev => ({
+      ...prev,
+      nomMagasin: nomAvecStradi
+    }));
+    
+    // Nettoyer le localStorage après utilisation
+    if (magasinFromStorage) {
+      localStorage.removeItem('magasinToAdd');
+    }
+  }
+}, []);
 
   // Configurer l'instance axios avec token
   const api = axios.create({
@@ -58,10 +86,32 @@ const Add_Magasin = () => {
   useEffect(() => {
     fetchMagasins();
   }, []);
-
+// Modification du composant Magasin pour récupérer le magasin à ajouter
+// A ajouter dans le composant Magasin.jsx
+useEffect(() => {
+  const magasinToAdd = localStorage.getItem('magasinToAdd');
+  if (magasinToAdd) {
+    // Pré-remplir le formulaire avec le magasin
+    setNewMagasin(prevState => ({
+      ...prevState,
+      nomMagasin: magasinToAdd.replace(/^Stradi\s+/i, '')
+    }));
+    // Nettoyer le stockage
+    localStorage.removeItem('magasinToAdd');
+  }
+}, []);
   const addMagasin = async () => {
-    // Validation des champs
-    if (!newMagasin.codeInditex || !newMagasin.nomMagasin || !newMagasin.codeFutura) {
+ // Validation - Vérifier que le nom commence bien par "Stradi"
+ if (!newMagasin.nomMagasin.includes('Stradi')) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Format incorrect',
+    text: 'Le nom du magasin doit contenir "Stradi"',
+    confirmButtonColor: '#3085d6'
+  });
+  return;
+}
+  if (!newMagasin.codeInditex || !newMagasin.nomMagasin || !newMagasin.codeFutura) {
       Swal.fire({
         background: 'transparent',
         title: '<span class="text-white">Champs manquants!</span>',
@@ -77,7 +127,46 @@ const Add_Magasin = () => {
       });
       return;
     }
-
+    const isCodeInditexValid = newMagasin.codeInditex.length > 3; // "IND" = 3 caractères
+    const isNomMagasinValid = newMagasin.nomMagasin.length > 7; // "Stradi " = 7 caractères
+    const isCodeFuturaValid = newMagasin.codeFutura.length > 3; // "FUT" = 3 caractères
+    const isMagasinNameUnique = (name) => {
+      return !magasins.some(mag => mag.nomMagasin.toLowerCase() === name.toLowerCase());
+    };
+    if (!isCodeInditexValid || !isNomMagasinValid || !isCodeFuturaValid) {
+      Swal.fire({
+        background: 'transparent',
+        title: '<span class="text-white">Formulaire incomplet!</span>',
+        html: '<span class="text-white">Veuillez remplir tous les champs avec des valeurs valides.</span>',
+        icon: 'warning',
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'bg-transparent',
+          title: 'text-white',
+          content: 'text-white'
+        }
+      });
+      return;
+    }
+  
+    // Vérifier si le nom du magasin est unique
+    if (!isMagasinNameUnique(newMagasin.nomMagasin)) {
+      Swal.fire({
+        background: 'transparent',
+        title: '<span class="text-white">Nom dupliqué!</span>',
+        html: '<span class="text-white">Un magasin avec ce nom existe déjà.</span>',
+        icon: 'error',
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'bg-transparent',
+          title: 'text-white',
+          content: 'text-white'
+        }
+      });
+      return;
+    }
     try {
       const response = await api.post('api/magasins', {
         codeInditex: newMagasin.codeInditex,
@@ -390,13 +479,31 @@ const Add_Magasin = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    let processedValue = value;
+    
+    if (name === 'codeInditex') {
+      processedValue = value.startsWith('IND') ? value : 'IND' + value;
+    } 
+    else if (name === 'nomMagasin') {
+      // Garder "Stradi" si déjà présent, sinon l'ajouter
+      processedValue = value.includes('Stradi') 
+        ? value 
+        : `Stradi ${value}`;
+      
+      // Supprimer les doublons "Stradi"
+      processedValue = processedValue.replace(/^(Stradi\s+)+/, 'Stradi ');
+    }
+    else if (name === 'codeFutura') {
+      processedValue = value.startsWith('FUT') ? value : 'FUT' + value;
+    }
+    
     setNewMagasin(prev => ({
       ...prev,
-      [name]: value
+      [name]: processedValue
     }));
   };
-
-  return (
+    return (
     <div className="w-300 relative">
       <div className="bg-white rounded-2xl border-3 text-blue-900 p-4 text-center">
         <div className="mb-4">
@@ -542,4 +649,4 @@ const Add_Magasin = () => {
   );
 };
 
-export default Add_Magasin;//
+export default Add_Magasin;////

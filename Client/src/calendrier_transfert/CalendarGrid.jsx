@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Boxes, ChevronDown, ChevronRight, Edit } from 'lucide-react';
+import { Boxes, ChevronDown, ChevronRight, Edit, AlertCircle } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { getMagasins } from '../les apis/magasinService';
+import { getMagasins, isMagasinActive } from '../les apis/magasinService';
 import '../Css/calendriertransfer.css';
 
 const MySwal = withReactContent(Swal);
@@ -11,7 +11,8 @@ export const useTransferOptions = () => {
   const [transferOptions, setTransferOptions] = useState({
     fromOptions: [],
     toOptions: [],
-    statusOptions: ['En cours', 'Confirmé', 'En attente', 'Annulé']
+    statusOptions: ['En cours', 'Confirmé', 'En attente', 'Annulé'],
+    activeWarehouses: [] // Nouvelle propriété pour stocker les magasins actifs
   });
 
   useEffect(() => {
@@ -50,7 +51,8 @@ export const useTransferOptions = () => {
         setTransferOptions(prev => ({
           ...prev,
           fromOptions: [...new Set(magasinNames)], // Élimine les doublons
-          toOptions: [...new Set(magasinNames)]
+          toOptions: [...new Set(magasinNames)],
+          activeWarehouses: activeWarehouses // Stocker les magasins actifs
         }));
       } catch (error) {
         console.error('Erreur lors du chargement des magasins:', error);
@@ -58,7 +60,8 @@ export const useTransferOptions = () => {
         setTransferOptions(prev => ({
           ...prev,
           fromOptions: [],
-          toOptions: []
+          toOptions: [],
+          activeWarehouses: []
         }));
       }
     };
@@ -144,6 +147,29 @@ const CalendarGrid = ({
   const transferOptions = useTransferOptions();
   const [expandedGroups, setExpandedGroups] = useState({});
 
+  // Fonction pour vérifier si un magasin existe dans la liste des magasins actifs
+  const checkMagasinExists = (magasinName) => {
+    if (!magasinName) return true; // Si le nom est vide, considérer comme valide
+    return transferOptions.fromOptions.some(option => 
+      option.toLowerCase() === magasinName.toLowerCase()
+    );
+  };
+
+  // Fonction pour afficher une alerte pour les magasins non Stradi
+  const showNonStradiAlert = (magasinName, type) => {
+    MySwal.fire({
+      icon: 'warning',
+      title: 'Magasin non référencé',
+      html: `<div class="text-center">
+              <p>Le magasin ${type === 'source' ? 'source' : 'destination'} <strong>"${magasinName}"</strong> n'appartient pas aux magasins Stradi actifs.</p>
+              <p class="mt-2">Veuillez vérifier l'orthographe ou contacter l'administrateur pour ajouter ce magasin.</p>
+            </div>`,
+      showConfirmButton: true,
+      confirmButtonText: 'Compris',
+      confirmButtonColor: '#3085d6',
+    });
+  };
+
   const toggleGroup = (groupKey, e) => {
     e.stopPropagation();
     setExpandedGroups(prev => ({
@@ -155,6 +181,10 @@ const CalendarGrid = ({
   const showGroupDetails = (groupData, dayData, e) => {
     e.stopPropagation();
     
+    // Vérifier si les magasins source et destination existent
+    const fromExists = checkMagasinExists(groupData.from);
+    const toExists = checkMagasinExists(groupData.to);
+    
     MySwal.fire({
       background: '#fff',
       title: `<div class="text-xl font-semibold text-black">
@@ -165,6 +195,21 @@ const CalendarGrid = ({
           <div className="text-black font-medium">
             {groupData.transfers.length} transfert(s) • Total: {groupData.totalQuantity} articles
           </div>
+          
+          {/* Afficher des avertissements si les magasins n'existent pas */}
+          {!fromExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>Le magasin source "{groupData.from}" n'appartient pas aux magasins Stradi actifs.</span>
+            </div>
+          )}
+          
+          {!toExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>Le magasin destination "{groupData.to}" n'appartient pas aux magasins Stradi actifs.</span>
+            </div>
+          )}
           
           <div className="mt-4 divide-y border rounded-lg">
             {groupData.transfers.map((transfer, index) => (
@@ -191,7 +236,6 @@ const CalendarGrid = ({
                   <div>Quantité: {transfer.quantity}</div>
                   <div>Statut: {transfer.status}</div>
                   <div>Date: {transfer.date}</div>
-                  <div>Créé le: {formatDateTime(transfer.createdAt)}</div>
                 </div>
               </div>
             ))}
@@ -201,22 +245,21 @@ const CalendarGrid = ({
       showConfirmButton: true,
       confirmButtonText: 'X',
       customClass: {
-        
         confirmButton: 'custom-swal-ferme-button',
       },
       width: '700px'
     });
   };
 
-  const formatDateTime = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-  };
+
 
   const showTransferDetails = (transfer, dayData, e) => {
     if (!transfer) return;
     e && e.stopPropagation();
+
+    // Vérifier si les magasins source et destination existent
+    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
+    const toExists = checkMagasinExists(transfer.to);
 
     const convertToDateInput = (dateStr) => {
       if (!dateStr) return '';
@@ -236,6 +279,21 @@ const CalendarGrid = ({
           <div className="text-transfer font-semibold mb-4 text-black">
             Détails {transfer.showBoxIcon ? "de l'Inventaire" : "du Transfert"}
           </div>
+          
+          {/* Afficher des avertissements si les magasins n'existent pas */}
+          {!transfer.showBoxIcon && !fromExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
+            </div>
+          )}
+          
+          {!toExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
+            </div>
+          )}
           
           {transfer.showBoxIcon ? (
             <div className="grid grid-cols-2 gap-4">
@@ -331,7 +389,8 @@ const CalendarGrid = ({
                   <input 
                     type="number" 
                     name="quantity"
-                    defaultValue={transfer.quantity || ''} 
+                    defaultValue={transfer.quantity} 
+                    readOnly
                     className="w-full p-2 border border-black text-black bg-transparent rounded" 
                   />
                 </div>
@@ -433,6 +492,19 @@ const CalendarGrid = ({
                 date: convertFromDateInput(values.date) || transfer.date
               };
 
+          // Vérifier si les nouveaux magasins existent
+          const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.from);
+          const newToExists = checkMagasinExists(updatedTransfer.to);
+
+          // Afficher les alertes si nécessaire
+          if (!transfer.showBoxIcon && !newFromExists) {
+            showNonStradiAlert(updatedTransfer.from, 'source');
+          }
+
+          if (!newToExists) {
+            showNonStradiAlert(updatedTransfer.to, 'destination');
+          }
+
           if (updateTransfer) {
             updateTransfer(dayData, updatedTransfer);
           }
@@ -477,6 +549,105 @@ const CalendarGrid = ({
     });
   };
 
+// Modifier la fonction handleTransferItemClick dans CalendarGrid
+const handleTransferItemClick = (transfer, dayData, e) => {
+  e.stopPropagation();
+  
+  // Vérifier si les magasins existent
+  const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
+  const toExists = checkMagasinExists(transfer.to);
+  
+  // Afficher l'alerte si un des magasins n'existe pas
+  if ((!transfer.showBoxIcon && !fromExists) || !toExists) {
+    // Déterminer le message à afficher
+    let alertMessage = "";
+    let nonExistingMagasin = "";
+    
+    if (!transfer.showBoxIcon && !fromExists && !toExists) {
+      alertMessage = `<p>Les magasins source <strong>"${transfer.from}"</strong> et destination <strong>"${transfer.to}"</strong> ne font pas partie des magasins Stradi actifs.</p>`;
+      nonExistingMagasin = `${transfer.from}, ${transfer.to}`;
+    } else if (!transfer.showBoxIcon && !fromExists) {
+      alertMessage = `<p>Le magasin source <strong>"${transfer.from}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
+      nonExistingMagasin = transfer.from;
+    } else if (!toExists) {
+      alertMessage = `<p>Le magasin ${transfer.showBoxIcon ? "" : "destination "}<strong>"${transfer.to}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
+      nonExistingMagasin = transfer.to;
+    }
+    
+    // Récupérer le rôle de l'utilisateur depuis localStorage
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : { role: 'User' }; // Par défaut User si non trouvé
+    
+    // Afficher l'alerte avec les trois boutons
+    MySwal.fire({
+      icon: 'warning',
+      title: 'Magasin non référencé',
+      html: `<div class="text-center">
+              ${alertMessage}
+              <p class="mt-3">Qu'est-ce que vous voulez faire?</p>
+            </div>`,
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Continuer l\'édition',
+      denyButtonText: 'Ajouter le magasin',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#3085d6',
+      denyButtonColor: '#28a745',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Option 1: Continuer l'édition
+        if (transfer.isGroup) {
+          showGroupDetails(transfer, dayData, e);
+        } else {
+          showTransferDetails(transfer, dayData, e);
+        }
+        
+        // Appeler le gestionnaire de clic original
+        handleTransferClick(transfer, dayData.date, e);
+      } else if (result.isDenied) {
+        // Option 2: Ajouter le magasin
+        if (user.role === 'Admin') {
+          // Rediriger vers le composant Magasin
+          // Stocker temporairement le magasin à ajouter
+          localStorage.setItem('magasinToAdd', nonExistingMagasin);
+          
+          // Trouver l'élément racine de l'application React
+          const appRoot = document.querySelector('.App');
+          if (appRoot) {
+            // Simuler un événement personnalisé pour changer de composant
+            const event = new CustomEvent('changeComponent', { 
+              detail: { component: 'house', magasinName: nonExistingMagasin } 
+            });
+            appRoot.dispatchEvent(event);
+            
+            // Alternative: recharger la page avec un paramètre
+            window.location.href = '/magasin?add=' + encodeURIComponent(nonExistingMagasin);
+          }
+        } else {
+          // Afficher un message d'interdiction pour les non-admin
+          MySwal.fire({
+            icon: 'error',
+            title: 'Accès interdit',
+            text: 'Vous n\'avez pas les droits pour ajouter un magasin. Veuillez contacter l\'administrateur de l\'application Stradivarius.',
+            confirmButtonColor: '#3085d6'
+          });
+        }
+      }
+    });
+  } else {
+    // Si tous les magasins existent, procéder normalement
+    if (transfer.isGroup) {
+      showGroupDetails(transfer, dayData, e);
+    } else {
+      showTransferDetails(transfer, dayData, e);
+    }
+    
+    // Appeler le gestionnaire de clic original
+    handleTransferClick(transfer, dayData.date, e);
+  }
+};
+
   return (
     <table className="w-full border-collapse">
       <thead>
@@ -510,6 +681,10 @@ const CalendarGrid = ({
               const groupedTransfers = groupTransfers(dayData.transfers);
               const transfer = groupedTransfers[transferRowIndex];
 
+              // Vérifier si les magasins existent
+              const showFromWarning = transfer && !transfer.showBoxIcon && !checkMagasinExists(transfer.from);
+              const showToWarning = transfer && !checkMagasinExists(transfer.to);
+
               return (
                 <td 
                   key={`transfer-cell-${dayIndex}-${transferRowIndex}`}
@@ -530,19 +705,9 @@ const CalendarGrid = ({
                       transfer.showBoxIcon 
                         ? 'border-yellow-500 bg-yellow-100' 
                         : `${getBorderColor(transfer.type)} ${getBgColor(transfer.type)}`
-                    } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (transfer.isGroup) {
-                        // For groups, show the group details modal
-                        handleTransferClick(transfer, dayData.date, e);
-                        showGroupDetails(transfer, dayData, e);
-                      } else {
-                        // For individual transfers, show the edit modal
-                        handleTransferClick(transfer, dayData.date, e);
-                        showTransferDetails(transfer, dayData, e);
-                      }
-                    }}
+                    } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''} 
+                      ${(showFromWarning || showToWarning) ? 'border-dashed border border-red-300' : ''}`}
+                    onClick={(e) => handleTransferItemClick(transfer, dayData, e)}
                   >
                     {transfer.showBoxIcon ? (
                       // Inventory display (unchanged)
@@ -556,6 +721,13 @@ const CalendarGrid = ({
                         {transfer.documentNumber && (
                           <div className="text-xs text-gray-600 mt-1">
                             N° {transfer.documentNumber}
+                          </div>
+                        )}
+                        {/* Afficher un avertissement si le magasin n'existe pas */}
+                        {showToWarning && (
+                          <div className="flex items-center text-red-600 mt-1 text-xs">
+                            <AlertCircle className="mr-1" size={14} />
+                            <span>Magasin non Stradi</span>
                           </div>
                         )}
                       </div>
@@ -583,6 +755,7 @@ const CalendarGrid = ({
                           <span>Transferts : {transfer.transfers.length}</span>
                         </div>
                         
+                        
                         {/* Status indicators for group */}
                         <div className="flex mt-2 space-x-1">
                           {Object.entries(transfer.statusCounts)
@@ -603,6 +776,15 @@ const CalendarGrid = ({
                             })}
                         </div>
                         
+                        {/* Afficher des avertissements si les magasins n'existent pas */}
+                        {(showFromWarning || showToWarning) && (
+                          <div className="flex items-center text-red-600 mt-2 text-xs">
+                            <AlertCircle className="mr-1" size={14} />
+                            <span>Magasin(s) non actif chez Stradi.</span>
+
+</div>
+                        )}
+                        
                         {/* Show expanded details if group is toggled */}
                         {expandedGroups[transfer.groupKey] && (
                           <div className="mt-2 pt-2 border-t text-xs">
@@ -621,7 +803,7 @@ const CalendarGrid = ({
                         )}
                       </div>
                     ) : (
-                      // Regular single transfer display (unchanged)
+                      // Regular single transfer display
                       <div className="flex flex-col">
                         <div className="flex items-center">
                           <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>

@@ -11,8 +11,18 @@ import Magasin from './Magasin/Magasin';
 import Utilisateurs from './Utilisateurs/Utilisateurs';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 const MySwal = withReactContent(Swal);
+
+function AppRouter() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
 function App() {
   const [activeComponent, setActiveComponent] = useState('calendar');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,13 +33,31 @@ function App() {
   const [isTabVisible, setIsTabVisible] = useState(true);
   const [showWakeUpLoader, setShowWakeUpLoader] = useState(false);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Synchroniser activeComponent avec la route actuelle
+  useEffect(() => {
+    const pathToComponent = {
+      '/': 'calendar',
+      '/upload': 'upload',
+      '/inventaires': 'boxes',
+      '/magasin': 'house',
+      '/utilisateurs': 'user'
+    };
+
+    const currentComponent = pathToComponent[location.pathname] || 'calendar';
+    if (currentComponent !== activeComponent) {
+      setActiveComponent(currentComponent);
+    }
+  }, [location.pathname]);
+
   // Vérifier la visibilité de l'onglet
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        // L'onglet redevient visible (mode veille terminé)
-        setShowWakeUpLoader(true); // Afficher LoaderNesk
-        setTimeout(() => setShowWakeUpLoader(false), 3000); // Disparaît après 3s
+        setShowWakeUpLoader(true);
+        setTimeout(() => setShowWakeUpLoader(false), 3000);
       }
       setIsTabVisible(document.visibilityState === 'visible');
     };
@@ -61,13 +89,12 @@ function App() {
           }
         } catch (error) {
           console.error('Erreur lors de la vérification du token:', error);
-          // En cas d'erreur, on déconnecte par sécurité
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setUser(null);
         }
       }
-    }, 5 * 60 * 1000); // Vérification toutes les 5 minutes
+    }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -96,6 +123,7 @@ function App() {
     setTimeout(() => {
       setIsLoading(false);
       setShowLoaderAfterLogin(false);
+      navigate('/'); // Rediriger vers la page d'accueil après connexion
     }, 5000);
   };
 
@@ -106,6 +134,7 @@ function App() {
       localStorage.removeItem('token');
       setUser(null);
       setShowLogoutLoader(false);
+      navigate('/login'); // Rediriger vers la page de login
     }, 3000);
   };
 
@@ -116,69 +145,104 @@ function App() {
     return false;
   };
 
-  const renderActiveComponent = () => {
-    if (!hasAccess(activeComponent)) {
-      return user && user.role === 'User' ? <CalendrierTransferts /> : null;
-    }
-
-    switch(activeComponent) {
-      case 'calendar':
-        return <CalendrierTransferts />;
-      case 'upload':
-        return <div><Importer/></div>;
-      case 'boxes':
-        return <div><Inventaires/></div>;
-      case 'house':
-        return <div><Magasin/></div>;
-      case 'user':
-        return <div><Utilisateurs/></div>;
-      default:
-        return <CalendrierTransferts />;
-    }
+  const handleNavigation = (component) => {
+    setActiveComponent(component);
+    const componentToPath = {
+      'calendar': '/',
+      'upload': '/upload',
+      'boxes': '/inventaires',
+      'house': '/magasin',
+      'user': '/utilisateurs'
+    };
+    navigate(componentToPath[component] || '/');
   };
 
   // Display logic with clear priorities
-  
-  // 1. Show logout loader if active
   if (showLogoutLoader) {
     return <LoaderNesk />;
   }
   
-  // 2. If user is not logged in
   if (!user) {
-    // 2a. Initial app loader
     if (showInitialLoader) {
       return <LoaderNesk />;
     }
     
-    // 2b. Wake up loader
     if (showWakeUpLoader) {
       return <LoaderNesk />;
     }
     
-    // 2c. No loaders active, show login
-    return <Login onLogin={handleLogin} />;
+    return (
+      <Routes>
+        <Route path="*" element={<Login onLogin={handleLogin} />} />
+      </Routes>
+    );
   }
   
-  // 3. User is logged in but still showing loader after login
   if (isLoading || showLoaderAfterLogin) {
     return <Loader user={user} />;
   }
   
-  // 4. Normal logged-in state - show the app
   return (
     <div className="App">
-      <div className="user-info">
-      </div>
-      {renderActiveComponent()}
-      <SideToolsComponent 
-        activeComponent={activeComponent} 
-        setActiveComponent={setActiveComponent}
-        onLogout={handleLogout}
-        userRole={user.role}
-      />
+      <Routes>
+        <Route path="/" element={
+          <>
+            {hasAccess('calendar') && <CalendrierTransferts />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        <Route path="/upload" element={
+          <>
+            {hasAccess('upload') && <Importer />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        <Route path="/inventaires" element={
+          <>
+            {hasAccess('boxes') && <Inventaires />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        <Route path="/magasin" element={
+          <>
+            {hasAccess('house') && <Magasin />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        <Route path="/utilisateurs" element={
+          <>
+            {hasAccess('user') && <Utilisateurs />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+      </Routes>
     </div>
   );
 }
 
-export default App;
+export default AppRouter; 

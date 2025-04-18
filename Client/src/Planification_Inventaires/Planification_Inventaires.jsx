@@ -4,6 +4,7 @@ import { Boxes, Edit, RotateCcw, X, ChevronUp, ChevronDown } from 'lucide-react'
 import Swal from 'sweetalert2';
 import '../Css/Planification_Inventaires.css';
 import logo from "/Logo-nesk-investment@2x.png";
+import DatePicker from './DatePicker';
 
 const Planification_Inventaires = () => {
   const [inventories, setInventories] = useState([]);
@@ -642,16 +643,23 @@ const Planification_Inventaires = () => {
                 <Boxes strokeWidth={0.75} size={60} className="mx-auto mb-3 text-blue-900" />
                 
                 <div className="mb-3 grid grid-cols-1 md:grid-cols-4 gap-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={newInventory.date}
-                      readOnly
-                      className="w-full px-3 py-2 border rounded-lg"
-                    />
-                  </div>
+                <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+  <DatePicker
+    selectedDate={newInventory.date}
+    onDateChange={(date) => {
+      setNewInventory(prev => ({
+        ...prev,
+        date: date
+      }));
+      
+      // Mettre à jour également le selectedDate pour la cohérence avec le mini-calendrier
+      if (date) {
+        setSelectedDate(new Date(date));
+      }
+    }}
+  />
+</div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>

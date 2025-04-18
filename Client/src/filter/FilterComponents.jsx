@@ -18,7 +18,7 @@ const FilterComponent = ({
   setFilterDirection,
   selectedWarehouses = [],
 }) => {
-  const [menuVisible, setMenuVisible] = useState(true);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [rotating, setRotating] = useState(false);
   
   const toggleMenu = () => {

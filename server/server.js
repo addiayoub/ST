@@ -8,7 +8,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/userRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const transferRoutes = require('./routes/transferRoutes');
-
+const transferManuelRoutes = require('./routes/transferManuelRoutes');
+  
 // Charger les variables d'environnement
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/magasins', magasins);
 app.use('/api/inventories', inventoryRoutes);
 app.use('/api/transfers', transferRoutes);
+app.use('/api/transfers-manuel', transferManuelRoutes);
 
 // Middleware de gestion des erreurs
 app.use(errorHandler);

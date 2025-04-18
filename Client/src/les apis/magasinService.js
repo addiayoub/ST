@@ -16,3 +16,15 @@ export const getMagasins = async () => {
     throw error;
   }
 };
+
+// Fonction pour vérifier si un magasin existe dans la liste des magasins actifs
+export const isMagasinActive = (magasinName, activeWarehouses) => {
+  // Normaliser le nom du magasin (supprimer "Stradi " s'il existe)
+  const normalizedName = magasinName.replace(/^Stradi\s+/i, '');
+  
+  // Vérifier si le magasin existe dans la liste
+  return activeWarehouses.some(warehouse => {
+    const warehouseName = warehouse.nomMagasin.replace(/^Stradi\s+/i, '');
+    return warehouseName.toLowerCase() === normalizedName.toLowerCase();
+  });
+};
