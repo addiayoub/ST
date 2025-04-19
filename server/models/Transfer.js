@@ -1,27 +1,47 @@
 const mongoose = require('mongoose');
 
+const MovementSchema = new mongoose.Schema({
+  Model: Number,
+  Quality: Number,
+  Colour: Number,
+  Size: Number,
+  Units: Number,
+  Price: Number,
+  Year: Number,
+  Campaign: Number,
+  Period: Number,
+  Information: String,
+  Box: String
+});
+
 const TransferSchema = new mongoose.Schema({
+  Date: {
+    type: Date,
+    required: true
+  },
+  Id_Store: Number,
+  Id_Department_Type: Number,
+  Destination_Id_Store: Number,
+  Destination_Id_Departament_Type: Number,
+  Id_Product: Number,
+  Id_Movement_Type: String,
+  Id_Movement_Subtype: Number,
+  Document_Number: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  Document_Date: Date,
+  Sequence: Number,
+  Void_Sequence: Number,
+  MOVEMENTS: [MovementSchema],
   from: {
     type: String,
-    required: function() { 
-      return !this.showBoxIcon && this.status !== 'Inventaire' && this.status !== 'Inventaire planifié'; 
-    },
     default: ''
   },
   to: {
     type: String,
     required: true
-  },
-  date: {
-    type: Date,
-    required: true
-  },
-  documentNumber: {
-    type: String,  // Changé de Number à String
-    required: function() { return this.status !== 'Inventaire' && this.status !== 'Inventaire planifié'; },
-    unique: true,
-    trim: true,
-    maxlength: 50
   },
   status: {
     type: String,
@@ -45,37 +65,37 @@ const TransferSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  Flag: {
+    type: Number,
+    default: 0
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 }, {
   timestamps: true
 });
 
-// Middleware pour le type selon le statut (modifié)
+// Middleware pour le type selon le statut
 TransferSchema.pre('save', function(next) {
   if (this.isModified('status') || this.isNew) {
     switch (this.status) {
-        case 'En cours':
-          this.type = 'blue';
-          break;
-        case 'Confirmé':
-          this.type = 'green';
-          break;
-        case 'En attente':
-          this.type = 'orange';
-          break;
-        case 'Annulé':
-          this.type = 'red';
-          break;
+      case 'En cours':
+        this.type = 'blue';
+        break;
+      case 'Confirmé':
+        this.type = 'green';
+        break;
+      case 'En attente':
+        this.type = 'orange';
+        break;
+      case 'Annulé':
+        this.type = 'red';
+        break;
     }
   }
   next();
 });
-  
+
 module.exports = mongoose.model('Transfer', TransferSchema);

@@ -6,19 +6,32 @@ const { validationResult } = require('express-validator');
 const formatDateToKey = (date) => moment(date).format('YYYY-MM-DD');
 
 const formatTransferResponse = (transfer) => ({
-    from: transfer.from || '',
-    to: transfer.to,
-    status: transfer.status,
-    type: transfer.type,
-    showBoxIcon: transfer.showBoxIcon,
-    quantity: transfer.quantity,
-    description: transfer.description,
-    date: moment(transfer.date).format('DD/MM/YYYY'),
-    _id: transfer._id,
-    documentNumber: transfer.documentNumber || '', // Ajoutez    cette ligne
-    createdAt: moment(transfer.createdAt).format('DD/MM/YYYY HH:mm'),
-    updatedAt: moment(transfer.updatedAt).format('DD/MM/YYYY HH:mm')
-  });
+  _id: transfer._id,
+  Date: moment(transfer.Date).format('YYYY-MM-DD'),  // Utilisez transfer.Date
+  Document_Number: transfer.Document_Number, 
+  Id_Store: transfer.Id_Store,
+  Id_Department_Type: transfer.Id_Department_Type,
+  Destination_Id_Store: transfer.Destination_Id_Store,
+  Destination_Id_Departament_Type: transfer.Destination_Id_Departament_Type,
+  Id_Product: transfer.Id_Product,
+  Id_Movement_Type: transfer.Id_Movement_Type,
+  Id_Movement_Subtype: transfer.Id_Movement_Subtype,
+  Document_Date: moment(transfer.Document_Date).format('YYYY-MM-DD'),
+  Sequence: transfer.Sequence,
+  Void_Sequence: transfer.Void_Sequence,
+  MOVEMENTS: transfer.MOVEMENTS,
+  from: transfer.from || '',
+  to: transfer.to,
+  status: transfer.status,
+  type: transfer.type,
+  showBoxIcon: transfer.showBoxIcon,
+  quantity: transfer.quantity,
+  description: transfer.description,
+  Flag: transfer.Flag,
+  createdAt: moment(transfer.createdAt).format('YYYY-MM-DD HH:mm'),
+  updatedAt: moment(transfer.updatedAt).format('YYYY-MM-DD HH:mm')
+});
+
 const handleErrors = (res, error, status = 500) => {
   console.error(error);
   res.status(status).json({ 
@@ -35,24 +48,16 @@ exports.getAllTransfers = async (req, res) => {
     
     if (status) query.status = status;
     
-    const transfers = await Transfer.find(query).sort({ date: 1 }).exec();
-
-    const transfersData = {};
-    transfers.forEach(transfer => {
-      const dateKey = formatDateToKey(transfer.date);
-      if (!transfersData[dateKey]) {
-        transfersData[dateKey] = {
-          date: moment(transfer.date).format('D'),
-          transfers: []
-        };
-      }
-      transfersData[dateKey].transfers.push(formatTransferResponse(transfer));
-    });
+    const transfers = await Transfer.find(query)
+      .sort({ Date: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .exec();
 
     const count = await Transfer.countDocuments(query);
     res.status(200).json({
       success: true,
-      data: transfersData,
+      data: transfers.map(formatTransferResponse),
       pagination: {
         totalItems: count,
         totalPages: Math.ceil(count / limit),
@@ -77,7 +82,7 @@ exports.getTransfersByPeriod = async (req, res) => {
 
     const { startDate, endDate, status } = req.query;
     const query = {
-      date: { 
+      Date: { 
         $gte: new Date(startDate), 
         $lte: new Date(endDate) 
       }
@@ -85,23 +90,11 @@ exports.getTransfersByPeriod = async (req, res) => {
     
     if (status) query.status = status;
 
-    const transfers = await Transfer.find(query).sort({ date: -1 });
-
-    const transfersData = {};
-    transfers.forEach(transfer => {
-      const dateKey = formatDateToKey(transfer.date);
-      if (!transfersData[dateKey]) {
-        transfersData[dateKey] = {
-          date: moment(transfer.date).format('D'),
-          transfers: []
-        };
-      }
-      transfersData[dateKey].transfers.push(formatTransferResponse(transfer));
-    });
+    const transfers = await Transfer.find(query).sort({ Date: -1 });
 
     res.status(200).json({
       success: true,
-      data: transfersData,
+      data: transfers.map(formatTransferResponse),
       count: transfers.length
     });
   } catch (error) {
@@ -128,33 +121,36 @@ exports.getTransferById = async (req, res) => {
 };
 
 exports.createTransfer = async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-          success: false,
-          errors: errors.array() 
-        });
-      }
-  
-      console.log('Données reçues:', req.body); // Debug
-  
-      const newTransfer = new Transfer({
-        ...req.body,
-        createdBy: req.user.id
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
       });
-      
-      const savedTransfer = await newTransfer.save();
-      console.log('Transfert sauvegardé:', savedTransfer); // Debug
-      
-      res.status(201).json({
-        success: true,
-        data: formatTransferResponse(savedTransfer)
-      });
-    } catch (error) {
-      handleErrors(res, error, 400);
     }
-  };    
+
+    // Calculer la quantité totale à partir des MOVEMENTS
+    const quantity = req.body.MOVEMENTS 
+      ? req.body.MOVEMENTS.reduce((sum, movement) => sum + (movement.Units || 0), 0)
+      : 0;
+
+    const newTransfer = new Transfer({
+      ...req.body,
+      quantity,
+      createdBy: req.user.id
+    });
+    
+    const savedTransfer = await newTransfer.save();
+    
+    res.status(201).json({
+      success: true,
+      data: formatTransferResponse(savedTransfer)
+    });
+  } catch (error) {
+    handleErrors(res, error, 400);
+  }
+};
 
 exports.updateTransfer = async (req, res) => {
   try {
@@ -164,6 +160,11 @@ exports.updateTransfer = async (req, res) => {
         success: false,
         errors: errors.array() 
       });
+    }
+
+    // Si MOVEMENTS est modifié, recalculer la quantité
+    if (req.body.MOVEMENTS) {
+      req.body.quantity = req.body.MOVEMENTS.reduce((sum, movement) => sum + (movement.Units || 0), 0);
     }
 
     const updatedTransfer = await Transfer.findByIdAndUpdate(
@@ -207,4 +208,4 @@ exports.deleteTransfer = async (req, res) => {
   } catch (error) {
     handleErrors(res, error);
   }
-};//
+};

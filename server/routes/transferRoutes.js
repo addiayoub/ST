@@ -4,11 +4,13 @@ const transferController = require('../controllers/transferController');
 const { protect } = require('../middleware/authMiddleware');
 const { check, query } = require('express-validator');
 
-// Validation rules as array
+// Validation rules
 const transferValidationRules = [
   check('to').notEmpty().withMessage('La destination est obligatoire'),
-  check('date').isISO8601().withMessage('Format de date invalide'),
-  check('quantity').isInt({ min: 0 }).withMessage('La quantité doit être un nombre positif'),
+  check('Date').isISO8601().withMessage('Format de date invalide'),
+  check('Document_Number').isNumeric().withMessage('Le numéro de document doit être un nombre'),
+  check('MOVEMENTS').isArray().withMessage('MOVEMENTS doit être un tableau'),
+  check('MOVEMENTS.*.Units').isInt({ min: 1 }).withMessage('Les unités doivent être un nombre positif'),
   check('status').isIn(['En cours', 'Confirmé', 'En attente', 'Annulé', 'Inventaire'])
     .withMessage('Statut invalide')
 ];
@@ -26,17 +28,10 @@ const periodValidationRules = [
 
 // Routes
 router.get('/', protect, transferController.getAllTransfers);
-
-// Use the validation rules array for the period route
 router.get('/period', protect, periodValidationRules, transferController.getTransfersByPeriod);
-
 router.get('/:id', protect, transferController.getTransferById);
-
-// Use the validation rules array for POST and PUT routes
 router.post('/', protect, transferValidationRules, transferController.createTransfer);
-
 router.put('/:id', protect, transferValidationRules, transferController.updateTransfer);
-
 router.delete('/:id', protect, transferController.deleteTransfer);
 
-module.exports = router;//
+module.exports = router;

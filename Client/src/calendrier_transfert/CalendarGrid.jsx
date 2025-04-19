@@ -217,7 +217,7 @@ const CalendarGrid = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2`}></div>
-                    <span className="font-medium">N° {transfer.documentNumber}</span>
+                    <span className="font-medium">N° {transfer.Document_Number}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <button 
@@ -234,8 +234,11 @@ const CalendarGrid = ({
                 </div>
                 <div className="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
                   <div>Quantité: {transfer.quantity}</div>
-                  <div>Statut: {transfer.status}</div>
-                  <div>Date: {transfer.date}</div>
+                  <div className="flex items-center ">
+  Statut:   
+  <span className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2`}></span>
+  {transfer.status}
+</div>                  <div>Date: {transfer.date}</div>
                 </div>
               </div>
             ))}
@@ -253,56 +256,108 @@ const CalendarGrid = ({
 
 
 
-  const showTransferDetails = (transfer, dayData, e) => {
-    if (!transfer) return;
-    e && e.stopPropagation();
+ const showTransferDetails = (transfer, dayData, e) => {
+  if (!transfer) return;
+  e && e.stopPropagation();
 
-    // Vérifier si les magasins source et destination existent
-    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
-    const toExists = checkMagasinExists(transfer.to);
+  // Vérifier si les magasins source et destination existent
+  const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
+  const toExists = checkMagasinExists(transfer.to);
 
-    const convertToDateInput = (dateStr) => {
-      if (!dateStr) return '';
-      
-      // Check if date is already in yyyy-mm-dd format
-      if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
-      
-      // Otherwise convert from dd/mm/yyyy
-      const [day, month, year] = dateStr.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    };
+  const convertToDateInput = (dateStr) => {
+    if (!dateStr) return '';
+    // Si la date est déjà au format YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
+    // Convertir DD/MM/YYYY vers YYYY-MM-DD
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
 
-    MySwal.fire({
-      background: transfer.showBoxIcon ? '#fff' : '#FFF',
-      html: (
-        <div className="p-4 space-y-4">
-          <div className="text-transfer font-semibold mb-4 text-black">
-            Détails {transfer.showBoxIcon ? "de l'Inventaire" : "du Transfert"}
+  MySwal.fire({
+    background: transfer.showBoxIcon ? '#fff' : '#FFF',
+    html: (
+      <div className="p-4 space-y-4">
+        <div className="text-transfer font-semibold mb-4 text-black">
+          Détails {transfer.showBoxIcon ? "de l'Inventaire" : "du Transfert"}
+        </div>
+
+        {/* Afficher des avertissements si les magasins n'existent pas */}
+        {!transfer.showBoxIcon && !fromExists && (
+          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <AlertCircle className="mr-2" size={20} />
+            <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
           </div>
-          
-          {/* Afficher des avertissements si les magasins n'existent pas */}
-          {!transfer.showBoxIcon && !fromExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
+        )}
+        {!toExists && (
+          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <AlertCircle className="mr-2" size={20} />
+            <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
+          </div>
+        )}
+
+        {transfer.showBoxIcon ? (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <strong className="block mb-1 text-black">Emplacement :</strong>
+              <select
+                name="to"
+                defaultValue={transfer.to || ''}
+                className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+              >
+                {transferOptions.toOptions.map((option, index) => (
+                  <option key={index} value={option} className="text-black">
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
-          
-          {!toExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
+            <div>
+              <strong className="block mb-1 text-black">Date :</strong>
+              <input
+                type="date"
+                name="date"
+                defaultValue={convertToDateInput(transfer.date || '')}
+                className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
+              />
             </div>
-          )}
-          
-          {transfer.showBoxIcon ? (
+            <div>
+              <strong className="block mb-1 text-black">Statut :</strong>
+              <select
+                name="status"
+                defaultValue={transfer.status || ''}
+                className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+              >
+                {transferOptions.statusOptions.map((option, index) => (
+                  <option key={index} value={option} className="text-black">
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : (
+          <>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <strong className="block mb-1 text-black">Emplacement :</strong>
-                <select 
+                <strong className="block mb-1 text-black">De :</strong>
+                <select
+                  name="from"
+                  defaultValue={transfer.from || ''}
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
+                >
+                  {transferOptions.fromOptions.map((option, index) => (
+                    <option key={index} value={option} className="text-black">
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <strong className="block mb-1 text-black">Vers :</strong>
+                <select
                   name="to"
-                  defaultValue={transfer.to || ''} 
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded" 
+                  defaultValue={transfer.to || ''}
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
                 >
                   {transferOptions.toOptions.map((option, index) => (
                     <option key={index} value={option} className="text-black">
@@ -311,23 +366,45 @@ const CalendarGrid = ({
                   ))}
                 </select>
               </div>
-              
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <strong className="block mb-1 text-black">Date :</strong>
-                <input 
-                  type="date" 
-                  name="date"
-                  defaultValue={convertToDateInput(transfer.date || '')} 
-                  className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded" 
+                <strong className="block mb-1 text-black">N° Document :</strong>
+                <input
+                  type="text"
+                  name="Document_Number"
+                  defaultValue={transfer.Document_Number || ''}
+                  placeholder="Entrez le numéro de document"
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
                 />
               </div>
-              
+              <div>
+                <strong className="block mb-1 text-black">Quantité :</strong>
+                <input
+                  type="number"
+                  name="quantity"
+                  defaultValue={transfer.quantity}
+                  readOnly
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <strong className="block mb-1 text-black">Date :</strong>
+                <input
+                  type="date"
+                  name="date"
+                  defaultValue={convertToDateInput(transfer.date || '')}
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
+                />
+              </div>
               <div>
                 <strong className="block mb-1 text-black">Statut :</strong>
-                <select 
+                <select
                   name="status"
-                  defaultValue={transfer.status || ''} 
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded" 
+                  defaultValue={transfer.status || ''}
+                  className="w-full p-2 border border-black text-black bg-transparent rounded"
                 >
                   {transferOptions.statusOptions.map((option, index) => (
                     <option key={index} value={option} className="text-black">
@@ -336,218 +413,123 @@ const CalendarGrid = ({
                   ))}
                 </select>
               </div>
-          
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">De :</strong>
-                  <select 
-                    name="from"
-                    defaultValue={transfer.from || ''} 
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  >
-                    {transferOptions.fromOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <strong className="block mb-1 text-black">Vers :</strong>
-                  <select 
-                    name="to"
-                    defaultValue={transfer.to || ''} 
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  >
-                    {transferOptions.toOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">N° Document :</strong>
-                  <input 
-                    type="text" 
-                    name="documentNumber"
-                    defaultValue={transfer.documentNumber || ''} 
-                    placeholder="Entrez le numéro de document"
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  />
-                </div>
-                
-                <div>
-                  <strong className="block mb-1 text-black">Quantité :</strong>
-                  <input 
-                    type="number" 
-                    name="quantity"
-                    defaultValue={transfer.quantity} 
-                    readOnly
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">Date :</strong>
-                  <input 
-                    type="date" 
-                    name="date"
-                    defaultValue={convertToDateInput(transfer.date || '')} 
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  />
-                </div>
-                
-                <div>
-                  <strong className="block mb-1 text-black">Statut :</strong>
-                  <select 
-                    name="status"
-                    defaultValue={transfer.status || ''} 
-                    className="w-full p-2 border border-black text-black bg-transparent rounded" 
-                  >
-                    {transferOptions.statusOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      ),
-      showConfirmButton: false,
-      showCancelButton: false,
-      width: '1000px',
-      customClass: {
-        popup: 'bg-transparent',
-        content: 'p-0'
-      },
-      footer: `
-        <div class="w-full flex justify-center space-x-4 pb-4">
-          <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
-              <path d="M18 6 6 18"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
-          <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </button>
-          
-        </div>
-      `,
-      didRender: () => {
-        document.getElementById('close-btn').addEventListener('click', () => {
-          MySwal.close();
+          </>
+        )}
+      </div>
+    ),
+    showConfirmButton: false,
+    showCancelButton: false,
+    width: '1000px',
+    customClass: {
+      popup: 'bg-transparent',
+      content: 'p-0',
+    },
+    footer: `
+      <div class="w-full flex justify-center space-x-4 pb-4">
+        <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+        <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </div>
+    `,
+    didRender: () => {
+      document.getElementById('close-btn').addEventListener('click', () => {
+        MySwal.close();
+      });
+
+      document.getElementById('confirm-btn').addEventListener('click', () => {
+        const formElements = MySwal.getPopup().querySelectorAll('input, select');
+        const values = {};
+
+        formElements.forEach((el) => {
+          if (el.type === 'date') {
+            values.date = el.value; // Garder YYYY-MM-DD pour l'API
+          } else if (el.type === 'number') {
+            values.quantity = Number(el.value);
+          } else {
+            values[el.name] = el.value;
+          }
         });
-        
-        document.getElementById('confirm-btn').addEventListener('click', () => {
-          const convertFromDateInput = (dateInput) => {
-            if (!dateInput) return '';
-            const [year, month, day] = dateInput.split('-');
-            return `${day}/${month}/${year}`;
-          };
 
-          const formElements = MySwal.getPopup().querySelectorAll('input, select');
-          const values = {};
-          
-          formElements.forEach(el => {
-            if (el.type === 'date') {
-              values.date = el.value;
-            } else if (el.type === 'number') {
-              values.quantity = Number(el.value);
-            } else {
-              values[el.name] = el.value;
+        const updatedTransfer = transfer.showBoxIcon
+          ? {
+              ...transfer,
+              to: values.to || transfer.to,
+              date: values.date, // Envoyer au format YYYY-MM-DD
+              status: values.status || transfer.status,
             }
-          });
+          : {
+              ...transfer,
+              from: transfer.showBoxIcon ? '' : values.from || transfer.from,
+              to: values.to || transfer.to,
+              quantity: values.quantity || transfer.quantity,
+              Document_Number: values.Document_Number || transfer.Document_Number,
+              status: values.status || transfer.status,
+              date: values.date, // Envoyer au format YYYY-MM-DD
+            };
 
-          const updatedTransfer = transfer.showBoxIcon 
-            ? {
-                ...transfer,
-                to: values.to || transfer.to,
-                date: convertFromDateInput(values.date) || transfer.date,
-                status: values.status || transfer.status
-              }
-            : {
-                ...transfer,
-                from: transfer.showBoxIcon ? '' : values.from || transfer.from,
-                to: values.to || transfer.to,
-                comment: values.comment || transfer.comment,
-                quantity: values.quantity || transfer.quantity,
-                documentNumber: values.documentNumber || transfer.documentNumber,
-                status: values.status || transfer.status,
-                date: convertFromDateInput(values.date) || transfer.date
-              };
+        // Vérifier si les nouveaux magasins existent
+        const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.from);
+        const newToExists = checkMagasinExists(updatedTransfer.to);
 
-          // Vérifier si les nouveaux magasins existent
-          const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.from);
-          const newToExists = checkMagasinExists(updatedTransfer.to);
-
-          // Afficher les alertes si nécessaire
-          if (!transfer.showBoxIcon && !newFromExists) {
-            showNonStradiAlert(updatedTransfer.from, 'source');
-          }
-
-          if (!newToExists) {
-            showNonStradiAlert(updatedTransfer.to, 'destination');
-          }
-
-          if (updateTransfer) {
-            updateTransfer(dayData, updatedTransfer);
-          }
-          
-          MySwal.fire({
-            background: 'transparent',
-            title: '<span class="text-white">Confirmé !</span>',
-            html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-            customClass: {
-              popup: 'bg-transparent',
-              title: 'text-white',
-              content: 'text-white'
-            }
-          });
-        });
-        
-        // Add delete button event listener if it exists
-        const deleteBtn = document.getElementById('delete-btn');
-        if (deleteBtn) {
-          deleteBtn.addEventListener('click', () => {
-            MySwal.fire({
-              title: 'Êtes-vous sûr ?',
-              text: "Cette action ne peut pas être annulée !",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#d33',
-              cancelButtonColor: '#3085d6',
-              confirmButtonText: 'Oui, supprimer',
-              cancelButtonText: 'Annuler'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                onDeleteTransfer(transfer._id, transfer.showBoxIcon);
-                MySwal.close();
-              }
-            });
-          });
+        // Afficher les alertes si nécessaire
+        if (!transfer.showBoxIcon && !newFromExists) {
+          showNonStradiAlert(updatedTransfer.from, 'source');
         }
+        if (!newToExists) {
+          showNonStradiAlert(updatedTransfer.to, 'destination');
+        }
+
+        if (updateTransfer) {
+          updateTransfer(dayData, updatedTransfer);
+        }
+
+        MySwal.fire({
+          background: 'transparent',
+          title: '<span class="text-white">Confirmé !</span>',
+          html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'bg-transparent',
+            title: 'text-white',
+            content: 'text-white',
+          },
+        });
+      });
+
+      const deleteBtn = document.getElementById('delete-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+          MySwal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Cette action ne peut pas être annulée !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              onDeleteTransfer(transfer._id, transfer.showBoxIcon);
+              MySwal.close();
+            }
+          });
+        });
       }
-    });
-  };
+    },
+  });
+};
 
 // Modifier la fonction handleTransferItemClick dans CalendarGrid
 const handleTransferItemClick = (transfer, dayData, e) => {
@@ -718,9 +700,9 @@ const handleTransferItemClick = (transfer, dayData, e) => {
                             {transfer.to}
                           </span>
                         </div>
-                        {transfer.documentNumber && (
+                        {transfer.Document_Number && (
                           <div className="text-xs text-gray-600 mt-1">
-                            N° {transfer.documentNumber}
+                            N° {transfer.Document_Number}
                           </div>
                         )}
                         {/* Afficher un avertissement si le magasin n'existe pas */}
@@ -790,7 +772,7 @@ const handleTransferItemClick = (transfer, dayData, e) => {
                           <div className="mt-2 pt-2 border-t text-xs">
                             {transfer.transfers.slice(0, 3).map((item, i) => (
                               <div  id='All_calendar'  key={i} className="flex items-center justify-between mt-1">
-                                <span>N° {item.documentNumber}</span>
+                                <span>N° {item.Document_Number}</span>
                                 <span>Qté: {item.quantity}</span>
                               </div>
                             ))}
@@ -810,9 +792,9 @@ const handleTransferItemClick = (transfer, dayData, e) => {
                           <div className="text-sm font-medium">De : {transfer.from}</div>
                         </div>
                         <div className="text-sm ml-4">À : {transfer.to}</div>
-                        {transfer.documentNumber && (
+                        {transfer.Document_Number && (
                           <div className="text-xs text-gray-600 mt-1">
-                            N° {transfer.documentNumber}
+                            N° {transfer.Document_Number}
                           </div>
                         )}
                         {transfer.quantity && (
