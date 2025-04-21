@@ -1,4 +1,5 @@
 import React from 'react';
+import { FilePenLine } from 'lucide-react';
 
 const TransferLegend = ({ transferLegend, getDotColor, onLegendClick, activeLegend }) => {
   return (
@@ -12,7 +13,11 @@ const TransferLegend = ({ transferLegend, getDotColor, onLegendClick, activeLege
           }`}
           onClick={() => onLegendClick(item.type)}
         >
-          <div className={`w-3 h-3 rounded-full ${getDotColor(item.type)} mr-2`}></div>
+          {item.type === 'manual' ? (
+            <FilePenLine size={16} className="text-white mr-2" />
+          ) : (
+            <div className={`w-3 h-3 rounded-full ${getDotColor(item.type)} mr-2`}></div>
+          )}
           <div>{item.label}</div>
         </div>
       ))}

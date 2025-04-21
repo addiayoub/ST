@@ -15,13 +15,13 @@
   export const defaultDate = new Date(2021, 1, 25); // 25 février 2021
   export const daysOfWeek = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
 
-  // Légende des types de transferts
   export const transferLegend = [
     { type: 'blue', label: 'En cours' },
     { type: 'green', label: 'Confirmé' },
     { type: 'orange', label: 'En attente' },
     { type: 'red', label: 'Annulé' },
-    { type: 'yellow', label: 'Inventaire' }
+    { type: 'yellow', label: 'Inventaire' },
+    { type: 'manual', label: 'Transferts manuels' } // Nouvel élément
   ];
 
   export const colorUtils = {
@@ -32,6 +32,7 @@
         case 'orange': return 'bg-orange-500';
         case 'red': return 'bg-red-500';
         case 'yellow': return 'bg-yellow-500';
+        case 'manual': return 'bg-black'; // Nouvelle couleur
         default: return '';
       }
     },
@@ -43,6 +44,7 @@
         case 'orange': return 'border-orange-500';
         case 'red': return 'border-red-500';
         case 'yellow': return 'border-yellow-500';
+        case 'manual': return 'border-black'; // Nouvelle couleur
         default: return '';
       }
     },
@@ -54,11 +56,11 @@
         case 'orange': return 'bg-orange-50';
         case 'green': return 'bg-green-50';
         case 'yellow': return 'bg-yellow-50';
+        case 'manual': return 'bg-black-50'; // Nouvelle couleur
         default: return '';
       }
     }
   };
-
   const CalendrierTransferts = () => {
     const [currentMonth, setCurrentMonth] = useState(() => {
       const date = new Date();
@@ -147,20 +149,19 @@
   const fetchAllTransfers = async () => {
     try {
       setIsLoading(true);
-      
-      // Get fresh API instance with current token
       const api = getApi();
       
-      // Fetch transfers
-      const transfersResponse = await api.get('/api/transfers');
+      // Fetch en parallèle pour meilleure performance
+      const [transfersResponse, inventoriesResponse, manualTransfersResponse] = await Promise.all([
+        api.get('/api/transfers'),
+        fetchAllInventories(),
+        getManualTransfers()
+      ]);
       
-      // Fetch inventories
-      const inventoriesResponse = await fetchAllInventories();
-      
-      // Format and merge data
       const mergedData = mergeTransfersAndInventories(
         transfersResponse.data, 
-        inventoriesResponse
+        inventoriesResponse,
+        manualTransfersResponse
       );
       
       setAllTransfers(mergedData);
@@ -178,7 +179,57 @@
       }
     }
   };
-
+  const updateManualTransfer = async (id, transferData) => {
+    try {
+      console.log("Données avant envoi API:", transferData);
+      
+      // Vérification explicite des valeurs
+      if (!transferData.fromLocation || !transferData.toLocation) {
+        console.error("IDs de magasins manquants:", {
+          fromLocation: transferData.fromLocation,
+          toLocation: transferData.toLocation
+        });
+        throw new Error("Les IDs des magasins source et destination sont requis");
+      }
+      
+      const api = getApi();
+      const dataToSend = {
+        transferDate: transferData.transferDate,
+        fromLocation: transferData.fromLocation, // Assurez-vous que c'est bien l'ID
+        toLocation: transferData.toLocation,     // Assurez-vous que c'est bien l'ID
+        status: transferData.status,
+        totalQuantity: transferData.totalQuantity,
+        items: transferData.items || []
+      };
+      
+      console.log("Données envoyées à l'API:", dataToSend);
+      
+      const response = await api.put(`/api/transfers-manuel/${id}`, dataToSend);
+      
+      console.log("Réponse API:", response.data);
+      await fetchAllTransfers();
+      return response.data;
+    } catch (err) {
+      console.error("Erreur complète:", err);
+      MySwal.fire({
+        title: 'Erreur',
+        text: err.response?.data?.message || err.message || 'Erreur lors de la mise à jour du transfert manuel',
+        icon: 'error',
+      });
+      throw err;
+    }
+  };
+// Dans votre fichier API (ex: transferService.js)
+ const getManualTransfers = async () => {
+  try {
+    const api = getApi(); // Utilisez votre instance axios configurée
+    const response = await api.get('/api/transfers-manuel');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching manual transfers:', error);
+    throw error;
+  }
+};
   // Update fetchAllInventories to use getApi()
   const fetchAllInventories = async () => {
     try {
@@ -250,7 +301,7 @@
 
   // Charger tous les transferts et inventaires
 
-  const mergeTransfersAndInventories = (transfersResponse, inventoriesResponse) => {
+  const mergeTransfersAndInventories = (transfersResponse, inventoriesResponse,manualTransfersResponse) => {
     const mergedData = {};
   
     // Traitement des transferts
@@ -305,8 +356,50 @@
         });
       }
     }
+    // Traitement des transferts manuels
+    if (manualTransfersResponse?.data) {
+      manualTransfersResponse.data.forEach((manualTransfer) => {
+        const dateKey = formatDateToKey(manualTransfer.transferDate);
+        if (!mergedData[dateKey]) {
+          mergedData[dateKey] = {
+            date: new Date(manualTransfer.transferDate).getDate().toString(),
+            transfers: [],
+          };
+        }
+  
+       // Dans la partie où vous traitez les transferts manuels dans mergeTransfersAndInventories
+mergedData[dateKey].transfers.push({
+  _id: manualTransfer._id,
+  from: manualTransfer.fromLocation?.nomMagasin || 'Magasin inconnu',
+  to: manualTransfer.toLocation?.nomMagasin || 'Magasin inconnu',
+  fromLocationId: manualTransfer.fromLocation?._id, // Ajouter l'ID du magasin source
+  toLocationId: manualTransfer.toLocation?._id,     // Ajouter l'ID du magasin destination
+  status: manualTransfer.status,
+  type: getManualTransferTypeColor(manualTransfer.status),
+  isInventory: false,
+  isManualTransfer: true,
+  showBoxIcon: false,
+  quantity: manualTransfer.totalQuantity,
+  Document_Number: `MAN-${manualTransfer._id.toString().slice(-6)}`,
+  date: formatDateString(manualTransfer.transferDate),
+  Date: manualTransfer.transferDate,
+  items: manualTransfer.items,
+  createdBy: manualTransfer.createdBy?.name || 'Utilisateur inconnu'
+});
+      });
+    }
   
     return mergedData;
+  };
+
+  const getManualTransferTypeColor = (status) => {
+    switch (status) {
+      case 'En attente': return 'orange';
+      case 'En cours': return 'blue';
+      case 'Confirmé': return 'green';
+      case 'Annulé': return 'red';
+      default: return 'blue';
+    }
   };
   // Fonction helper pour créer un objet inventaire standardisé
   const createInventoryObject = (inventory) => ({
@@ -349,59 +442,8 @@
   // Charger tous les inventaires
 
   // Charger les transferts et inventaires par période
-  const fetchTransfersByPeriod = async (startDate, endDate) => {
-    try {
-      setIsLoading(true);
-      
-      // Fetch transfers for the period
-      const transfersResponse = await api.get('/api/transfers/period', {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        }
-      });
-      
-      // Fetch inventories for the period
-      const inventoriesResponse = await api.get('/api/inventories/period', {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        }
-      });
-      
-      // Merge and format data
-      const mergedData = mergeTransfersAndInventories(
-        transfersResponse.data, 
-        inventoriesResponse.data
-      );
-      
-      setAllTransfers(mergedData);
-      setIsLoading(false);
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-      MySwal.fire({
-        title: 'Erreur',
-        text: 'Impossible de charger les données pour cette période',
-        icon: 'error'
-      });
-    }
-  };
-  // Créer un nouvel inventaire
-  const createInventory = async (inventoryData) => {
-    try {
-      const response = await api.post('/api/inventories', inventoryData);
-      await fetchAllTransfers(); // Refresh all data
-      return response.data;
-    } catch (err) {
-      MySwal.fire({
-        title: 'Erreur',
-        text: err.response?.data?.message || 'Erreur lors de la création de l\'inventaire',
-        icon: 'error'
-      });
-      throw err;
-    }
-  };
+ 
+
 
   // Mettre à jour un inventaire
   const updateInventory = async (id, inventoryData) => {
@@ -506,8 +548,53 @@
             description: updatedItem.description,
             status: updatedItem.status,
           });
+        } else   if (updatedItem.isManualTransfer) {
+          // Pour les transferts manuels
+          const api = getApi();
+          
+          // Récupérer les IDs des magasins à partir des noms
+          const magasinsResponse = await api.get('/api/magasins');
+          const magasins = magasinsResponse.data.data || magasinsResponse.data;
+          
+          console.log("Recherche des magasins correspondants:");
+          console.log("- From:", updatedItem.from);
+          console.log("- To:", updatedItem.to);
+          console.log("- Magasins disponibles:", magasins.map(m => m.nomMagasin));
+          
+          const fromMagasin = magasins.find(m => 
+            m.nomMagasin === updatedItem.from || 
+            `Stradi ${m.nomMagasin.replace(/^Stradi\s+/i, '')}` === updatedItem.from
+          );
+          
+          const toMagasin = magasins.find(m => 
+            m.nomMagasin === updatedItem.to || 
+            `Stradi ${m.nomMagasin.replace(/^Stradi\s+/i, '')}` === updatedItem.to
+          );
+        
+          console.log("Magasins trouvés:");
+          console.log("- From:", fromMagasin);
+          console.log("- To:", toMagasin);
+        
+          if (!fromMagasin || !toMagasin) {
+            console.error("Magasin source ou destination introuvable");
+            throw new Error('Magasin source ou destination introuvable');
+          }
+        
+          // Créer explicitement l'objet avec les bons ID
+          const manualTransferData = {
+            transferDate: formatDateForAPI(updatedItem.date),
+            fromLocation: fromMagasin.id || fromMagasin._id,  // Essayer les deux formats
+            toLocation: toMagasin.id || toMagasin._id,      // Essayer les deux formats
+            status: updatedItem.status,
+            totalQuantity: updatedItem.quantity,
+            items: updatedItem.items || []
+          };
+        
+          console.log("Données du transfert manuel à mettre à jour:", manualTransferData);
+        
+          await updateManualTransfer(updatedItem._id, manualTransferData);
         } else {
-          // C'est un transfert
+          // C'est un transfert standard
           await updateTransfer(updatedItem._id, formattedData);
         }
     
@@ -753,8 +840,18 @@
         // Appliquer les filtres
         const filteredTransfers = dayData.transfers.filter((transfer) => {
           // Filtre par type de légende (multiple selections)
-          if (activeLegend.length > 0 && !activeLegend.includes(transfer.type)) {
-            return false;
+          if (activeLegend.length > 0) {
+            // Cas spécial pour les transferts manuels
+            if (activeLegend.includes('manual')) {
+              if (!transfer.isManualTransfer) return false;
+              // Si d'autres légendes sont sélectionnées avec 'manual'
+              const otherLegends = activeLegend.filter(l => l !== 'manual');
+              if (otherLegends.length > 0 && !otherLegends.includes(transfer.type)) {
+                return false;
+              }
+            } else if (!activeLegend.includes(transfer.type)) {
+              return false;
+            }
           }
     
           // Filtre par type (inventaire/transfert)

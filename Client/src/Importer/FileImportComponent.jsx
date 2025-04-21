@@ -98,73 +98,97 @@ const FileImportComponent = () => {
       }
     };
 
-    const parseFileContent = (content, fileId) => {
-      const lines = content.split('\n').filter(line => line.trim() !== '');
+ // Fonction parseFileContent modifiée pour détecter automatiquement le format
+const parseFileContent = (content, fileId) => {
+  const lines = content.split('\n').filter(line => line.trim() !== '');
+  
+  // Détecter le format du fichier à partir de la première ligne non vide
+  const firstLine = lines[0];
+  const isSimpleFormat = firstLine.split(';').length <= 2; // Format simple: "code;quantité"
+  
+  const parsedItems = [];
+  const invalidItems = [];
+  
+  lines.forEach(line => {
+    let barcode, quantity;
+    
+    if (isSimpleFormat) {
+      // Format simple: "code;quantité"
+      const parts = line.split(';');
+      if (parts.length >= 2) {
+        barcode = parts[0].trim();
+        quantity = parseInt(parts[1].trim()) || 1;
+      }
+    } else {
+      // Format complexe: "0;40;5009083001015;;1;304;304"
+      const parts = line.split(';');
+      if (parts.length >= 5) {
+        // Dans le format complexe, le code-barres est à la position 2 (indice 2)
+        // et la quantité à la position 4 (indice 4)
+        barcode = parts[2].trim();
+        quantity = parseInt(parts[4].trim()) || 1;
+      }
+    }
+    
+    // Si le code-barres est valide, ajouter à la liste des items
+    if (barcode && barcode.length > 0) {
+      const exists = barcodeDatabase.includes(barcode);
       
-      const parsedItems = [];
-      const invalidItems = [];
-      
-      lines.forEach(line => {
-        const parts = line.split(';');
-        if (parts.length >= 2) {
-          const barcode = parts[0].trim();
-          const quantity = parseInt(parts[1].trim()) || 1;
-          
-          const exists = barcodeDatabase.includes(barcode);
-          
-          parsedItems.push({
-            barcode,
-            quantity,
-            exists
-          });
-          
-          if (!exists) {
-            invalidItems.push(barcode);
-          }
-        }
+      parsedItems.push({
+        barcode,
+        quantity,
+        exists
       });
       
-      const newAnalysis = {
-        parsedData: parsedItems,
-        invalidBarcodes: invalidItems
-      };
-      
-      setFileAnalysis(prev => ({
-        ...prev,
-        [fileId]: newAnalysis
-      }));
-      
-      if (parsedItems.length > 0) {
-        if (invalidItems.length > 0) {
-          // Afficher l'alerte pour les codes-barres invalides
-          Swal.fire({
-            title: 'Attention',
-            html: `
-              <div style="text-align: left;">
-                <p style="margin-bottom: 15px;">Des codes-barres ne sont pas valides:</p>
-                <div style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;">
-                  ${invalidItems.map(barcode => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">${barcode}</div>`).join('')}
-                </div>
-              </div>
-            `,
-            icon: 'error',
-            background: 'rgba(254, 226, 226, 0.9)',
-            confirmButtonColor: '#ef4444',
-            confirmButtonText: 'Compris',
-            customClass: {
-              container: 'swal-danger-container',
-              popup: 'swal-danger-popup',
-              title: 'swal-danger-title',
-              htmlContainer: 'swal-danger-html'
-            }
-          });
-        } else {
-          showTransferDialog(parsedItems, fileId);
-        }
+      if (!exists) {
+        invalidItems.push(barcode);
       }
-    };
+    }
+  });
+  
+  const newAnalysis = {
+    parsedData: parsedItems,
+    invalidBarcodes: invalidItems,
+    format: isSimpleFormat ? 'simple' : 'complexe'
+  };
+  
+  setFileAnalysis(prev => ({
+    ...prev,
+    [fileId]: newAnalysis
+  }));
+  
+  if (parsedItems.length > 0) {
+    if (invalidItems.length > 0) {
+      // Afficher l'alerte pour les codes-barres invalides
+      Swal.fire({
+        title: 'Attention',
+        html: `
+          <div style="text-align: left;">
+            <p style="margin-bottom: 15px;">Des codes-barres ne sont pas valides:</p>
+            <div style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+              ${invalidItems.map(barcode => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">${barcode}</div>`).join('')}
+            </div>
+          </div>
+        `,
+        icon: 'error',
+        background: 'rgba(254, 226, 226, 0.9)',
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Compris',
+        customClass: {
+          container: 'swal-danger-container',
+          popup: 'swal-danger-popup',
+          title: 'swal-danger-title',
+          htmlContainer: 'swal-danger-html'
+        }
+      });
+    } else {
+      showTransferDialog(parsedItems, fileId);
+    }
+  }
+};
    // Modifiez la fonction showTransferDialog pour éliminer la référence et appeler l'API
-const showTransferDialog = (parsedItems) => {
+// Modifiez la fonction showTransferDialog pour supprimer le fichier après sauvegarde
+const showTransferDialog = (parsedItems, fileId) => {
   const totalQuantity = parsedItems.reduce((total, item) => total + item.quantity, 0);
   
   const barcodeCounts = {};
@@ -334,6 +358,19 @@ ${parsedItems.map(item =>
         const apiResponse = await createTransferManuelAPI(result.value);
         
         console.log('Données du transfert manuel:', apiResponse.data);
+        
+        // Supprimer le fichier de la liste après sauvegarde réussie
+        if (fileId) {
+          setFiles(prevFiles => prevFiles.filter(f => f.id !== fileId));
+          setFileAnalysis(prev => {
+            const newAnalysis = {...prev};
+            delete newAnalysis[fileId];
+            return newAnalysis;
+          });
+          if (expandedFile === fileId) {
+            setExpandedFile(null);
+          }
+        }
         
         Swal.fire(
           'Transfert manuel créé!',
@@ -703,7 +740,7 @@ ${parsedItems.map(item =>
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                  <X size={12} className="mr-1" /> Non trouvé
+                                  <X size={12} className="mr-1" /> 
                                 </span>
                               )}
                             </td>
@@ -728,3 +765,4 @@ ${parsedItems.map(item =>
 };
 
 export default FileImportComponent;
+

@@ -93,30 +93,56 @@ const getTransferManuelById = asyncHandler(async (req, res) => {
 // @desc    Mettre à jour un transfert manuel
 // @route   PUT /api/transfers-manuel/:id
 // @access  Private
+// @desc    Mettre à jour un transfert manuel
+// @route   PUT /api/transfers-manuel/:id
+// @access  Private
 const updateTransferManuel = asyncHandler(async (req, res) => {
-  const { status } = req.body;
+  const { status, transferDate, fromLocation, toLocation, totalQuantity, items } = req.body;
 
-  const transferManuel = await TransferManuel.findById(req.params.id);
+  const transferManuel = await TransferManuel.findById(req.params.id)
+    .populate('fromLocation toLocation');
 
   if (!transferManuel) {
     res.status(404);
     throw new Error('Transfert manuel non trouvé');
   }
 
-  // Vérifier si le transfert peut être mis à jour
-  if (transferManuel.status === 'confirmed' && status !== 'confirmed') {
-    res.status(400);
-    throw new Error('Un transfert manuel confirmé ne peut pas être modifié');
+  // Mettre à jour les références des magasins si elles ont changé
+  if (fromLocation && fromLocation !== transferManuel.fromLocation.toString()) {
+    const fromMagasin = await Magasin.findById(fromLocation);
+    if (!fromMagasin) {
+      res.status(400);
+      throw new Error('Magasin source spécifié introuvable');
+    }
+    transferManuel.fromLocation = fromLocation;
   }
 
-  // Mettre à jour uniquement le statut
+  if (toLocation && toLocation !== transferManuel.toLocation.toString()) {
+    const toMagasin = await Magasin.findById(toLocation);
+    if (!toMagasin) {
+      res.status(400);
+      throw new Error('Magasin destination spécifié introuvable');
+    }
+    transferManuel.toLocation = toLocation;
+  }
+
+  // Mettre à jour les autres champs
   transferManuel.status = status || transferManuel.status;
+  if (transferDate) transferManuel.transferDate = transferDate;
+  if (totalQuantity !== undefined) transferManuel.totalQuantity = totalQuantity;
+  if (items) transferManuel.items = items;
   
   const updatedTransferManuel = await transferManuel.save();
 
+  // Re-populer les données pour la réponse
+  const populatedTransfer = await TransferManuel.findById(updatedTransferManuel._id)
+    .populate('fromLocation', 'nomMagasin')
+    .populate('toLocation', 'nomMagasin')
+    .populate('createdBy', 'name');
+
   res.json({
     success: true,
-    data: updatedTransferManuel
+    data: populatedTransfer
   });
 });
 

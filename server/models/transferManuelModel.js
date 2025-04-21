@@ -38,6 +38,10 @@ const transferManuelSchema = new mongoose.Schema({
       }
     }
   ],
+  Flag: {
+    type: Number,
+    default: 0
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
