@@ -1,4 +1,5 @@
 const Transfer = require('../models/Transfer');
+const Magasin = require('../models/Magasin');
 const moment = require('moment');
 const { validationResult } = require('express-validator');
 
@@ -7,7 +8,7 @@ const formatDateToKey = (date) => moment(date).format('YYYY-MM-DD');
 
 const formatTransferResponse = (transfer) => ({
   _id: transfer._id,
-  Date: moment(transfer.Date).format('YYYY-MM-DD'),  // Utilisez transfer.Date
+  Date: moment(transfer.Date).format('YYYY-MM-DD'),
   Document_Number: transfer.Document_Number, 
   Id_Store: transfer.Id_Store,
   Id_Department_Type: transfer.Id_Department_Type,
@@ -20,8 +21,8 @@ const formatTransferResponse = (transfer) => ({
   Sequence: transfer.Sequence,
   Void_Sequence: transfer.Void_Sequence,
   MOVEMENTS: transfer.MOVEMENTS,
-  from: transfer.from || '',
-  to: transfer.to,
+  from: transfer.from, // On garde le format original (ID seulement)
+  to: transfer.to,    // On garde le format original (ID seulement)
   status: transfer.status,
   type: transfer.type,
   showBoxIcon: transfer.showBoxIcon,
@@ -43,10 +44,16 @@ const handleErrors = (res, error, status = 500) => {
 // Contrôleurs
 exports.getAllTransfers = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status } = req.query;
+    const { page = 1, limit = 10, status, storeId } = req.query;
     const query = {};
     
     if (status) query.status = status;
+    if (storeId) {
+      query.$or = [
+        { 'from': storeId },
+        { 'to': storeId }
+      ];
+    }
     
     const transfers = await Transfer.find(query)
       .sort({ Date: -1 })
@@ -80,7 +87,7 @@ exports.getTransfersByPeriod = async (req, res) => {
       });
     }
 
-    const { startDate, endDate, status } = req.query;
+    const { startDate, endDate, status, storeId } = req.query;
     const query = {
       Date: { 
         $gte: new Date(startDate), 
@@ -89,6 +96,12 @@ exports.getTransfersByPeriod = async (req, res) => {
     };
     
     if (status) query.status = status;
+    if (storeId) {
+      query.$or = [
+        { 'from': storeId },
+        { 'to': storeId }
+      ];
+    }
 
     const transfers = await Transfer.find(query).sort({ Date: -1 });
 
@@ -105,6 +118,7 @@ exports.getTransfersByPeriod = async (req, res) => {
 exports.getTransferById = async (req, res) => {
   try {
     const transfer = await Transfer.findById(req.params.id);
+      
     if (!transfer) {
       return res.status(404).json({ 
         success: false,
@@ -128,6 +142,17 @@ exports.createTransfer = async (req, res) => {
         success: false,
         errors: errors.array() 
       });
+    }
+
+    // Vérifier que le magasin destination existe
+    if (req.body.to) {
+      const toStore = await Magasin.findById(req.body.to);
+      if (!toStore) {
+        return res.status(400).json({
+          success: false,
+          error: 'Magasin destination non trouvé'
+        });
+      }
     }
 
     // Calculer la quantité totale à partir des MOVEMENTS
@@ -160,6 +185,17 @@ exports.updateTransfer = async (req, res) => {
         success: false,
         errors: errors.array() 
       });
+    }
+
+    // Vérifier que le magasin destination existe si modifié
+    if (req.body.to) {
+      const toStore = await Magasin.findById(req.body.to);
+      if (!toStore) {
+        return res.status(400).json({
+          success: false,
+          error: 'Magasin destination non trouvé'
+        });
+      }
     }
 
     // Si MOVEMENTS est modifié, recalculer la quantité

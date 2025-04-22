@@ -36,11 +36,12 @@ const TransferSchema = new mongoose.Schema({
   Void_Sequence: Number,
   MOVEMENTS: [MovementSchema],
   from: {
-    type: String,
-    default: ''
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Magasin'
   },
   to: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Magasin',
     required: true
   },
   status: {

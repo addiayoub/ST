@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Boxes, ChevronDown, ChevronRight, Edit, AlertCircle, FilePenLine } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -10,10 +9,10 @@ const MySwal = withReactContent(Swal);
 
 export const useTransferOptions = () => {
   const [transferOptions, setTransferOptions] = useState({
-    fromOptions: [],
-    toOptions: [],
+    fromOptions: [], // Contient des objets { value: id, label: nom }
+    toOptions: [], // Contient des objets { value: id, label: nom }
     statusOptions: ['En cours', 'Confirmé', 'En attente', 'Annulé'],
-    activeWarehouses: []
+    activeWarehouses: [],
   });
 
   useEffect(() => {
@@ -21,7 +20,7 @@ export const useTransferOptions = () => {
       try {
         const response = await getMagasins();
         let warehouseData = [];
-        
+
         if (response && response.data) {
           if (Array.isArray(response.data.data)) {
             warehouseData = response.data.data;
@@ -33,31 +32,41 @@ export const useTransferOptions = () => {
         } else if (response && response.results && Array.isArray(response.results)) {
           warehouseData = response.results;
         }
-        
-        const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
-        
-        // Normalisation des noms des magasins
-        const magasinNames = activeWarehouses.map(magasin => {
-          const nom = magasin.nomMagasin.trim().replace(/^Stradi\s+/i, '');
-          return `Stradi ${nom}`;
+
+        const activeWarehouses = warehouseData.filter((warehouse) => warehouse.statut === 'active');
+
+        // Créer des options avec ID et nom normalisé
+        const options = activeWarehouses.map((magasin) => {
+          const baseName = magasin.nomMagasin.trim();
+          // Enlever STRADI ou Stradi s'il existe déjà, puis ajouter "Stradi " de façon uniforme
+          const normalizedName = `Stradi ${baseName.replace(/^STRADI\s+|^Stradi\s+/i, '')}`;
+          return {
+            value: magasin._id || magasin.id,
+            label: normalizedName,
+            rawName: baseName, // Store the raw name for easier comparison
+          };
         });
-        
-        // Suppression des doublons avec Set
-        const uniqueMagasinNames = [...new Set(magasinNames)];
-        
-        setTransferOptions(prev => ({
+
+        // Suppression des doublons par ID
+        const uniqueOptions = Array.from(
+          new Map(options.map((opt) => [opt.value, opt])).values()
+        );
+
+        console.log("Active warehouses loaded:", uniqueOptions);
+
+        setTransferOptions((prev) => ({
           ...prev,
-          fromOptions: uniqueMagasinNames,
-          toOptions: uniqueMagasinNames,
-          activeWarehouses
+          fromOptions: uniqueOptions,
+          toOptions: uniqueOptions,
+          activeWarehouses,
         }));
       } catch (error) {
         console.error('Erreur lors du chargement des magasins:', error);
-        setTransferOptions(prev => ({
+        setTransferOptions((prev) => ({
           ...prev,
           fromOptions: [],
           toOptions: [],
-          activeWarehouses: []
+          activeWarehouses: [],
         }));
       }
     };
@@ -70,71 +79,151 @@ export const useTransferOptions = () => {
 
 const groupTransfers = (transfers) => {
   if (!transfers || !Array.isArray(transfers)) return [];
-  
-  const inventories = transfers.filter(t => t.showBoxIcon);
+
+  const inventories = transfers.filter((t) => t.showBoxIcon);
   const transferGroups = {};
-  
-  transfers.filter(t => !t.showBoxIcon).forEach(transfer => {
-    const key = `${transfer.from}|${transfer.to}`;
-    
-    if (!transferGroups[key]) {
-      transferGroups[key] = {
-        isGroup: true,
-        groupKey: key,
-        from: transfer.from,
-        to: transfer.to,
-        transfers: [],
-        type: transfer.type,
-        statusCounts: {
-          'En cours': 0,
-          'Confirmé': 0,
-          'En attente': 0,
-          'Annulé': 0
-        },
-        totalQuantity: 0
+
+  transfers
+    .filter((t) => !t.showBoxIcon)
+    .forEach((transfer) => {
+      const key = `${transfer.from}|${transfer.to}`; // Grouper par IDs
+
+      if (!transferGroups[key]) {
+        transferGroups[key] = {
+          isGroup: true,
+          groupKey: key,
+          from: transfer.from, // ID
+          to: transfer.to, // ID
+          fromName: transfer.fromName, // Nom pour affichage
+          toName: transfer.toName, // Nom pour affichage
+          transfers: [],
+          type: transfer.type,
+          statusCounts: {
+            'En cours': 0,
+            'Confirmé': 0,
+            'En attente': 0,
+            'Annulé': 0,
+          },
+          totalQuantity: 0,
+        };
+      }
+
+      transferGroups[key].transfers.push(transfer);
+      transferGroups[key].statusCounts[transfer.status]++;
+      transferGroups[key].totalQuantity += parseInt(transfer.quantity || 0);
+
+      const typePriority = {
+        orange: 1,
+        red: 2,
+        blue: 3,
+        green: 4,
       };
-    }
-    
-    transferGroups[key].transfers.push(transfer);
-    transferGroups[key].statusCounts[transfer.status]++;
-    transferGroups[key].totalQuantity += parseInt(transfer.quantity || 0);
-    
-    const typePriority = {
-      'orange': 1,
-      'red': 2,
-      'blue': 3,
-      'green': 4
-    };
-    
-    if (typePriority[transfer.type] < typePriority[transferGroups[key].type]) {
-      transferGroups[key].type = transfer.type;
-    }
-  });
-  
+
+      if (typePriority[transfer.type] < typePriority[transferGroups[key].type]) {
+        transferGroups[key].type = transfer.type;
+      }
+    });
+
   return [...inventories, ...Object.values(transferGroups)];
 };
 
-const CalendarGrid = ({ 
-  transfersData, 
-  selectedDay, 
-  selectDay, 
-  handleTransferClick, 
+const CalendarGrid = ({
+  transfersData,
+  selectedDay,
+  selectDay,
+  handleTransferClick,
   selectedTransfer,
   getDotColor,
   getBorderColor,
   getBgColor,
   updateTransfer,
-  onDeleteTransfer
+  onDeleteTransfer,
 }) => {
   const transferOptions = useTransferOptions();
   const [expandedGroups, setExpandedGroups] = useState({});
+// Fonction pour synchroniser les noms des magasins
+const syncWarehouseNames = (transfers) => {
+  if (!transfers || !Array.isArray(transfers) || transferOptions.fromOptions.length === 0) {
+    return transfers;
+  }
 
-  const checkMagasinExists = (magasinName) => {
+  return transfers.map(transfer => {
+    // Ne pas modifier les transferts d'inventaire
+    if (transfer.showBoxIcon) return transfer;
+    
+    // Trouver les magasins correspondants par ID
+    const fromWarehouse = transferOptions.fromOptions.find(opt => opt.value === transfer.from);
+    const toWarehouse = transferOptions.toOptions.find(opt => opt.value === transfer.to);
+    
+    return {
+      ...transfer,
+      // Mettre à jour les noms seulement si l'ID correspond et que le nom actuel est "Magasin inconnu"
+      fromName: (fromWarehouse && (transfer.fromName === "Magasin inconnu" || !transfer.fromName)) 
+                ? fromWarehouse.label 
+                : transfer.fromName,
+      toName: (toWarehouse && (transfer.toName === "Magasin inconnu" || !transfer.toName)) 
+              ? toWarehouse.label 
+              : transfer.toName
+    };
+  });
+};
+  // Improved function to check if a magasin exists by ID or name
+  const checkMagasinExists = (magasinName, magasinId) => {
+    // If we have the ID and it matches any warehouse option, it exists
+    if (magasinId && transferOptions.fromOptions.some(opt => opt.value === magasinId)) {
+      return true;
+    }
+    
     if (!magasinName) return true;
-    return transferOptions.fromOptions.some(option => 
-      option.toLowerCase() === magasinName.toLowerCase()
-    );
+    
+    // Normalize the warehouse name for comparison
+    const normalizedInput = magasinName.trim().toLowerCase();
+    
+    // Remove "Stradi" prefix if present for comparison
+    const stradiNormalizedInput = normalizedInput.replace(/^stradi\s+/i, '');
+    
+    // Check against all warehouse options
+    return transferOptions.fromOptions.some((option) => {
+      // Normalize option name
+      const optionName = option.label.toLowerCase();
+      // Get raw name without Stradi prefix
+      const optionRawName = option.rawName ? option.rawName.toLowerCase() : 
+                           optionName.replace(/^stradi\s+/i, '');
+      
+      // Check for matches with both original and normalized versions
+      return optionRawName === stradiNormalizedInput || 
+             optionName === normalizedInput ||
+             // Simple substring check
+             stradiNormalizedInput.includes(optionRawName) ||
+             optionRawName.includes(stradiNormalizedInput);
+    });
   };
+
+  // Debug hook to log warehouse data and check consistency
+  useEffect(() => {
+    if (transferOptions.fromOptions.length > 0) {
+      console.log("Available warehouse options:", transferOptions.fromOptions);
+      
+      // Check if your transfers have matching IDs with options
+      if (transfersData) {
+        const allTransfers = Object.values(transfersData)
+          .flatMap(day => day.transfers || [])
+          .filter(t => t && !t.showBoxIcon) // Only check regular transfers
+          .slice(0, 5); // Sample the first 5 transfers
+        
+        console.log("Sample transfers for warehouse validation:", 
+          allTransfers.map(t => ({
+            fromId: t.from,
+            fromName: t.fromName,
+            toId: t.to,
+            toName: t.toName,
+            fromExists: checkMagasinExists(t.fromName, t.from),
+            toExists: checkMagasinExists(t.toName, t.to),
+          }))
+        );
+      }
+    }
+  }, [transferOptions.fromOptions, transfersData]);
 
   const showNonStradiAlert = (magasinName, type) => {
     MySwal.fire({
@@ -150,45 +239,56 @@ const CalendarGrid = ({
     });
   };
 
+  // Debug function to inspect selected transfer
+  useEffect(() => {
+    if (selectedTransfer) {
+      console.log("Transfert sélectionné:", selectedTransfer);
+      console.log("ID source:", selectedTransfer.from);
+      console.log("ID destination:", selectedTransfer.to);
+      console.log("Source exists:", checkMagasinExists(selectedTransfer.fromName, selectedTransfer.from));
+      console.log("Destination exists:", checkMagasinExists(selectedTransfer.toName, selectedTransfer.to));
+    }
+  }, [selectedTransfer]);
+
   const toggleGroup = (groupKey, e) => {
     e.stopPropagation();
-    setExpandedGroups(prev => ({
+    setExpandedGroups((prev) => ({
       ...prev,
-      [groupKey]: !prev[groupKey]
+      [groupKey]: !prev[groupKey],
     }));
   };
 
   const showGroupDetails = (groupData, dayData, e) => {
     e.stopPropagation();
-    
-    const fromExists = checkMagasinExists(groupData.from);
-    const toExists = checkMagasinExists(groupData.to);
-    
+
+    const fromExists = checkMagasinExists(groupData.fromName, groupData.from);
+    const toExists = checkMagasinExists(groupData.toName, groupData.to);
+
     MySwal.fire({
       background: '#fff',
       title: `<div class="text-xl font-semibold text-black">
-                Transferts de ${groupData.from} vers ${groupData.to}
+                Transferts de ${groupData.fromName} vers ${groupData.toName}
               </div>`,
       html: (
         <div className="p-4 space-y-6">
           <div className="text-black font-medium">
             {groupData.transfers.length} transfert(s) • Total: {groupData.totalQuantity} articles
           </div>
-          
+
           {!fromExists && (
             <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin source "{groupData.from}" n'appartient pas aux magasins Stradi actifs.</span>
+              <span>Le magasin source "{groupData.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
           )}
-          
+
           {!toExists && (
             <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin destination "{groupData.to}" n'appartient pas aux magasins Stradi actifs.</span>
+              <span>Le magasin destination "{groupData.toName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
           )}
-          
+
           <div className="mt-4 divide-y border rounded-lg">
             {groupData.transfers.map((transfer, index) => (
               <div key={index} className="py-4 px-3 hover:bg-gray-50">
@@ -198,7 +298,7 @@ const CalendarGrid = ({
                     <span className="font-medium">N° {transfer.Document_Number}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <button 
+                    <button
                       className="p-2 edit_trans text-gray-500 hover:text-blue-500"
                       onClick={() => {
                         MySwal.close();
@@ -212,7 +312,7 @@ const CalendarGrid = ({
                 <div className="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
                   <div>Quantité: {transfer.quantity}</div>
                   <div className="flex items-center">
-                    Statut: 
+                    Statut:
                     <span className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2`}></span>
                     {transfer.status}
                   </div>
@@ -228,122 +328,148 @@ const CalendarGrid = ({
       customClass: {
         confirmButton: 'custom-swal-ferme-button',
       },
-      width: '700px'
+      width: '700px',
     });
   };
-
-const showTransferDetails = (transfer, dayData, e) => {
-  if (!transfer) return;
-  e && e.stopPropagation();
-
-  const isManualTransfer = transfer.isManualTransfer;
-  const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
-  const toExists = checkMagasinExists(transfer.to);
-
-  const convertToDateInput = (dateStr) => {
-    if (!dateStr) return '';
-    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
-    const [day, month, year] = dateStr.split('/');
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-  };
-
-  // Normaliser le nom du magasin pour correspondre à transferOptions.toOptions
-  const normalizeMagasinName = (name) => {
-    if (!name) return '';
-    return `Stradi ${name.trim().replace(/^Stradi\s+/i, '')}`;
-  };
-
-  const totalQuantity = isManualTransfer
-    ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
-    : transfer.quantity || 0;
-
-  const barcodeCounts = {};
-  if (isManualTransfer && transfer.items) {
-    transfer.items.forEach(item => {
-      barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
+// À l'intérieur du composant CalendarGrid
+useEffect(() => {
+  if (transfersData && transferOptions.fromOptions.length > 0) {
+    // Créer une copie profonde de transfersData pour éviter de modifier l'original directement
+    const updatedTransfersData = { ...transfersData };
+    
+    // Mettre à jour les noms des magasins pour chaque jour
+    Object.keys(updatedTransfersData).forEach(day => {
+      if (updatedTransfersData[day].transfers) {
+        updatedTransfersData[day].transfers = syncWarehouseNames(updatedTransfersData[day].transfers);
+      }
     });
+    
+    // Si vous avez une fonction pour mettre à jour les données de transfert
+    // updateTransfersData(updatedTransfersData);
+    
+    console.log("Synchronized warehouse names in transfers data");
   }
+}, [transfersData, transferOptions.fromOptions]);
+  const showTransferDetails = (transfer, dayData, e) => {
+    if (!transfer) return;
+    e && e.stopPropagation();
 
-  MySwal.fire({
-    background: transfer.showBoxIcon ? '#fff' : '#FFF',
-    html: (
-      <div className="p-4 space-y-4">
-        <div className="text-transfer font-semibold mb-4 text-black">
-          Détails {transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
-        </div>
+    const isManualTransfer = transfer.isManualTransfer;
+    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.fromName, transfer.from);
+    const toExists = checkMagasinExists(transfer.toName, transfer.to);
 
-        {!transfer.showBoxIcon && !fromExists && (
-          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-            <AlertCircle className="mr-2" size={20} />
-            <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
+    console.log("In showTransferDetails - fromExists:", fromExists, "toExists:", toExists, 
+                "fromName:", transfer.fromName, "toName:", transfer.toName, 
+                "fromId:", transfer.from, "toId:", transfer.to);
+
+    const convertToDateInput = (dateStr) => {
+      if (!dateStr) return '';
+      if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
+      const [day, month, year] = dateStr.split('/');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    };
+
+    // Normaliser le nom du magasin pour correspondre à transferOptions.toOptions
+    const normalizeMagasinName = (name) => {
+      if (!name) return '';
+      return `Stradi ${name.trim().replace(/^Stradi\s+/i, '')}`;
+    };
+
+    const totalQuantity = isManualTransfer
+      ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
+      : transfer.quantity || 0;
+
+    const barcodeCounts = {};
+    if (isManualTransfer && transfer.items) {
+      transfer.items.forEach((item) => {
+        barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
+      });
+    }
+
+    MySwal.fire({
+      background: transfer.showBoxIcon ? '#fff' : '#FFF',
+      html: (
+        <div className="p-4 space-y-4">
+          <div className="text-transfer font-semibold mb-4 text-black">
+            Détails {transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
           </div>
-        )}
-        {!toExists && (
-          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-            <AlertCircle className="mr-2" size={20} />
-            <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
-          </div>
-        )}
 
-{transfer.showBoxIcon ? (
-  <div className="grid grid-cols-2 gap-4">
-    <div>
-      <strong className="block mb-1 text-black">Emplacement :</strong>
-      <select
-        name="to"
-        defaultValue={normalizeMagasinName(transfer.to) || ''}
-        className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-      >
-        {transferOptions.toOptions.map((option, index) => (
-          <option key={index} value={option} className="text-black">
-            {option}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div>
-      <strong className="block mb-1 text-black">Date :</strong>
-      <input
-        type="date"
-        name="date"
-        defaultValue={convertToDateInput(transfer.date || '')}
-        className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
-      />
-    </div>
-    <div>
-      <strong className="block mb-1 text-black">Statut :</strong>
-      <select
-        name="status"
-        defaultValue={transfer.status || ''}
-        className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-      >
-        {transferOptions.statusOptions.map((option, index) => (
-          <option key={index} value={option} className="text-black">
-            {option}
-          </option>
-        ))}
-      </select>
-    </div>
-  </div>
-) : (
+          {!transfer.showBoxIcon && !fromExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>Le magasin source "{transfer.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
+            </div>
+          )}
+          {!toExists && (
+            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <AlertCircle className="mr-2" size={20} />
+              <span>
+                Le magasin {transfer.showBoxIcon ? '' : 'destination '} "{transfer.toName}" n'appartient pas aux
+                magasins Stradi actifs.
+              </span>
+            </div>
+          )}
+
+          {transfer.showBoxIcon ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <strong className="block mb-1 text-black">Emplacement :</strong>
+                <select
+                  name="to"
+                  defaultValue={transfer.to || ''} // Utiliser l'ID
+                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+                >
+                  {transferOptions.toOptions.map((option, index) => (
+                    <option key={index} value={option.value} className="text-black">
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <strong className="block mb-1 text-black">Date :</strong>
+                <input
+                  type="date"
+                  name="date"
+                  defaultValue={convertToDateInput(transfer.date || '')}
+                  className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
+                />
+              </div>
+              <div>
+                <strong className="block mb-1 text-black">Statut :</strong>
+                <select
+                  name="status"
+                  defaultValue={transfer.status || ''}
+                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+                >
+                  {transferOptions.statusOptions.map((option, index) => (
+                    <option key={index} value={option} className="text-black">
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <strong className="block mb-1 text-black">De :</strong>
                   <select
                     name="from"
-                    defaultValue={transfer.from || ''}
+                    defaultValue={transfer.from || ''} // Utiliser l'ID
                     className="w-full p-2 border border-black text-black bg-transparent rounded"
                   >
                     {/* Ajouter l'option actuelle si elle n'existe pas dans fromOptions */}
-                    {!transferOptions.fromOptions.includes(transfer.from) && transfer.from && (
-                      <option value={transfer.from} className="text-black">
-                        {transfer.from}
-                      </option>
-                    )}
+                    {!transferOptions.fromOptions.some((opt) => opt.value === transfer.from) &&
+                      transfer.fromName && (
+                        <option value={transfer.from} className="text-black">
+                          {transfer.fromName}
+                        </option>
+                      )}
                     {transferOptions.fromOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
+                      <option key={index} value={option.value} className="text-black">
+                        {option.label}
                       </option>
                     ))}
                   </select>
@@ -352,18 +478,18 @@ const showTransferDetails = (transfer, dayData, e) => {
                   <strong className="block mb-1 text-black">Vers :</strong>
                   <select
                     name="to"
-                    defaultValue={transfer.to || ''}
+                    defaultValue={transfer.to || ''} // Utiliser l'ID
                     className="w-full p-2 border border-black text-black bg-transparent rounded"
                   >
                     {/* Ajouter l'option actuelle si elle n'existe pas dans toOptions */}
-                    {!transferOptions.toOptions.includes(transfer.to) && transfer.to && (
+                    {!transferOptions.toOptions.some((opt) => opt.value === transfer.to) && transfer.toName && (
                       <option value={transfer.to} className="text-black">
-                        {transfer.to}
+                        {transfer.toName}
                       </option>
                     )}
                     {transferOptions.toOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
+                      <option key={index} value={option.value} className="text-black">
+                        {option.label}
                       </option>
                     ))}
                   </select>
@@ -409,10 +535,15 @@ const showTransferDetails = (transfer, dayData, e) => {
               {isManualTransfer && transfer.items && (
                 <>
                   <div className="mt-4">
-                    <strong className="block mb-1 text-black">Codes-barres ( {Object.keys(barcodeCounts).length} uniques) :</strong>
+                    <strong className="block mb-1 text-black">
+                      Codes-barres ({Object.keys(barcodeCounts).length} uniques) :
+                    </strong>
                     <div className="flex flex-wrap gap-2 p-2 border overflow-auto max-h-48 border-black rounded bg-gray-50">
                       {transfer.items.map((item, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-200 text-black rounded-full">
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-gray-200 text-black rounded-full"
+                        >
                           {item.barcode}
                         </span>
                       ))}
@@ -471,11 +602,11 @@ const showTransferDetails = (transfer, dayData, e) => {
         document.getElementById('close-btn').addEventListener('click', () => {
           MySwal.close();
         });
-  
+
         document.getElementById('confirm-btn').addEventListener('click', () => {
           const formElements = MySwal.getPopup().querySelectorAll('input, select');
           const values = {};
-  
+
           formElements.forEach((el) => {
             if (el.type === 'date') {
               values.date = el.value;
@@ -485,39 +616,42 @@ const showTransferDetails = (transfer, dayData, e) => {
               values[el.name] = el.value;
             }
           });
-  
+
           const updatedTransfer = transfer.showBoxIcon
             ? {
                 ...transfer,
-                to: values.to || transfer.to,
+                to: values.to || transfer.to, // ID du magasin
                 date: values.date,
                 status: values.status || transfer.status,
+                toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName, // Mettre à jour le nom
               }
             : {
                 ...transfer,
-                from: transfer.showBoxIcon ? '' : values.from || transfer.from,
-                to: values.to || transfer.to,
+                from: transfer.showBoxIcon ? '' : values.from || transfer.from, // ID du magasin
+                to: values.to || transfer.to, // ID du magasin
                 quantity: values.quantity || transfer.quantity,
                 Document_Number: values.Document_Number || transfer.Document_Number,
                 status: values.status || transfer.status,
                 date: values.date,
                 items: transfer.items, // Conserver les items pour les transferts manuels
+                fromName: transferOptions.fromOptions.find((opt) => opt.value === values.from)?.label || transfer.fromName, // Mettre à jour le nom
+                toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName, // Mettre à jour le nom
               };
-  
-          const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.from);
-          const newToExists = checkMagasinExists(updatedTransfer.to);
-  
+
+          const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.fromName, updatedTransfer.from);
+          const newToExists = checkMagasinExists(updatedTransfer.toName, updatedTransfer.to);
+
           if (!transfer.showBoxIcon && !newFromExists) {
-            showNonStradiAlert(updatedTransfer.from, 'source');
+            showNonStradiAlert(updatedTransfer.fromName, 'source');
           }
           if (!newToExists) {
-            showNonStradiAlert(updatedTransfer.to, 'destination');
+            showNonStradiAlert(updatedTransfer.toName, 'destination');
           }
-  
+
           if (updateTransfer) {
             updateTransfer(dayData, updatedTransfer);
           }
-  
+
           MySwal.fire({
             background: 'transparent',
             title: '<span class="text-white">Confirmé !</span>',
@@ -532,13 +666,13 @@ const showTransferDetails = (transfer, dayData, e) => {
             },
           });
         });
-  
+
         const deleteBtn = document.getElementById('delete-btn');
         if (deleteBtn) {
           deleteBtn.addEventListener('click', () => {
             MySwal.fire({
               title: 'Êtes-vous sûr ?',
-              text: "Cette action ne peut pas être annulée !",
+              text: 'Cette action ne peut pas être annulée !',
               icon: 'warning',
               showCancelButton: true,
               confirmButtonColor: '#d33',
@@ -556,31 +690,79 @@ const showTransferDetails = (transfer, dayData, e) => {
       },
     });
   };
-
+  const checkMagasinAndGetName = (magasinName, magasinId) => {
+    // Si nous avons l'ID et qu'il correspond à un entrepôt
+    if (magasinId) {
+      const foundOption = transferOptions.fromOptions.find(opt => opt.value === magasinId);
+      if (foundOption) {
+        return { exists: true, correctName: foundOption.label };
+      }
+    }
+    
+    if (!magasinName) return { exists: true, correctName: magasinName };
+    
+    // Normaliser le nom du magasin pour la comparaison
+    const normalizedInput = magasinName.trim().toLowerCase();
+    const stradiNormalizedInput = normalizedInput.replace(/^stradi\s+/i, '');
+    
+    // Vérifier par rapport à toutes les options de magasin
+    const foundOption = transferOptions.fromOptions.find((option) => {
+      const optionName = option.label.toLowerCase();
+      const optionRawName = option.rawName ? option.rawName.toLowerCase() : 
+                           optionName.replace(/^stradi\s+/i, '');
+      
+      return optionRawName === stradiNormalizedInput || 
+             optionName === normalizedInput ||
+             stradiNormalizedInput.includes(optionRawName) ||
+             optionRawName.includes(stradiNormalizedInput);
+    });
+    
+    return { exists: !!foundOption, correctName: foundOption ? foundOption.label : magasinName };
+  };
   const handleTransferItemClick = (transfer, dayData, e) => {
     e.stopPropagation();
+  
+    // Vérification améliorée de l'existence des entrepôts avec débogage approprié
+    const fromResult = transfer.showBoxIcon ? { exists: true, correctName: transfer.fromName } : 
+                      checkMagasinAndGetName(transfer.fromName, transfer.from);
+    const toResult = checkMagasinAndGetName(transfer.toName, transfer.to);
     
-    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
-    const toExists = checkMagasinExists(transfer.to);
+    const fromExists = fromResult.exists;
+    const toExists = toResult.exists;
     
+    // Si les IDs existent mais les noms sont "Magasin inconnu", mettre à jour les noms
+    if (fromExists && transfer.fromName === "Magasin inconnu") {
+      transfer.fromName = fromResult.correctName;
+    }
+    
+    if (toExists && transfer.toName === "Magasin inconnu") {
+      transfer.toName = toResult.correctName;
+    }
+    
+    console.log("Transfer click:", transfer.fromName, "→", transfer.toName);
+    console.log("Existence check:", {fromExists, toExists, fromId: transfer.from, toId: transfer.to});
+  
+
     if ((!transfer.showBoxIcon && !fromExists) || !toExists) {
-      let alertMessage = "";
-      let nonExistingMagasin = "";
-      
+      let alertMessage = '';
+      let nonExistingMagasin = '';
+
       if (!transfer.showBoxIcon && !fromExists && !toExists) {
-        alertMessage = `<p>Les magasins source <strong>"${transfer.from}"</strong> et destination <strong>"${transfer.to}"</strong> ne font pas partie des magasins Stradi actifs.</p>`;
-        nonExistingMagasin = `${transfer.from}, ${transfer.to}`;
+        alertMessage = `<p>Les magasins source <strong>"${transfer.fromName}"</strong> et destination <strong>"${transfer.toName}"</strong> ne font pas partie des magasins Stradi actifs.</p>`;
+        nonExistingMagasin = `${transfer.fromName}, ${transfer.toName}`;
       } else if (!transfer.showBoxIcon && !fromExists) {
-        alertMessage = `<p>Le magasin source <strong>"${transfer.from}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
-        nonExistingMagasin = transfer.from;
+        alertMessage = `<p>Le magasin source <strong>"${transfer.fromName}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
+        nonExistingMagasin = transfer.fromName;
       } else if (!toExists) {
-        alertMessage = `<p>Le magasin ${transfer.showBoxIcon ? "" : "destination "}<strong>"${transfer.to}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
-        nonExistingMagasin = transfer.to;
+        alertMessage = `<p>Le magasin ${
+          transfer.showBoxIcon ? '' : 'destination '
+        }<strong>"${transfer.toName}"</strong> ne fait pas partie des magasins Stradi actifs.</p>`;
+        nonExistingMagasin = transfer.toName;
       }
-      
+
       const userStr = localStorage.getItem('user');
       const user = userStr ? JSON.parse(userStr) : { role: 'User' };
-      
+
       MySwal.fire({
         icon: 'warning',
         title: 'Magasin non référencé',
@@ -590,7 +772,7 @@ const showTransferDetails = (transfer, dayData, e) => {
               </div>`,
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Continuer l\'édition',
+        confirmButtonText: "Continuer l'édition",
         denyButtonText: 'Ajouter le magasin',
         cancelButtonText: 'Annuler',
         confirmButtonColor: '#3085d6',
@@ -603,14 +785,15 @@ const showTransferDetails = (transfer, dayData, e) => {
           } else {
             showTransferDetails(transfer, dayData, e);
           }
+          
           handleTransferClick(transfer, dayData.date, e);
         } else if (result.isDenied) {
           if (user.role === 'Admin') {
             localStorage.setItem('magasinToAdd', nonExistingMagasin);
             const appRoot = document.querySelector('.App');
             if (appRoot) {
-              const event = new CustomEvent('changeComponent', { 
-                detail: { component: 'house', magasinName: nonExistingMagasin } 
+              const event = new CustomEvent('changeComponent', {
+                detail: { component: 'house', magasinName: nonExistingMagasin },
               });
               appRoot.dispatchEvent(event);
               window.location.href = '/magasin?add=' + encodeURIComponent(nonExistingMagasin);
@@ -619,8 +802,8 @@ const showTransferDetails = (transfer, dayData, e) => {
             MySwal.fire({
               icon: 'error',
               title: 'Accès interdit',
-              text: 'Vous n\'avez pas les droits pour ajouter un magasin. Veuillez contacter l\'administrateur de l\'application Stradivarius.',
-              confirmButtonColor: '#3085d6'
+              text: "Vous n'avez pas les droits pour ajouter un magasin. Veuillez contacter l'administrateur de l'application Stradivarius.",
+              confirmButtonColor: '#3085d6',
             });
           }
         }
@@ -640,19 +823,19 @@ const showTransferDetails = (transfer, dayData, e) => {
       <thead>
         <tr>
           {Object.keys(transfersData).map((day, index) => (
-            <th 
-              key={index} 
+            <th
+              key={index}
               className={`p-3 border text-center font-normal ${
                 parseInt(transfersData[day].date) === selectedDay ? 'bg-blue-50' : ''
               }`}
-              style={{ 
+              style={{
                 borderColor: '#e5e7eb',
-                borderWidth: '1px'
+                borderWidth: '1px',
               }}
               onClick={() => selectDay(parseInt(transfersData[day].date))}
             >
               <div>{day}</div>
-              <div id='day_and_date'>{transfersData[day].date}</div>
+              <div id="day_and_date">{transfersData[day].date}</div>
             </th>
           ))}
         </tr>
@@ -665,40 +848,39 @@ const showTransferDetails = (transfer, dayData, e) => {
               const isSelectedDay = parseInt(dayData.date) === selectedDay;
               const groupedTransfers = groupTransfers(dayData.transfers);
               const transfer = groupedTransfers[transferRowIndex];
-              const showFromWarning = transfer && !transfer.showBoxIcon && !checkMagasinExists(transfer.from);
-              const showToWarning = transfer && !checkMagasinExists(transfer.to);
+              const showFromWarning = transfer && !transfer.showBoxIcon && !checkMagasinExists(transfer.fromName);
+              const showToWarning = transfer && !checkMagasinExists(transfer.toName);
 
               return (
-                <td 
+                <td
                   key={`transfer-cell-${dayIndex}-${transferRowIndex}`}
                   className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
-                  style={{ 
-                    height: '100px', 
+                  style={{
+                    height: '100px',
                     borderColor: '#e5e7eb',
                     borderWidth: '1px',
                     verticalAlign: 'top',
                     position: 'relative',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
                   }}
                   onClick={() => selectDay(parseInt(dayData.date))}
                 >
                   {transfer && (
-                    <div 
+                    <div
                       className={`p-4 m-2 border-l-4 rounded ${
-                        transfer.showBoxIcon 
-                          ? 'border-yellow-500 bg-yellow-100' 
+                        transfer.showBoxIcon
+                          ? 'border-yellow-500 bg-yellow-100'
                           : `${getBorderColor(transfer.type)} ${getBgColor(transfer.type)}`
-                      } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''} 
-                        ${(showFromWarning || showToWarning) ? 'border-dashed border border-red-300' : ''}`}
+                      } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''} ${
+                        showFromWarning || showToWarning ? 'border-dashed border border-red-300' : ''
+                      }`}
                       onClick={(e) => handleTransferItemClick(transfer, dayData, e)}
                     >
                       {transfer.showBoxIcon ? (
                         <div className="flex flex-col">
                           <div className="flex items-center">
                             <Boxes className="text-yellow-500 mr-2" size={25} />
-                            <span className="text-sm font-medium">
-                              {transfer.to}
-                            </span>
+                            <span className="text-sm font-medium">{transfer.toName}</span>
                           </div>
                           {transfer.Document_Number && (
                             <div className="text-xs text-gray-600 mt-1">
@@ -714,31 +896,29 @@ const showTransferDetails = (transfer, dayData, e) => {
                         </div>
                       ) : transfer.isGroup ? (
                         <div className="flex flex-col">
-                           {transfer.transfers.some(t => t.isManualTransfer) && (
-                                  <FilePenLine className="text-black text-center" size={25} />
-                                )}
-                      <div className="flex items-center justify-between">
-                        
-                              <div className="flex items-center">
-                             
-                                <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
-                                <div className="text-sm font-medium">De : {transfer.from}</div>
-                                
-                              </div>
-                              <div className="flex">
-                                
-                                <button
-                                  onClick={(e) => toggleGroup(transfer.groupKey, e)}
-                                  className="p-1" id='viewdocument'
-                                >
-                                  {expandedGroups[transfer.groupKey] ? 
-                                    <ChevronDown size={16} /> : 
-                                    <ChevronRight size={16} />
-                                  }
-                                </button>
-                              </div>
+                          {transfer.transfers.some((t) => t.isManualTransfer) && (
+                            <FilePenLine className="text-black text-center" size={25} />
+                          )}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
+                              <div className="text-sm font-medium">De : {transfer.fromName}</div>
                             </div>
-                          <div className="text-sm ml-4">À : {transfer.to}</div>
+                            <div className="flex">
+                              <button
+                                onClick={(e) => toggleGroup(transfer.groupKey, e)}
+                                className="p-1"
+                                id="viewdocument"
+                              >
+                                {expandedGroups[transfer.groupKey] ? (
+                                  <ChevronDown size={16} />
+                                ) : (
+                                  <ChevronRight size={16} />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="text-sm ml-4">À : {transfer.toName}</div>
                           <div className="text-xs text-gray-600 mt-1 flex justify-between">
                             <span>Quantité : {transfer.totalQuantity}</span>
                             <span>Transferts : {transfer.transfers.length}</span>
@@ -751,7 +931,7 @@ const showTransferDetails = (transfer, dayData, e) => {
                                   'En cours': 'bg-blue-500',
                                   'Confirmé': 'bg-green-500',
                                   'En attente': 'bg-orange-500',
-                                  'Annulé': 'bg-red-500'
+                                  'Annulé': 'bg-red-500',
                                 };
                                 return (
                                   <div key={i} className="flex items-center">
@@ -767,56 +947,57 @@ const showTransferDetails = (transfer, dayData, e) => {
                               <span>Magasin(s) non actif chez Stradi.</span>
                             </div>
                           )}
-                      {expandedGroups[transfer.groupKey] && (
-  <div className="mt-2 pt-2 border-t text-xs">
-    {transfer.transfers.slice(0, 3).map((item, i) => (
-      <div id='All_calendar' key={i} className="flex flex-col mt-1">
-        {!item.isManualTransfer && (
-          <span>N° {item.Document_Number}</span>
-        )}
-        {item.isManualTransfer && item.items && (
-          <div className="flex flex-wrap gap-1">
-            {item.items.map((barcodeItem, idx) => (
-              <span key={idx} className="px-1 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
-                {barcodeItem.barcode}
-              </span>
-            ))}
-          </div>
-        )}
-        <span>Qté: {item.quantity}</span>
-      </div>
-    ))}
-    {transfer.transfers.length > 3 && (
-      <div className="text-blue-500 text-center mt-1">
-        +{transfer.transfers.length - 3} plus...
-      </div>
-    )}
-  </div>
-)}
+                          {expandedGroups[transfer.groupKey] && (
+                            <div className="mt-2 pt-2 border-t text-xs">
+                              {transfer.transfers.slice(0, 3).map((item, i) => (
+                                <div id="All_calendar" key={i} className="flex flex-col mt-1">
+                                  {!item.isManualTransfer && <span>N° {item.Document_Number}</span>}
+                                  {item.isManualTransfer && item.items && (
+                                    <div className="flex flex-wrap gap-1">
+                                      {item.items.map((barcodeItem, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="px-1 py-0.5 bg-gray-100 text-gray-800 rounded text-xs"
+                                        >
+                                          {barcodeItem.barcode}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  <span>Qté: {item.quantity}</span>
+                                </div>
+                              ))}
+                              {transfer.transfers.length > 3 && (
+                                <div className="text-blue-500 text-center mt-1">
+                                  +{transfer.transfers.length - 3} plus...
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="flex flex-col">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
-                            <div className="text-sm font-medium">De : {transfer.from}</div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
+                              <div className="text-sm font-medium">De : {transfer.fromName}</div>
+                            </div>
+                            {transfer.isManualTransfer && (
+                              <FilePenLine className="text-gray-500" size={16} />
+                            )}
                           </div>
-                          {transfer.isManualTransfer && (
-                            <FilePenLine className="text-gray-500" size={16} />
+                          <div className="text-sm ml-4">À : {transfer.toName}</div>
+                          {transfer.Document_Number && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              N° {transfer.Document_Number}
+                            </div>
+                          )}
+                          {transfer.quantity && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              Quantité : {transfer.quantity}
+                            </div>
                           )}
                         </div>
-                        <div className="text-sm ml-4">À : {transfer.to}</div>
-                        {transfer.Document_Number && (
-                          <div className="text-xs text-gray-600 mt-1">
-                            N° {transfer.Document_Number}
-                          </div>
-                        )}
-                        {transfer.quantity && (
-                          <div className="text-xs text-gray-600 mt-1">
-                            Quantité : {transfer.quantity}
-                          </div>
-                        )}
-                      </div>
                       )}
                     </div>
                   )}
