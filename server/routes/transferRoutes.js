@@ -10,7 +10,6 @@ const transferValidationRules = [
   check('Date').isISO8601().withMessage('Format de date invalide'),
   check('Document_Number').isNumeric().withMessage('Le numéro de document doit être un nombre'),
   check('MOVEMENTS').isArray().withMessage('MOVEMENTS doit être un tableau'),
-  check('MOVEMENTS.*.Units').isInt({ min: 1 }).withMessage('Les unités doivent être un nombre positif'),
   check('status').isIn(['En cours', 'Confirmé', 'En attente', 'Annulé', 'Inventaire'])
     .withMessage('Statut invalide')
 ];
