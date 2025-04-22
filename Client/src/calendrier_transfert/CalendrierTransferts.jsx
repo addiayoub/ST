@@ -328,27 +328,19 @@
 
 
 
-
-    // Charger tous les transferts et inventaires
-
     const mergeTransfersAndInventories = (transfersResponse, inventoriesResponse, manualTransfersResponse) => {
       const mergedData = {};
     
       const getMagasinName = (magasinId) => {
         if (!magasinId) return 'Magasin inconnu';
-        
-        // Vérifier avec des logs pour déboguer
-     
-        
-        // Essayer plusieurs méthodes de correspondance
         const magasin = warehouses.find((wh) => 
           wh._id === magasinId || 
           wh.id === magasinId || 
           (typeof magasinId === 'object' && (wh._id === magasinId._id || wh.id === magasinId.id))
         );
-        
         return magasin ? magasin.nomMagasin : 'Magasin inconnu';
       };
+    
       // Traitement des transferts
       if (transfersResponse?.data) {
         transfersResponse.data.forEach((transfer) => {
@@ -367,10 +359,10 @@
             documentNumber: transfer.Document_Number,
             date: formatDateString(transfer.Date),
             Date: transfer.Date,
-            from: transfer.from, // Conserver l'ID du magasin source
-            to: transfer.to, // Conserver l'ID du magasin destination
-            fromName: getMagasinName(transfer.from), // Nom pour l'affichage
-            toName: getMagasinName(transfer.to), // Nom pour l'affichage
+            from: transfer.from?._id || transfer.from, // Conserver l'ID
+            to: transfer.to?._id || transfer.to,       // Conserver l'ID
+            fromName: transfer.from?.nomMagasin || 'Magasin inconnu', // Utiliser nomMagasin
+            toName: transfer.to?.nomMagasin || 'Magasin inconnu',     // Utiliser nomMagasin
           });
         });
       }
@@ -420,10 +412,10 @@
     
           mergedData[dateKey].transfers.push({
             _id: manualTransfer._id,
-            from: manualTransfer.fromLocation?._id, // ID du magasin source
-            to: manualTransfer.toLocation?._id, // ID du magasin destination
-            fromName: manualTransfer.fromLocation?.nomMagasin || 'Magasin inconnu', // Nom pour l'affichage
-            toName: manualTransfer.toLocation?.nomMagasin || 'Magasin inconnu', // Nom pour l'affichage
+            from: manualTransfer.fromLocation?._id,
+            to: manualTransfer.toLocation?._id,
+            fromName: manualTransfer.fromLocation?.nomMagasin || 'Magasin inconnu',
+            toName: manualTransfer.toLocation?.nomMagasin || 'Magasin inconnu',
             fromLocationId: manualTransfer.fromLocation?._id,
             toLocationId: manualTransfer.toLocation?._id,
             status: manualTransfer.status,
@@ -443,7 +435,6 @@
     
       return mergedData;
     };
-
     const getManualTransferTypeColor = (status) => {
       switch (status) {
         case 'En attente': return 'orange';

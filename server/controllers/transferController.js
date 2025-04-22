@@ -21,8 +21,8 @@ const formatTransferResponse = (transfer) => ({
   Sequence: transfer.Sequence,
   Void_Sequence: transfer.Void_Sequence,
   MOVEMENTS: transfer.MOVEMENTS,
-  from: transfer.from, // On garde le format original (ID seulement)
-  to: transfer.to,    // On garde le format original (ID seulement)
+  from: transfer.from, // Maintenant un objet magasin avec _id et nomMagasin
+  to: transfer.to,    // Maintenant un objet magasin avec _id et nomMagasin
   status: transfer.status,
   type: transfer.type,
   showBoxIcon: transfer.showBoxIcon,
@@ -50,12 +50,14 @@ exports.getAllTransfers = async (req, res) => {
     if (status) query.status = status;
     if (storeId) {
       query.$or = [
-        { 'from': storeId },
-        { 'to': storeId }
+        { 'from._id': storeId },
+        { 'to._id': storeId }
       ];
     }
     
     const transfers = await Transfer.find(query)
+      .populate('from', '_id nomMagasin') // Peupler from avec _id et nomMagasin
+      .populate('to', '_id nomMagasin')   // Peupler to avec _id et nomMagasin
       .sort({ Date: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
@@ -98,12 +100,15 @@ exports.getTransfersByPeriod = async (req, res) => {
     if (status) query.status = status;
     if (storeId) {
       query.$or = [
-        { 'from': storeId },
-        { 'to': storeId }
+        { 'from._id': storeId },
+        { 'to._id': storeId }
       ];
     }
 
-    const transfers = await Transfer.find(query).sort({ Date: -1 });
+    const transfers = await Transfer.find(query)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin')
+      .sort({ Date: -1 });
 
     res.status(200).json({
       success: true,
@@ -117,7 +122,9 @@ exports.getTransfersByPeriod = async (req, res) => {
 
 exports.getTransferById = async (req, res) => {
   try {
-    const transfer = await Transfer.findById(req.params.id);
+    const transfer = await Transfer.findById(req.params.id)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin');
       
     if (!transfer) {
       return res.status(404).json({ 
@@ -168,9 +175,14 @@ exports.createTransfer = async (req, res) => {
     
     const savedTransfer = await newTransfer.save();
     
+    // Repeupler les champs from et to pour la réponse
+    const populatedTransfer = await Transfer.findById(savedTransfer._id)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin');
+    
     res.status(201).json({
       success: true,
-      data: formatTransferResponse(savedTransfer)
+      data: formatTransferResponse(populatedTransfer)
     });
   } catch (error) {
     handleErrors(res, error, 400);
@@ -216,9 +228,14 @@ exports.updateTransfer = async (req, res) => {
       });
     }
     
+    // Repeupler les champs from et to pour la réponse
+    const populatedTransfer = await Transfer.findById(updatedTransfer._id)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin');
+    
     res.status(200).json({
       success: true,
-      data: formatTransferResponse(updatedTransfer)
+      data: formatTransferResponse(populatedTransfer)
     });
   } catch (error) {
     handleErrors(res, error, 400);
@@ -236,10 +253,15 @@ exports.deleteTransfer = async (req, res) => {
       });
     }
     
+    // Repeupler les champs from et to pour la réponse
+    const populatedTransfer = await Transfer.findById(transfer._id)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin');
+    
     res.status(200).json({
       success: true,
       message: 'Transfert supprimé avec succès',
-      data: formatTransferResponse(transfer)
+      data: formatTransferResponse(populatedTransfer || transfer)
     });
   } catch (error) {
     handleErrors(res, error);

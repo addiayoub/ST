@@ -56,4 +56,4 @@ magasinSchema.pre('save', async function(next) {
   next();
 });
 
-module.exports = mongoose.model('Magasin', magasinSchema, 'magasin');
+module.exports = mongoose.model('Magasin', magasinSchema, 'magasins');
