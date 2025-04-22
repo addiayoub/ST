@@ -403,14 +403,14 @@ mergedData[dateKey].transfers.push({
   };
   // Fonction helper pour créer un objet inventaire standardisé
  // Modify the createInventoryObject function to extract the magasin name from destination object
-const createInventoryObject = (inventory) => ({
+ const createInventoryObject = (inventory) => ({
   _id: inventory._id,
   from: '', // Pas de source pour les inventaires
-  to: inventory.destination?.nomMagasin || 'Magasin inconnu', // Extract the name string
-  destinationId: inventory.destination?._id, // Store the ID separately if needed
+  to: inventory.destination?.nomMagasin || 'Magasin inconnu',
+  destinationId: inventory.destination?._id || inventory.destination?.id, // Store both ID formats
   status: inventory.status,
   type: getInventoryTypeColor(inventory.status),
-  isInventory: true, // Explicitement marqué comme inventaire
+  isInventory: true,
   showBoxIcon: true,
   description: inventory.comment || 'Inventaire planifié',
   documentNumber: inventory.documentNumber || '',
@@ -449,30 +449,44 @@ const createInventoryObject = (inventory) => ({
 // Mettre à jour un inventaire
 const updateInventory = async (id, inventoryData) => {
   try {
-    const api = getApi(); // Use getApi() to get a properly authenticated API instance
+    const api = getApi();
     
-    // Make sure the data structure matches what the API expects
-    const response = await api.put(`/api/inventories/${id}`, {
+    // First, get the warehouse ID from the name
+    const warehousesResponse = await api.get('/api/magasins');
+    const warehouses = warehousesResponse.data.data || warehousesResponse.data;
+    
+    // Find the warehouse by name (case-insensitive)
+    const destinationWarehouse = warehouses.find(wh => 
+      wh.nomMagasin.toLowerCase() === inventoryData.destination.toLowerCase() ||
+      `Stradi ${wh.nomMagasin.replace(/^Stradi\s+/i, '')}`.toLowerCase() === inventoryData.destination.toLowerCase()
+    );
+
+    if (!destinationWarehouse) {
+      throw new Error('Magasin destination introuvable');
+    }
+
+    // Prepare the data with the warehouse ID
+    const dataToSend = {
       date: inventoryData.date,
-      destination: inventoryData.destination, // Make sure this is the ID, not the name
+      destination: destinationWarehouse._id || destinationWarehouse.id, // Use ID instead of name
       status: inventoryData.status,
-      comment: inventoryData.description // Make sure field names match the API expectations
-    });
+      comment: inventoryData.description
+    };
+
+    const response = await api.put(`/api/inventories/${id}`, dataToSend);
     
-    await fetchAllTransfers(); // Refresh all data
+    await fetchAllTransfers();
     return response.data;
   } catch (err) {
     console.error('Error updating inventory:', err);
-    console.log('Request data:', inventoryData);
     MySwal.fire({
       title: 'Erreur',
-      text: err.response?.data?.message || 'Erreur lors de la mise à jour de l\'inventaire',
+      text: err.response?.data?.message || err.message || 'Erreur lors de la mise à jour de l\'inventaire',
       icon: 'error'
     });
     throw err;
   }
 };
-
   // Supprimer un inventaire
 
 
