@@ -6,9 +6,9 @@ const inventorySchema = new mongoose.Schema({
     required: [true, 'Veuillez ajouter une date']
   },
   destination: {
-    type: String,
-    required: [true, 'Veuillez ajouter une destination'],
-    trim: true
+    type: mongoose.Schema.ObjectId,
+    ref: 'Magasin', // Reference to the Magasin model
+    required: [true, 'Veuillez ajouter une destination']
   },
   comment: {
     type: String,
@@ -39,5 +39,14 @@ const inventorySchema = new mongoose.Schema({
 
 // Index pour optimiser les recherches
 inventorySchema.index({ date: 1, destination: 1 });
+
+// Populate destination automatically in find queries
+inventorySchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'destination',
+    select: 'nomMagasin'
+  });
+  next();
+});
 
 module.exports = mongoose.model('Inventory', inventorySchema);

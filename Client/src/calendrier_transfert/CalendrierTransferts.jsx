@@ -402,21 +402,22 @@ mergedData[dateKey].transfers.push({
     }
   };
   // Fonction helper pour créer un objet inventaire standardisé
-  const createInventoryObject = (inventory) => ({
-    _id: inventory._id,
-    from: '', // Pas de source pour les inventaires
-    to: inventory.destination,
-    status: inventory.status,
-    type: getInventoryTypeColor(inventory.status),
-    isInventory: true, // Explicitement marqué comme inventaire
-    showBoxIcon: true,
-    description: inventory.comment || 'Inventaire planifié',
-    documentNumber: inventory.documentNumber || '',
-    date: formatDateString(inventory.date),
-    createdAt: formatDateTimeString(inventory.createdAt),
-    updatedAt: inventory.updatedAt ? formatDateTimeString(inventory.updatedAt) : undefined
-  });
-
+ // Modify the createInventoryObject function to extract the magasin name from destination object
+const createInventoryObject = (inventory) => ({
+  _id: inventory._id,
+  from: '', // Pas de source pour les inventaires
+  to: inventory.destination?.nomMagasin || 'Magasin inconnu', // Extract the name string
+  destinationId: inventory.destination?._id, // Store the ID separately if needed
+  status: inventory.status,
+  type: getInventoryTypeColor(inventory.status),
+  isInventory: true, // Explicitement marqué comme inventaire
+  showBoxIcon: true,
+  description: inventory.comment || 'Inventaire planifié',
+  documentNumber: inventory.documentNumber || '',
+  date: formatDateString(inventory.date),
+  createdAt: formatDateTimeString(inventory.createdAt),
+  updatedAt: inventory.updatedAt ? formatDateTimeString(inventory.updatedAt) : undefined
+});
   // Helper function to determine inventory color based on status
   const getInventoryTypeColor = (status) => {
     switch (status) {
@@ -445,21 +446,32 @@ mergedData[dateKey].transfers.push({
  
 
 
-  // Mettre à jour un inventaire
-  const updateInventory = async (id, inventoryData) => {
-    try {
-      const response = await api.put(`/api/inventories/${id}`, inventoryData);
-      await fetchAllTransfers(); // Refresh all data
-      return response.data;
-    } catch (err) {
-      MySwal.fire({
-        title: 'Erreur',
-        text: err.response?.data?.message || 'Erreur lors de la mise à jour de l\'inventaire',
-        icon: 'error'
-      });
-      throw err;
-    }
-  };
+// Mettre à jour un inventaire
+const updateInventory = async (id, inventoryData) => {
+  try {
+    const api = getApi(); // Use getApi() to get a properly authenticated API instance
+    
+    // Make sure the data structure matches what the API expects
+    const response = await api.put(`/api/inventories/${id}`, {
+      date: inventoryData.date,
+      destination: inventoryData.destination, // Make sure this is the ID, not the name
+      status: inventoryData.status,
+      comment: inventoryData.description // Make sure field names match the API expectations
+    });
+    
+    await fetchAllTransfers(); // Refresh all data
+    return response.data;
+  } catch (err) {
+    console.error('Error updating inventory:', err);
+    console.log('Request data:', inventoryData);
+    MySwal.fire({
+      title: 'Erreur',
+      text: err.response?.data?.message || 'Erreur lors de la mise à jour de l\'inventaire',
+      icon: 'error'
+    });
+    throw err;
+  }
+};
 
   // Supprimer un inventaire
 

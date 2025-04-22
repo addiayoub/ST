@@ -232,96 +232,100 @@ const CalendarGrid = ({
     });
   };
 
-  const showTransferDetails = (transfer, dayData, e) => {
-    if (!transfer) return;
-    e && e.stopPropagation();
-  
-    const isManualTransfer = transfer.isManualTransfer;
-    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
-    const toExists = checkMagasinExists(transfer.to);
-  
-    const convertToDateInput = (dateStr) => {
-      if (!dateStr) return '';
-      if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
-      const [day, month, year] = dateStr.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    };
-  
-    // Calculer la quantité totale pour les transferts manuels
-    const totalQuantity = isManualTransfer 
-      ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
-      : transfer.quantity || 0;
-  
-    // Créer un affichage des codes-barres pour les transferts manuels
-    const barcodeCounts = {};
-    if (isManualTransfer && transfer.items) {
-      transfer.items.forEach(item => {
-        barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
-      });
-    }
-  
-    MySwal.fire({
-      background: transfer.showBoxIcon ? '#fff' : '#FFF',
-      html: (
-        <div className="p-4 space-y-4">
-          <div className="text-transfer font-semibold mb-4 text-black">
-            Détails {transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
+const showTransferDetails = (transfer, dayData, e) => {
+  if (!transfer) return;
+  e && e.stopPropagation();
+
+  const isManualTransfer = transfer.isManualTransfer;
+  const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.from);
+  const toExists = checkMagasinExists(transfer.to);
+
+  const convertToDateInput = (dateStr) => {
+    if (!dateStr) return '';
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
+  // Normaliser le nom du magasin pour correspondre à transferOptions.toOptions
+  const normalizeMagasinName = (name) => {
+    if (!name) return '';
+    return `Stradi ${name.trim().replace(/^Stradi\s+/i, '')}`;
+  };
+
+  const totalQuantity = isManualTransfer
+    ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
+    : transfer.quantity || 0;
+
+  const barcodeCounts = {};
+  if (isManualTransfer && transfer.items) {
+    transfer.items.forEach(item => {
+      barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
+    });
+  }
+
+  MySwal.fire({
+    background: transfer.showBoxIcon ? '#fff' : '#FFF',
+    html: (
+      <div className="p-4 space-y-4">
+        <div className="text-transfer font-semibold mb-4 text-black">
+          Détails {transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
+        </div>
+
+        {!transfer.showBoxIcon && !fromExists && (
+          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <AlertCircle className="mr-2" size={20} />
+            <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
           </div>
-  
-          {!transfer.showBoxIcon && !fromExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin source "{transfer.from}" n'appartient pas aux magasins Stradi actifs.</span>
-            </div>
-          )}
-          {!toExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
-            </div>
-          )}
-  
-          {transfer.showBoxIcon ? (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="block mb-1 text-black">Emplacement :</strong>
-                <select
-                  name="to"
-                  defaultValue={transfer.to || ''}
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-                >
-                  {transferOptions.toOptions.map((option, index) => (
-                    <option key={index} value={option} className="text-black">
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <strong className="block mb-1 text-black">Date :</strong>
-                <input
-                  type="date"
-                  name="date"
-                  defaultValue={convertToDateInput(transfer.date || '')}
-                  className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
-                />
-              </div>
-              <div>
-                <strong className="block mb-1 text-black">Statut :</strong>
-                <select
-                  name="status"
-                  defaultValue={transfer.status || ''}
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-                >
-                  {transferOptions.statusOptions.map((option, index) => (
-                    <option key={index} value={option} className="text-black">
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ) : (
+        )}
+        {!toExists && (
+          <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <AlertCircle className="mr-2" size={20} />
+            <span>Le magasin {transfer.showBoxIcon ? "" : "destination "} "{transfer.to}" n'appartient pas aux magasins Stradi actifs.</span>
+          </div>
+        )}
+
+{transfer.showBoxIcon ? (
+  <div className="grid grid-cols-2 gap-4">
+    <div>
+      <strong className="block mb-1 text-black">Emplacement :</strong>
+      <select
+        name="to"
+        defaultValue={normalizeMagasinName(transfer.to) || ''}
+        className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+      >
+        {transferOptions.toOptions.map((option, index) => (
+          <option key={index} value={option} className="text-black">
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <strong className="block mb-1 text-black">Date :</strong>
+      <input
+        type="date"
+        name="date"
+        defaultValue={convertToDateInput(transfer.date || '')}
+        className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
+      />
+    </div>
+    <div>
+      <strong className="block mb-1 text-black">Statut :</strong>
+      <select
+        name="status"
+        defaultValue={transfer.status || ''}
+        className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+      >
+        {transferOptions.statusOptions.map((option, index) => (
+          <option key={index} value={option} className="text-black">
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+) : (
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>

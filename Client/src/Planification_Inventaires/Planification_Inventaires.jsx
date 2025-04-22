@@ -8,10 +8,8 @@ import DatePicker from './DatePicker';
 
 const Planification_Inventaires = () => {
   const [inventories, setInventories] = useState([]);
-  const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedStore, setSelectedStore] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   
   // Toggle states for sections
@@ -21,13 +19,14 @@ const Planification_Inventaires = () => {
   // États pour le mini calendrier
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [miniCalendarDays, setMiniCalendarDays] = useState([]);
-  
-  const [newInventory, setNewInventory] = useState({
-    date: '',
-    destination: '',
-    comment: '',
-    status: 'En attente'
-  });
+  const [destinations, setDestinations] = useState([]); // Array of { _id, nomMagasin } objects
+const [selectedStore, setSelectedStore] = useState(''); // Store magasin _id instead of name
+const [newInventory, setNewInventory] = useState({
+  date: '',
+  destination: '', // Will store magasin _id
+  comment: '',
+  status: 'En attente'
+});
 
   // Helper function to get auth headers
   const getAuthHeaders = (includeContentType = true) => {
@@ -193,10 +192,10 @@ const Planification_Inventaires = () => {
   // Filtrer les inventaires
   const filteredInventories = inventories.filter(inventory => {
     // Filtre par magasin
-    if (selectedStore && inventory.destination !== selectedStore) {
+    if (selectedStore && inventory.destination._id !== selectedStore) {
       return false;
     }
-    
+  
     // Filtre par date
     if (selectedDate) {
       const invDate = new Date(inventory.date);
@@ -206,42 +205,37 @@ const Planification_Inventaires = () => {
         invDate.getFullYear() === selectedDate.getFullYear()
       );
     }
-    
+  
     return true;
   });
-
   // Fetch inventories and destinations on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoriesRes, magasinsRes] = await Promise.all([
+        const [inventoriesRes, destinationsRes] = await Promise.all([
           fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
             headers: getAuthHeaders(false)
           }),
-          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/magasins`, {
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories/destinations`, {
             headers: getAuthHeaders(false)
           })
         ]);
-
+  
         if (!inventoriesRes.ok) {
           const errorData = await inventoriesRes.json();
           throw new Error(errorData.message || 'Failed to fetch inventories');
         }
-        
-        if (!magasinsRes.ok) {
-          const errorData = await magasinsRes.json();
-          throw new Error(errorData.message || 'Failed to fetch magasins');
+  
+        if (!destinationsRes.ok) {
+          const errorData = await destinationsRes.json();
+          throw new Error(errorData.message || 'Failed to fetch destinations');
         }
-
+  
         const inventoriesData = await inventoriesRes.json();
-        const magasinsData = await magasinsRes.json();
-
+        const destinationsData = await destinationsRes.json();
+  
         setInventories(inventoriesData.data);
-        
-        // Filtrer uniquement les magasins actifs
-        const activeMagasins = magasinsData.data.filter(m => m.statut === 'active');
-        setDestinations(activeMagasins.map(m => m.nomMagasin));
-        
+        setDestinations(destinationsData.data); // Array of { _id, nomMagasin }
         setLoading(false);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -250,7 +244,7 @@ const Planification_Inventaires = () => {
         showErrorAlert(err.message);
       }
     };
-
+  
     fetchData();
   }, []);
 
@@ -308,7 +302,6 @@ const Planification_Inventaires = () => {
       });
       return;
     }
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventories`, {
         method: 'POST',
@@ -320,14 +313,23 @@ const Planification_Inventaires = () => {
           status: newInventory.status
         })
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to create inventory');
       }
-
+  
       const createdInventory = await response.json();
-      setInventories([...inventories, createdInventory.data]);
+      
+      // Trouver le magasin complet par son ID
+      const selectedDestination = destinations.find(dest => dest._id === newInventory.destination);
+      
+      // Ajouter l'inventaire avec le magasin complet
+      setInventories([...inventories, {
+        ...createdInventory.data,
+        destination: selectedDestination // Remplacer par l'objet magasin complet
+      }]);
+      
       setNewInventory({ date: '', destination: '', comment: '', status: 'En attente' });
       showSuccessAlert('L\'inventaire a été planifié avec succès');
       
@@ -338,7 +340,6 @@ const Planification_Inventaires = () => {
       showErrorAlert(err.message);
     }
   };
-
   const removeInventory = async (id) => {
     Swal.fire({
       background: 'transparent',
@@ -473,7 +474,7 @@ const Planification_Inventaires = () => {
           value="${inventory.date.split('T')[0]}" placeholder="Date">
         <select id="swal-input-destination" class="swal2-input custom-swal-input">
           ${destinations.map(dest => 
-            `<option value="${dest}" ${inventory.destination === dest ? 'selected' : ''}>${dest}</option>`
+            `<option value="${dest._id}" ${inventory.destination._id === dest._id ? 'selected' : ''}>${dest.nomMagasin}</option>`
           ).join('')}
         </select>
         <select id="swal-input-status" class="swal2-input custom-swal-input">
@@ -539,18 +540,26 @@ const Planification_Inventaires = () => {
               comment: result.value.comment
             })
           });
-
+        
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || 'Failed to update inventory');
           }
-
+        
           const updatedInventory = await response.json();
-          setInventories(inventories.map(inv => 
-            inv._id === inventory._id ? updatedInventory.data : inv
-          ));
-          showSuccessAlert('Les modifications ont été enregistrées');
           
+          // Trouver le magasin complet par son ID
+          const selectedDestination = destinations.find(dest => dest._id === result.value.destination);
+          
+          setInventories(inventories.map(inv => 
+            inv._id === inventory._id ? {
+              ...updatedInventory.data,
+              destination: selectedDestination // Remplacer par l'objet magasin complet
+            } : inv
+          ));
+          
+          showSuccessAlert('Les modifications ont été enregistrées');
+        
           // Mettre à jour le calendrier après la modification
           setMiniCalendarDays(generateCalendarDays(currentMonth));
         } catch (err) {
@@ -560,7 +569,6 @@ const Planification_Inventaires = () => {
       }
     });
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewInventory(prev => ({
@@ -661,20 +669,20 @@ const Planification_Inventaires = () => {
   />
 </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
-                    <select
-                      name="destination"
-                      value={newInventory.destination}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border rounded-lg"
-                    >
-                      <option value="">Sélectionnez une destination</option>
-                      {destinations.map((dest, index) => (
-                        <option key={index} value={dest}>{dest}</option>
-                      ))}
-                    </select>
-                  </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+  <select
+    name="destination"
+    value={newInventory.destination}
+    onChange={handleInputChange}
+    className="w-full px-3 py-2 border rounded-lg"
+  >
+    <option value="">Sélectionnez une destination</option>
+    {destinations.map((dest) => (
+      <option key={dest._id} value={dest._id}>{dest.nomMagasin}</option>
+    ))}
+  </select>
+</div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
@@ -725,16 +733,16 @@ const Planification_Inventaires = () => {
               </h3>
               
               <div className="flex items-center ">
-                <select
-                  value={selectedStore}
-                  onChange={(e) => setSelectedStore(e.target.value)}
-                  className="px-3 py-2 border rounded-lg text-sm mr-2 cursor-pointer"
-                >
-                  <option value="">Tous les magasins</option>
-                  {destinations.map((dest, index) => (
-                    <option key={index} value={dest}>{dest}</option>
-                  ))}
-                </select>
+              <select
+  value={selectedStore}
+  onChange={(e) => setSelectedStore(e.target.value)}
+  className="px-3 py-2 border rounded-lg text-sm mr-2 cursor-pointer"
+>
+  <option value="">Tous les magasins</option>
+  {destinations.map((dest) => (
+    <option key={dest._id} value={dest._id}>{dest.nomMagasin}</option>
+  ))}
+</select>
                 
                 <button 
                   onClick={toggleInventoryList}
@@ -780,7 +788,7 @@ const Planification_Inventaires = () => {
                           {inventory.date ? new Date(inventory.date).toLocaleDateString() : 'Non spécifiée'}
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                          {inventory.destination}
+                        {inventory.destination.nomMagasin}
                         </td>
                         <td className={`px-4 py-2 whitespace-nowrap text-sm ${
                           inventory.status === 'En attente' ? 'text-orange-500' :

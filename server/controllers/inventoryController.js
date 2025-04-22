@@ -1,12 +1,30 @@
 const Inventory = require('../models/Inventory');
+const Magasin = require('../models/Magasin');
 const asyncHandler = require('express-async-handler');
-const User = require('../models/User');
+const mongoose = require('mongoose');
 
 // @desc    Créer un nouvel inventaire
 // @route   POST /api/inventories
 // @access  Private/Admin
 exports.createInventory = asyncHandler(async (req, res, next) => {
   const { date, destination, comment } = req.body;
+
+  // Validate destination as a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(destination)) {
+    return res.status(400).json({
+      success: false,
+      message: 'ID de magasin invalide'
+    });
+  }
+
+  // Verify that the magasin exists
+  const magasinExists = await Magasin.findById(destination);
+  if (!magasinExists) {
+    return res.status(400).json({
+      success: false,
+      message: 'Magasin non trouvé'
+    });
+  }
 
   // Vérifier si un inventaire existe déjà pour cette date et destination
   const existingInventory = await Inventory.findOne({ 
@@ -43,13 +61,22 @@ exports.getInventories = asyncHandler(async (req, res, next) => {
   let query = {};
 
   if (date) query.date = date;
-  if (destination) query.destination = { $regex: destination, $options: 'i' };
+  if (destination) {
+    if (!mongoose.Types.ObjectId.isValid(destination)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de magasin invalide'
+      });
+    }
+    query.destination = destination;
+  }
   if (status) query.status = status;
 
   const inventories = await Inventory.find(query)
-    .populate('createdBy', 'name email')
-    .populate('updatedBy', 'name email')
-    .sort({ date: 1 });
+  .populate('destination', 'nomMagasin')  // Add this line
+  .populate('createdBy', 'name email')
+  .populate('updatedBy', 'name email')
+  .sort({ date: 1 });
 
   res.status(200).json({
     success: true,
@@ -94,6 +121,23 @@ exports.updateInventory = asyncHandler(async (req, res, next) => {
     });
   }
 
+  // Validate destination if provided
+  if (destination) {
+    if (!mongoose.Types.ObjectId.isValid(destination)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de magasin invalide'
+      });
+    }
+    const magasinExists = await Magasin.findById(destination);
+    if (!magasinExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'Magasin non trouvé'
+      });
+    }
+  }
+
   // Vérifier les conflits de date/destination
   if (date || destination) {
     const existingInventory = await Inventory.findOne({
@@ -124,70 +168,63 @@ exports.updateInventory = asyncHandler(async (req, res, next) => {
     data: inventory
   });
 });
+
 // @desc    Get inventories by period
 // @route   GET /api/inventories/period
 // @access  Private
-exports.getInventoriesByPeriod = async (req, res, next) => {
-  try {
-    const { startDate, endDate } = req.query;
-    
-    if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide both startDate and endDate'
-      });
-    }
-
-    const inventories = await Inventory.find({
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      }
-    }).sort({ date: 1 });
-
-    res.status(200).json({
-      success: true,
-      count: inventories.length,
-      data: inventories
+exports.getInventoriesByPeriod = asyncHandler(async (req, res, next) => {
+  const { startDate, endDate } = req.query;
+  
+  if (!startDate || !endDate) {
+    return res.status(400).json({
+      success: false,
+      message: 'Veuillez fournir une date de début et une date de fin'
     });
-  } catch (err) {
-    next(err);
   }
-};
+
+  const inventories = await Inventory.find({
+    date: {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate)
+    }
+  }).sort({ date: 1 });
+
+  res.status(200).json({
+    success: true,
+    count: inventories.length,
+    data: inventories
+  });
+});
+
 // @desc    Supprimer un inventaire
 // @route   DELETE /api/inventories/:id
 // @access  Private/Admin
-// Dans controllers/inventoryController.js
 exports.deleteInventory = asyncHandler(async (req, res, next) => {
-    const inventory = await Inventory.findById(req.params.id);
-  
-    if (!inventory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Inventaire non trouvé'
-      });
-    }
-  
-    // Remplacer cette ligne :
-    // await inventory.remove();
-    
-    // Par :
-    await inventory.deleteOne();
-  
-    res.status(200).json({
-      success: true,
-      data: {}
+  const inventory = await Inventory.findById(req.params.id);
+
+  if (!inventory) {
+    return res.status(404).json({
+      success: false,
+      message: 'Inventaire non trouvé'
     });
+  }
+
+  await inventory.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    data: {}
   });
+});
 
 // @desc    Récupérer les destinations disponibles
 // @route   GET /api/inventories/destinations
 // @access  Private
 exports.getDestinations = asyncHandler(async (req, res, next) => {
-  const destinations = await Inventory.distinct('destination');
+  const magasins = await Magasin.find({ statut: 'active' }).select('_id nomMagasin');
   
   res.status(200).json({
     success: true,
-    data: destinations
+    data: magasins
   });
 });
