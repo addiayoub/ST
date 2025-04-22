@@ -2,11 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CloudUpload, X, Check, AlertCircle, ChevronDown, ChevronUp, Calendar, Edit } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { getMagasins } from "../les apis/magasinService";
-import { BarcodeDatabase } from '../les apis/data';
 import api from '../les apis/api';
 
-// Exemple de base de données de codes-barres (à remplacer par votre data.js)
-const barcodeDatabase = BarcodeDatabase
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const FileImportComponent = () => {
@@ -14,6 +11,7 @@ const FileImportComponent = () => {
     const [isDragOver, setIsDragOver] = useState(false);
     const [fileAnalysis, setFileAnalysis] = useState({});
     const [expandedFile, setExpandedFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // New state for global loader
     const fileInputRef = useRef(null);
     
     // États pour gérer les magasins
@@ -22,12 +20,44 @@ const FileImportComponent = () => {
     const [error, setError] = useState(null);
     const createTransferManuelAPI = async (transferData) => {
       try {
+        setIsLoading(true); // Show loader
         const response = await api.post('/api/transfers-manuel', transferData);
         return response.data;
       } catch (error) {
         console.error('Erreur API:', error);
         const errorMessage = error.response?.data?.message || 'Erreur lors de la création du transfert manuel';
         throw new Error(errorMessage);
+      } finally {
+        setIsLoading(false); // Hide loader
+      }
+    };
+
+    // Fonction pour vérifier les codes-barres via l'API
+    const checkBarcodes = async (barcodes) => {
+      try {
+        setIsLoading(true); // Show loader
+        const response = await fetch('api/codes-barres/non-existants', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            codes_barres: barcodes
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erreur lors de la vérification des codes-barres');
+        }
+        
+        const data = await response.json();
+        return data.codes_non_existants || [];
+      } catch (error) {
+        console.error('Erreur lors de la vérification des codes-barres:', error);
+        throw error;
+      } finally {
+        setIsLoading(false); // Hide loader
       }
     };
 
@@ -36,6 +66,7 @@ const FileImportComponent = () => {
       const fetchActiveWarehouses = async () => {
         try {
           setLoading(true); 
+          setIsLoading(true); // Show loader
           const response = await getMagasins('/api/magasins');
           
           // Vérifier si response.data existe et si c'est un tableau
@@ -63,6 +94,7 @@ const FileImportComponent = () => {
           setWarehouses([]);
         } finally {
           setLoading(false);
+          setIsLoading(false); // Hide loader
         }
       };
 
@@ -98,16 +130,16 @@ const FileImportComponent = () => {
       }
     };
 
- // Fonction parseFileContent modifiée pour détecter automatiquement le format
-const parseFileContent = (content, fileId) => {
+// Fonction parseFileContent modifiée pour utiliser l'API
+const parseFileContent = async (content, fileId) => {
   const lines = content.split('\n').filter(line => line.trim() !== '');
   
   // Détecter le format du fichier à partir de la première ligne non vide
   const firstLine = lines[0];
   const isSimpleFormat = firstLine.split(';').length <= 2; // Format simple: "code;quantité"
   
-  const parsedItems = [];
-  const invalidItems = [];
+  // Extraire tous les codes-barres du fichier
+  const parsedBarcodes = [];
   
   lines.forEach(line => {
     let barcode, quantity;
@@ -123,70 +155,85 @@ const parseFileContent = (content, fileId) => {
       // Format complexe: "0;40;5009083001015;;1;304;304"
       const parts = line.split(';');
       if (parts.length >= 5) {
-        // Dans le format complexe, le code-barres est à la position 2 (indice 2)
-        // et la quantité à la position 4 (indice 4)
         barcode = parts[2].trim();
         quantity = parseInt(parts[4].trim()) || 1;
       }
     }
     
-    // Si le code-barres est valide, ajouter à la liste des items
+    // Si le code-barres est valide, ajouter à la liste
     if (barcode && barcode.length > 0) {
-      const exists = barcodeDatabase.includes(barcode);
-      
-      parsedItems.push({
+      parsedBarcodes.push({
         barcode,
-        quantity,
-        exists
+        quantity
       });
-      
-      if (!exists) {
-        invalidItems.push(barcode);
-      }
     }
   });
   
-  const newAnalysis = {
-    parsedData: parsedItems,
-    invalidBarcodes: invalidItems,
-    format: isSimpleFormat ? 'simple' : 'complexe'
-  };
+  // Récupérer seulement les codes-barres pour l'API
+  const barcodesList = parsedBarcodes.map(item => item.barcode);
   
-  setFileAnalysis(prev => ({
-    ...prev,
-    [fileId]: newAnalysis
-  }));
-  
-  if (parsedItems.length > 0) {
-    if (invalidItems.length > 0) {
-      // Afficher l'alerte pour les codes-barres invalides
-      Swal.fire({
-        title: 'Attention',
-        html: `
-          <div style="text-align: left;">
-            <p style="margin-bottom: 15px;">Des codes-barres ne sont pas valides:</p>
-            <div style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;">
-              ${invalidItems.map(barcode => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">${barcode}</div>`).join('')}
+  try {
+    // Vérification des codes-barres via l'API
+    const invalidBarcodes = await checkBarcodes(barcodesList);
+    
+    // Mise à jour des informations sur l'existence des codes-barres
+    const parsedItems = parsedBarcodes.map(item => ({
+      ...item,
+      exists: !invalidBarcodes.includes(item.barcode)
+    }));
+    
+    const newAnalysis = {
+      parsedData: parsedItems,
+      invalidBarcodes: invalidBarcodes,
+      format: isSimpleFormat ? 'simple' : 'complexe'
+    };
+    
+    setFileAnalysis(prev => ({
+      ...prev,
+      [fileId]: newAnalysis
+    }));
+    
+    if (parsedItems.length > 0) {
+      if (invalidBarcodes.length > 0) {
+        // Afficher l'alerte pour les codes-barres invalides
+        Swal.fire({
+          title: 'Attention',
+          html: `
+            <div style="text-align: left;">
+              <p style="margin-bottom: 15px;">Des codes-barres ne sont pas valides:</p>
+              <div style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                ${invalidBarcodes.map(barcode => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">${barcode}</div>`).join('')}
+              </div>
             </div>
-          </div>
-        `,
-        icon: 'error',
-        background: 'rgba(254, 226, 226, 0.9)',
-        confirmButtonColor: '#ef4444',
-        confirmButtonText: 'Compris',
-        customClass: {
-          container: 'swal-danger-container',
-          popup: 'swal-danger-popup',
-          title: 'swal-danger-title',
-          htmlContainer: 'swal-danger-html'
-        }
-      });
-    } else {
-      showTransferDialog(parsedItems, fileId);
+          `,
+          icon: 'error',
+          background: 'rgba(254, 226, 226, 0.9)',
+          confirmButtonColor: '#ef4444',
+          confirmButtonText: 'Compris',
+          customClass: {
+            container: 'swal-danger-container',
+            popup: 'swal-danger-popup',
+            title: 'swal-danger-title',
+            htmlContainer: 'swal-danger-html'
+          }
+        });
+      } else {
+        showTransferDialog(parsedItems, fileId);
+      }
     }
+  } catch (error) {
+    console.error('Erreur lors de la vérification des codes-barres:', error);
+    
+    // En cas d'erreur, afficher un message d'erreur
+    Swal.fire({
+      title: 'Erreur',
+      text: 'Une erreur est survenue lors de la vérification des codes-barres. Veuillez réessayer.',
+      icon: 'error',
+      confirmButtonColor: '#ef4444',
+    });
   }
 };
-   // Modifiez la fonction showTransferDialog pour éliminer la référence et appeler l'API
+
 // Modifiez la fonction showTransferDialog pour supprimer le fichier après sauvegarde
 const showTransferDialog = (parsedItems, fileId) => {
   const totalQuantity = parsedItems.reduce((total, item) => total + item.quantity, 0);
@@ -488,24 +535,24 @@ ${parsedItems.map(item =>
           position: relative;
         }
         .swal-danger-container {
-      backdrop-filter: blur(2px);
-    }
-    
-    .swal-danger-popup {
-      background: rgba(254, 226, 226, 0.95);
-      border-left: 5px solid #ef4444;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
-    }
-    
-    .swal-danger-title {
-      color: #b91c1c;
-      font-weight: 600;
-    }
-    
-    .swal-danger-html {
-      color: #7f1d1d;
-    }
+          backdrop-filter: blur(2px);
+        }
+        
+        .swal-danger-popup {
+          background: rgba(254, 226, 226, 0.95);
+          border-left: 5px solid #ef4444;
+          border-radius: 8px;
+          box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .swal-danger-title {
+          color: #b91c1c;
+          font-weight: 600;
+        }
+        
+        .swal-danger-html {
+          color: #7f1d1d;
+        }
         .barcode-tags {
           background-color: #f8f9fa;
           padding: 10px;
@@ -587,6 +634,108 @@ ${parsedItems.map(item =>
           color: #e53e3e;
           margin-top: 5px;
         }
+        
+        /* Loader CSS */
+        .loader { 
+          transform: rotateZ(45deg); 
+          perspective: 1000px; 
+          border-radius: 50%; 
+          width: 48px; 
+          height: 48px; 
+          color: #4299e1; 
+        } 
+        
+        .loader:before, 
+        .loader:after { 
+          content: ''; 
+          display: block; 
+          position: absolute; 
+          top: 0; 
+          left: 0; 
+          width: inherit; 
+          height: inherit; 
+          border-radius: 50%; 
+          transform: rotateX(70deg); 
+          animation: 1s spin linear infinite; 
+        } 
+        
+        .loader:after { 
+          color: white; 
+          transform: rotateY(70deg); 
+          animation-delay: .4s; 
+        } 
+        
+        @keyframes rotate { 
+          0% { 
+            transform: translate(-50%, -50%) rotateZ(0deg); 
+          } 
+          100% { 
+            transform: translate(-50%, -50%) rotateZ(360deg); 
+          } 
+        } 
+        
+        @keyframes rotateccw { 
+          0% { 
+            transform: translate(-50%, -50%) rotate(0deg); 
+          } 
+          100% { 
+            transform: translate(-50%, -50%) rotate(-360deg); 
+          } 
+        } 
+        
+        @keyframes spin { 
+          0%, 100% { 
+            box-shadow: .2em 0px 0 0px currentcolor; 
+          } 
+          12% { 
+            box-shadow: .2em .2em 0 0 currentcolor; 
+          } 
+          25% { 
+            box-shadow: 0 .2em 0 0px currentcolor; 
+          } 
+          37% { 
+            box-shadow: -.2em .2em 0 0 currentcolor; 
+          } 
+          50% { 
+            box-shadow: -.2em 0 0 0 currentcolor; 
+          } 
+          62% { 
+            box-shadow: -.2em -.2em 0 0 currentcolor; 
+          } 
+          75% { 
+            box-shadow: 0px -.2em 0 0 currentcolor; 
+          } 
+          87% { 
+            box-shadow: .2em -.2em 0 0 currentcolor; 
+          } 
+        }
+        
+        .loader-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+        
+        .loader-container {
+          padding: 20px;
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .loader-text {
+          margin-top: 15px;
+          color: #4a5568;
+          font-weight: 500;
+        }
       `;
       document.head.appendChild(style);
       
@@ -597,6 +746,15 @@ ${parsedItems.map(item =>
   
     return (
       <div className="relative w-300">
+        {/* Loader Overlay */}
+        {isLoading && (
+          <div className="loader-overlay">
+            <div className="loader-container">
+              <span className="loader"></span>
+            </div>
+          </div>
+        )}
+        
         <div 
           className={`bg-white rounded-2xl border-3 p-4 text-center 
             ${isDragOver ? 'border-blue-900 bg-blue-50' : 'border-gray-300'}
@@ -766,3 +924,4 @@ ${parsedItems.map(item =>
 
 export default FileImportComponent;
 
+//

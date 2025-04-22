@@ -8,8 +8,12 @@ export default defineConfig({
     host: true, // Permet d'exposer sur le réseau
     port: 5173,
     proxy: {
-      '/api': 'http://localhost:3000', // Backend en local
-    },
+      '/api': {
+        target: 'http://192.168.1.15:30000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   plugins: [react(),
     tailwindcss(),
