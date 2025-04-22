@@ -36,15 +36,19 @@ export const useTransferOptions = () => {
         
         const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
         
+        // Normalisation des noms des magasins
         const magasinNames = activeWarehouses.map(magasin => {
-          const nom = magasin.nomMagasin.replace(/^Stradi\s+/i, '');
+          const nom = magasin.nomMagasin.trim().replace(/^Stradi\s+/i, '');
           return `Stradi ${nom}`;
         });
         
+        // Suppression des doublons avec Set
+        const uniqueMagasinNames = [...new Set(magasinNames)];
+        
         setTransferOptions(prev => ({
           ...prev,
-          fromOptions: [...new Set(magasinNames)],
-          toOptions: [...new Set(magasinNames)],
+          fromOptions: uniqueMagasinNames,
+          toOptions: uniqueMagasinNames,
           activeWarehouses
         }));
       } catch (error) {
@@ -256,12 +260,6 @@ const CalendarGrid = ({
       });
     }
   
-    const detailsHtml = isManualTransfer
-      ? Object.entries(barcodeCounts)
-          .map(([barcode, qty]) => `<tr><td>${barcode}</td><td>${qty}</td></tr>`)
-          .join('')
-      : '';
-  
     MySwal.fire({
       background: transfer.showBoxIcon ? '#fff' : '#FFF',
       html: (
@@ -333,6 +331,12 @@ const CalendarGrid = ({
                     defaultValue={transfer.from || ''}
                     className="w-full p-2 border border-black text-black bg-transparent rounded"
                   >
+                    {/* Ajouter l'option actuelle si elle n'existe pas dans fromOptions */}
+                    {!transferOptions.fromOptions.includes(transfer.from) && transfer.from && (
+                      <option value={transfer.from} className="text-black">
+                        {transfer.from}
+                      </option>
+                    )}
                     {transferOptions.fromOptions.map((option, index) => (
                       <option key={index} value={option} className="text-black">
                         {option}
@@ -347,6 +351,12 @@ const CalendarGrid = ({
                     defaultValue={transfer.to || ''}
                     className="w-full p-2 border border-black text-black bg-transparent rounded"
                   >
+                    {/* Ajouter l'option actuelle si elle n'existe pas dans toOptions */}
+                    {!transferOptions.toOptions.includes(transfer.to) && transfer.to && (
+                      <option value={transfer.to} className="text-black">
+                        {transfer.to}
+                      </option>
+                    )}
                     {transferOptions.toOptions.map((option, index) => (
                       <option key={index} value={option} className="text-black">
                         {option}
@@ -356,7 +366,7 @@ const CalendarGrid = ({
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                  <div>
+                <div>
                   <strong className="block mb-1 text-black">Date :</strong>
                   <input
                     type="date"
@@ -377,7 +387,6 @@ const CalendarGrid = ({
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-              
                 <div>
                   <strong className="block mb-1 text-black">Statut :</strong>
                   <select
@@ -397,7 +406,7 @@ const CalendarGrid = ({
                 <>
                   <div className="mt-4">
                     <strong className="block mb-1 text-black">Codes-barres ( {Object.keys(barcodeCounts).length} uniques) :</strong>
-                    <div className="flex flex-wrap gap-2 p-2 border overflow-auto max-h-48  border-black rounded bg-gray-50">
+                    <div className="flex flex-wrap gap-2 p-2 border overflow-auto max-h-48 border-black rounded bg-gray-50">
                       {transfer.items.map((item, index) => (
                         <span key={index} className="px-2 py-1 bg-gray-200 text-black rounded-full">
                           {item.barcode}
