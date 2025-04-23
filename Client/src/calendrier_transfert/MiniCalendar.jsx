@@ -252,32 +252,46 @@ const MiniCalendar = ({
                           <span className="w-1 h-1 bg-blue-900 rounded-full"></span>
                         )}
                       </div>
+                      <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex justify-center space-x-1">
+  {day.hasEvent && !day.isCurrentDay && (
+    <>
+      {day.transferCount > 0 && <span className="w-1 h-1 bg-blue-900 rounded-full"></span>}
+      {day.manualTransferCount > 0 && <span className="w-1 h-1 bg-black rounded-full"></span>}
+    </>
+  )}
+</div>
                       
                       {/* Tooltip avec fade */}
-                      {(day.transferCount > 0 || day.inventoryCount > 0) && (
-                        <div className="
-                          absolute z-50 bottom-full ml-2 transform -translate-x-1/2
-                          bg-gray-800 text-white text-xs px-4 py-2 rounded whitespace-nowrap
-                          mb-2 pointer-events-none opacity-0 group-hover:opacity-100
-                          transition-opacity duration-300 shadow-lg
-                        ">
-                          <div className="flex flex-col items-start">
-                            {day.transferCount > 0 && (
-                              <div className="flex items-center">
-                                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                                <span>{day.transferCount} transfert{day.transferCount > 1 ? 's' : ''}</span>
-                              </div>
-                            )}
-                            {day.inventoryCount > 0 && (
-                              <div className="flex items-center mt-1">
-                                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                                <span>{day.inventoryCount} inventaire{day.inventoryCount > 1 ? 's' : ''}</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-gray-800 rotate-45"></div>
-                        </div>
-                      )}
+                      {(day.transferCount > 0 || day.inventoryCount > 0 || day.manualTransferCount > 0) && (
+  <div className="
+    absolute z-50 bottom-full ml-2 transform -translate-x-1/2
+    bg-gray-800 text-white text-xs px-4 py-2 rounded whitespace-nowrap
+    mb-2 pointer-events-none opacity-0 group-hover:opacity-100
+    transition-opacity duration-300 shadow-lg
+  ">
+    <div className="flex flex-col items-start">
+      {day.transferCount > 0 && (
+        <div className="flex items-center">
+          <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+          <span>{day.transferCount} transfert{day.transferCount > 1 ? 's' : ''} standard{day.transferCount > 1 ? 's' : ''}</span>
+        </div>
+      )}
+      {day.manualTransferCount > 0 && (
+        <div className="flex items-center mt-1">
+          <span className="w-2 h-2 bg-black rounded-full mr-2"></span>
+          <span>{day.manualTransferCount} transfert{day.manualTransferCount > 1 ? 's' : ''} manuel{day.manualTransferCount > 1 ? 's' : ''}</span>
+        </div>
+      )}
+      {day.inventoryCount > 0 && (
+        <div className="flex items-center mt-1">
+          <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+          <span>{day.inventoryCount} inventaire{day.inventoryCount > 1 ? 's' : ''}</span>
+        </div>
+      )}
+    </div>
+    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+  </div>
+)}
                     </div>
                   </td>
                 ))}

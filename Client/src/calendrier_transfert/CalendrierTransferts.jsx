@@ -830,15 +830,17 @@
               // Check if day has any transfers or inventories
               const hasTransfer = dayTransfers.some(t => !t.showBoxIcon);
               const hasInventory = dayTransfers.some(t => t.showBoxIcon);
-              
+              const hasManualTransfer = dayTransfers.some(t => t.isManualTransfer);
               week.push({
                 day: dayCount,
                 month: 'current',
-                hasEvent: hasTransfer || hasInventory,
+                hasEvent: hasTransfer || hasInventory || hasManualTransfer, // Modifié ici
                 hasInventory,
+                hasManualTransfer, // Ajouté ici
                 isCurrentDay: dayCount === selectedDay && month === currentMonth.getMonth(),
-                transferCount: dayTransfers.filter(t => !t.showBoxIcon).length,
-                inventoryCount: dayTransfers.filter(t => t.showBoxIcon).length,
+                transferCount: dayTransfers.filter(t => !t.showBoxIcon && !t.isManualTransfer).length, // Transferts standards
+                inventoryCount: dayTransfers.filter(t => t.showBoxIcon).length, // Inventaires
+                manualTransferCount: dayTransfers.filter(t => t.isManualTransfer).length, // Ajouté pour les transferts manuels
                 dateStr
               });
               dayCount++;
