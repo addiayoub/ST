@@ -45,9 +45,9 @@ const handleErrors = (res, error, status = 500) => {
 exports.getAllTransfers = async (req, res) => {
   try {
     const { status, storeId } = req.query;
-    const query = {};
+    const query = { status: { $ne: "Erreur" } }; // Exclure les transferts avec statut "Erreur"
     
-    if (status) query.status = status;
+    if (status) query.status = status; // Cette ligne remplacera la condition $ne si un statut spécifique est demandé
     if (storeId) {
       query.$or = [
         { 'from._id': storeId },
