@@ -44,7 +44,7 @@ const handleErrors = (res, error, status = 500) => {
 // Contrôleurs
 exports.getAllTransfers = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status, storeId } = req.query;
+    const { status, storeId } = req.query;
     const query = {};
     
     if (status) query.status = status;
@@ -56,23 +56,15 @@ exports.getAllTransfers = async (req, res) => {
     }
     
     const transfers = await Transfer.find(query)
-      .populate('from', '_id nomMagasin') // Peupler from avec _id et nomMagasin
-      .populate('to', '_id nomMagasin')   // Peupler to avec _id et nomMagasin
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin')
       .sort({ Date: -1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
       .exec();
 
-    const count = await Transfer.countDocuments(query);
     res.status(200).json({
       success: true,
       data: transfers.map(formatTransferResponse),
-      pagination: {
-        totalItems: count,
-        totalPages: Math.ceil(count / limit),
-        currentPage: +page,
-        itemsPerPage: +limit
-      }
+      count: transfers.length
     });
   } catch (error) {
     handleErrors(res, error);

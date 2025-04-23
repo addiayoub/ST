@@ -1,65 +1,104 @@
 [{
   "_id": {
-    "$oid": "67efc59947d088d1cdd9de9b"
+    "$oid": "68064acf8ac694eb271061a7"
   },
-  "codeInditex": "IND002",
-  "nomMagasin": "Stradi Rabat",
-  "codeFutura": "FUT002",
+  "codeInditex": 18792,
+  "nomMagasin": "STRADI AGADIR",
+  "codeFutura": 40201,
   "statut": "active",
   "createdAt": {
-    "$date": "2025-04-04T11:42:17.467Z"
+    "$date": "2025-04-21T00:00:00.000Z"
   },
   "__v": 0
 },
 {
   "_id": {
-    "$oid": "67efd0eb8d81e1c06d192881"
+    "$oid": "68064acf8ac694eb271061a8"
   },
-  "codeInditex": "IND001",
-  "nomMagasin": "Stradi Casablanca",
-  "codeFutura": "FUT001",
+  "codeInditex": 14093,
+  "nomMagasin": "STRADI MM",
+  "codeFutura": 40801,
   "statut": "active",
   "createdAt": {
-    "$date": "2025-04-04T12:30:35.707Z"
+    "$date": "2025-04-21T00:00:00.000Z"
   },
   "__v": 0
 },
 {
   "_id": {
-    "$oid": "67f0130dcac1f24ddd056bb0"
+    "$oid": "68064acf8ac694eb271061a9"
   },
-  "codeInditex": "IND003",
-  "nomMagasin": "Stradi Marrakech",
-  "codeFutura": "FUT003",
+  "codeInditex": 11666,
+  "nomMagasin": "STRADI CASA",
+  "codeFutura": 40301,
   "statut": "active",
   "createdAt": {
-    "$date": "2025-04-04T17:12:45.294Z"
+    "$date": "2025-04-21T00:00:00.000Z"
   },
   "__v": 0
 },
 {
   "_id": {
-    "$oid": "67f01324cac1f24ddd056bb5"
+    "$oid": "68064acf8ac694eb271061aa"
   },
-  "codeInditex": "IND004",
-  "nomMagasin": "Stradi Tanger",
-  "codeFutura": "FUT004",
+  "codeInditex": 7548,
+  "nomMagasin": "STRADI FES",
+  "codeFutura": 40701,
   "statut": "active",
   "createdAt": {
-    "$date": "2025-04-04T17:13:08.377Z"
+    "$date": "2025-04-21T00:00:00.000Z"
   },
   "__v": 0
 },
 {
   "_id": {
-    "$oid": "67f3926806b005fa19612da3"
+    "$oid": "68064acf8ac694eb271061ab"
   },
-  "codeInditex": "IND005",
-  "nomMagasin": "Stradi Morocco-mall",
-  "codeFutura": "FUT005",
+  "codeInditex": 10442,
+  "nomMagasin": "STRADI MARRAKECH",
+  "codeFutura": 40601,
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-21T00:00:00.000Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68064acf8ac694eb271061ac"
+  },
+  "codeInditex": 2756,
+  "nomMagasin": "STRADI RABAT",
+  "codeFutura": 40501,
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-21T00:00:00.000Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68064acf8ac694eb271061ad"
+  },
+  "codeInditex": 2873,
+  "nomMagasin": "STRADI TCC",
+  "codeFutura": 40901,
+  "statut": "active",
+  "createdAt": {
+    "$date": "2025-04-21T00:00:00.000Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68064acf8ac694eb271061ae"
+  },
+  "codeInditex": 7670,
+  "nomMagasin": "STRADI ONLINE",
+  "codeFutura": 40101,
   "statut": "inactive",
   "createdAt": {
-    "$date": "2025-04-07T08:52:56.131Z"
+    "$date": "2025-04-21T00:00:00.000Z"
   },
   "__v": 0
 }]
