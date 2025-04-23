@@ -256,7 +256,7 @@ const MiniCalendar = ({
   {day.hasEvent && !day.isCurrentDay && (
     <>
       {day.transferCount > 0 && <span className="w-1 h-1 bg-blue-900 rounded-full"></span>}
-      {day.manualTransferCount > 0 && <span className="w-1 h-1 bg-black rounded-full"></span>}
+      {day.manualTransferCount > 0 && <span className="w-1 h-1 bg-white rounded-full"></span>}
     </>
   )}
 </div>
@@ -278,7 +278,7 @@ const MiniCalendar = ({
       )}
       {day.manualTransferCount > 0 && (
         <div className="flex items-center mt-1">
-          <span className="w-2 h-2 bg-black rounded-full mr-2"></span>
+          <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
           <span>{day.manualTransferCount} transfert{day.manualTransferCount > 1 ? 's' : ''} manuel{day.manualTransferCount > 1 ? 's' : ''}</span>
         </div>
       )}

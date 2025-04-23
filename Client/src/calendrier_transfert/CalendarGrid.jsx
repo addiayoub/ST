@@ -52,7 +52,6 @@ export const useTransferOptions = () => {
           new Map(options.map((opt) => [opt.value, opt])).values()
         );
 
-        console.log("Active warehouses loaded:", uniqueOptions);
 
         setTransferOptions((prev) => ({
           ...prev,
@@ -202,7 +201,6 @@ const syncWarehouseNames = (transfers) => {
   // Debug hook to log warehouse data and check consistency
   useEffect(() => {
     if (transferOptions.fromOptions.length > 0) {
-      console.log("Available warehouse options:", transferOptions.fromOptions);
       
       // Check if your transfers have matching IDs with options
       if (transfersData) {
@@ -211,16 +209,7 @@ const syncWarehouseNames = (transfers) => {
           .filter(t => t && !t.showBoxIcon) // Only check regular transfers
           .slice(0, 5); // Sample the first 5 transfers
         
-        console.log("Sample transfers for warehouse validation:", 
-          allTransfers.map(t => ({
-            fromId: t.from,
-            fromName: t.fromName,
-            toId: t.to,
-            toName: t.toName,
-            fromExists: checkMagasinExists(t.fromName, t.from),
-            toExists: checkMagasinExists(t.toName, t.to),
-          }))
-        );
+      
       }
     }
   }, [transferOptions.fromOptions, transfersData]);
@@ -240,15 +229,7 @@ const syncWarehouseNames = (transfers) => {
   };
 
   // Debug function to inspect selected transfer
-  useEffect(() => {
-    if (selectedTransfer) {
-      console.log("Transfert sélectionné:", selectedTransfer);
-      console.log("ID source:", selectedTransfer.from);
-      console.log("ID destination:", selectedTransfer.to);
-      console.log("Source exists:", checkMagasinExists(selectedTransfer.fromName, selectedTransfer.from));
-      console.log("Destination exists:", checkMagasinExists(selectedTransfer.toName, selectedTransfer.to));
-    }
-  }, [selectedTransfer]);
+
 
   const toggleGroup = (groupKey, e) => {
     e.stopPropagation();
@@ -347,7 +328,6 @@ useEffect(() => {
     // Si vous avez une fonction pour mettre à jour les données de transfert
     // updateTransfersData(updatedTransfersData);
     
-    console.log("Synchronized warehouse names in transfers data");
   }
 }, [transfersData, transferOptions.fromOptions]);
   const showTransferDetails = (transfer, dayData, e) => {
@@ -358,9 +338,7 @@ useEffect(() => {
     const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.fromName, transfer.from);
     const toExists = checkMagasinExists(transfer.toName, transfer.to);
 
-    console.log("In showTransferDetails - fromExists:", fromExists, "toExists:", toExists, 
-                "fromName:", transfer.fromName, "toName:", transfer.toName, 
-                "fromId:", transfer.from, "toId:", transfer.to);
+    
 
     const convertToDateInput = (dateStr) => {
       if (!dateStr) return '';
@@ -738,9 +716,7 @@ useEffect(() => {
     if (toExists && transfer.toName === "Magasin inconnu") {
       transfer.toName = toResult.correctName;
     }
-    
-    console.log("Transfer click:", transfer.fromName, "→", transfer.toName);
-    console.log("Existence check:", {fromExists, toExists, fromId: transfer.from, toId: transfer.to});
+
   
 
     if ((!transfer.showBoxIcon && !fromExists) || !toExists) {
