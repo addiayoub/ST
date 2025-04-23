@@ -9,6 +9,7 @@ import Importer from './Importer/Importer';
 import Inventaires from './Planification_Inventaires/Inventaires';
 import Magasin from './Magasin/Magasin';
 import Utilisateurs from './Utilisateurs/Utilisateurs';
+import FlaggedTransfersComponent from './FlaggedTransfersComponent'; // Importez votre nouveau composant
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -41,6 +42,7 @@ function App() {
     const pathToComponent = {
       '/': 'calendar',
       '/upload': 'upload',
+      '/flagged': 'flagged', // Nouvelle route
       '/inventaires': 'boxes',
       '/magasin': 'house',
       '/utilisateurs': 'user'
@@ -141,7 +143,7 @@ function App() {
   const hasAccess = (componentName) => {
     if (!user) return false;
     if (user.role === 'Admin') return true;
-    if (user.role === 'User') return ['calendar', 'upload'].includes(componentName);
+    if (user.role === 'User') return ['calendar', 'upload', 'flagged'].includes(componentName); // Ajout de 'flagged'
     return false;
   };
 
@@ -150,6 +152,7 @@ function App() {
     const componentToPath = {
       'calendar': '/',
       'upload': '/upload',
+      'flagged': '/flagged', // Nouvelle route
       'boxes': '/inventaires',
       'house': '/magasin',
       'user': '/utilisateurs'
@@ -207,6 +210,18 @@ function App() {
             />
           </>
         } />
+        {/* Nouvelle route pour les transferts marqués */}
+        <Route path="/flagged" element={
+          <>
+            {hasAccess('flagged') && <FlaggedTransfersComponent />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
         <Route path="/inventaires" element={
           <>
             {hasAccess('boxes') && <Inventaires />}
@@ -245,4 +260,4 @@ function App() {
   );
 }
 
-export default AppRouter; 
+export default AppRouter;

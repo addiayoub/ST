@@ -45,7 +45,10 @@ const handleErrors = (res, error, status = 500) => {
 exports.getAllTransfers = async (req, res) => {
   try {
     const { status, storeId } = req.query;
-    const query = { status: { $ne: "Erreur" } }; // Exclure les transferts avec statut "Erreur"
+    const query = { 
+      status: { $ne: "Erreur" },
+      Flag: { $ne: 1 } // Exclure les transferts avec Flag=1
+    }; 
     
     if (status) query.status = status; // Cette ligne remplacera la condition $ne si un statut spécifique est demandé
     if (storeId) {
@@ -231,6 +234,35 @@ exports.updateTransfer = async (req, res) => {
     });
   } catch (error) {
     handleErrors(res, error, 400);
+  }
+};
+// Add this new method to transferController.js
+
+exports.getFlaggedTransfers = async (req, res) => {
+  try {
+    const { storeId } = req.query;
+    const query = { Flag: 1 }; // Only get transfers with Flag=1
+    
+    if (storeId) {
+      query.$or = [
+        { 'from._id': storeId },
+        { 'to._id': storeId }
+      ];
+    }
+    
+    const transfers = await Transfer.find(query)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin')
+      .sort({ Date: -1 })
+      .exec();
+
+    res.status(200).json({
+      success: true,
+      data: transfers.map(formatTransferResponse),
+      count: transfers.length
+    });
+  } catch (error) {
+    handleErrors(res, error);
   }
 };
 

@@ -27,6 +27,7 @@ const periodValidationRules = [
 
 // Routes
 router.get('/', protect, transferController.getAllTransfers);
+router.get('/flagged', protect, transferController.getFlaggedTransfers); // New route for flagged transfers
 router.get('/period', protect, periodValidationRules, transferController.getTransfersByPeriod);
 router.get('/:id', protect, transferController.getTransferById);
 router.post('/', protect, transferValidationRules, transferController.createTransfer);

@@ -76,6 +76,7 @@ export const useTransferOptions = () => {
   return transferOptions;
 };
 
+// Fonction améliorée pour le groupement des transferts
 const groupTransfers = (transfers) => {
   if (!transfers || !Array.isArray(transfers)) return [];
 
@@ -104,12 +105,18 @@ const groupTransfers = (transfers) => {
             'Annulé': 0,
           },
           totalQuantity: 0,
+          documentNumbers: [], // Nouveau: pour stocker tous les numéros de document
         };
       }
 
       transferGroups[key].transfers.push(transfer);
       transferGroups[key].statusCounts[transfer.status]++;
       transferGroups[key].totalQuantity += parseInt(transfer.quantity || 0);
+      
+      // Ajouter le numéro de document à la liste s'il n'existe pas déjà
+      if (transfer.Document_Number && !transferGroups[key].documentNumbers.includes(transfer.Document_Number)) {
+        transferGroups[key].documentNumbers.push(transfer.Document_Number);
+      }
 
       const typePriority = {
         orange: 1,
@@ -166,6 +173,18 @@ const syncWarehouseNames = (transfers) => {
     };
   });
 };
+const getMaxTransfersCount = () => {
+  if (!transfersData) return 0;
+  
+  return Math.max(
+    ...Object.values(transfersData).map(dayData => {
+      const groupedTransfers = groupTransfers(dayData.transfers || []);
+      return groupedTransfers.length;
+    })
+  );
+};
+const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffer of 5 rows and minimum of 10
+
   // Improved function to check if a magasin exists by ID or name
   const checkMagasinExists = (magasinName, magasinId) => {
     // If we have the ID and it matches any warehouse option, it exists
@@ -239,77 +258,309 @@ const syncWarehouseNames = (transfers) => {
     }));
   };
 
+
   const showGroupDetails = (groupData, dayData, e) => {
     e.stopPropagation();
-
+  
+    // If the group only contains one transfer, show the details of that transfer
+    if (groupData.transfers.length === 1) {
+      showTransferDetails(groupData.transfers[0], dayData, e);
+      return;
+    }
+  
     const fromExists = checkMagasinExists(groupData.fromName, groupData.from);
     const toExists = checkMagasinExists(groupData.toName, groupData.to);
-
+  
+    // Function to update the entire group
+    const updateEntireGroup = (updatedValues) => {
+      // Create updated copies of all transfers in the group
+      const updatedTransfers = groupData.transfers.map(transfer => ({
+        ...transfer,
+        // Update these fields from the form values
+        from: updatedValues.from || transfer.from,
+        to: updatedValues.to || transfer.to,
+        fromName: updatedValues.fromName || transfer.fromName,
+        toName: updatedValues.toName || transfer.toName,
+        status: updatedValues.status || transfer.status,
+        date: updatedValues.date || transfer.date
+      }));
+      
+      // Update each transfer individually
+      updatedTransfers.forEach(updatedTransfer => {
+        if (updateTransfer) {
+          updateTransfer(dayData, updatedTransfer);
+        }
+      });
+      
+      MySwal.fire({
+        background: 'transparent',
+        title: '<span class="text-white">Mise à jour effectuée !</span>',
+        html: '<span class="text-white">Tous les transferts du groupe ont été mis à jour.</span>',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'bg-transparent',
+          title: 'text-white',
+          content: 'text-white',
+        },
+      });
+    };
+  
     MySwal.fire({
       background: '#fff',
       title: `<div class="text-xl font-semibold text-black">
                 Transferts de ${groupData.fromName} vers ${groupData.toName}
               </div>`,
-      html: (
-        <div className="p-4 space-y-6">
-          <div className="text-black font-medium">
-            {groupData.transfers.length} transfert(s) • Total: {groupData.totalQuantity} articles
+      html: `
+        <div class="p-4 space-y-6">
+          <div class="text-black font-medium">
+            ${groupData.transfers.length} transfert(s) • Total: ${groupData.totalQuantity} articles
           </div>
-
-          {!fromExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin source "{groupData.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
+          
+          ${!fromExists ? `
+            <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Le magasin source "${groupData.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
-          )}
-
-          {!toExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin destination "{groupData.toName}" n'appartient pas aux magasins Stradi actifs.</span>
+          ` : ''}
+          
+          ${!toExists ? `
+            <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Le magasin destination "${groupData.toName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
-          )}
-
-          <div className="mt-4 divide-y border rounded-lg">
-            {groupData.transfers.map((transfer, index) => (
-              <div key={index} className="py-4 px-3 hover:bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2`}></div>
-                    <span className="font-medium">N° {transfer.Document_Number}</span>
+          ` : ''}
+          
+          ${groupData.transfers.length > 1 ? `
+            <div class="bg-gray-50 p-4 rounded-lg border mb-6">
+              <button id="toggle-group-edit-btn" class="w-full flex justify-between items-center cursor-pointer p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded mb-4">
+                <span class="font-medium">Modifier tout le groupe</span>
+                <svg id="edit-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform duration-200 rotate-0">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+              
+              <div id="group-edit-form" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <!-- Champs "De:" et "Vers:" pour la mise à jour de groupe -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">De :</label>
+                    <select id="group-from" class="w-full p-2 border border-gray-300 rounded">
+                      <option value="${groupData.from}" data-name="${groupData.fromName}" selected>${groupData.fromName}</option>
+                      ${transferOptions.fromOptions.map(option => 
+                        option.value !== groupData.from ? 
+                        `<option value="${option.value}" data-name="${option.label}">${option.label}</option>` : ''
+                      ).join('')}
+                    </select>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <button
-                      className="p-2 edit_trans text-gray-500 hover:text-blue-500"
-                      onClick={() => {
-                        MySwal.close();
-                        showTransferDetails(transfer, dayData, e);
-                      }}
-                    >
-                      <Edit size={25} />
-                    </button>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vers :</label>
+                    <select id="group-to" class="w-full p-2 border border-gray-300 rounded">
+                      <option value="${groupData.to}" data-name="${groupData.toName}" selected>${groupData.toName}</option>
+                      ${transferOptions.toOptions.map(option => 
+                        option.value !== groupData.to ? 
+                        `<option value="${option.value}" data-name="${option.label}">${option.label}</option>` : ''
+                      ).join('')}
+                    </select>
+                  </div>
+                  
+                  <!-- Statut et Date existants -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Statut :</label>
+                    <select id="group-status" class="w-full p-2 border border-gray-300 rounded">
+                      ${transferOptions.statusOptions.map(status => 
+                        `<option value="${status}">${status}</option>`
+                      ).join('')}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date :</label>
+                    <input type="date" id="group-date" class="w-full p-2 border border-gray-300 rounded">
                   </div>
                 </div>
-                <div className="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
-                  <div>Quantité: {transfer.quantity}</div>
-                  <div className="flex items-center">
-                    Statut:
-                    <span className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2`}></span>
-                    {transfer.status}
-                  </div>
-                  <div>Date: {transfer.date}</div>
-                </div>
+                <div class="text-black font-medium mb-2">N° Documents: ${groupData.documentNumbers.join(' | ')}</div>
+  
+                <button id="update-group-btn" class="w-full p-2 text-white rounded-full hover:bg-green-700">
+                  Mettre à jour tous les transferts 
+                </button>
               </div>
-            ))}
+            </div>
+          ` : ''}
+  
+          <div class="mt-4 border rounded-lg overflow-hidden">
+            <button id="toggle-transfers-btn" class="w-full flex justify-between cursor-pointer items-center p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-200">
+              <span class="font-medium">Liste des transferts</span>
+              <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform duration-200 rotate-0">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+            
+            <div id="transfers-list" class="divide-y max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+              ${groupData.transfers.map((transfer, index) => `
+                <div class="py-4 px-3 hover:bg-gray-50">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
+                      <span class="font-medium">N° ${transfer.Document_Number}</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <button
+                        class="p-2 edit_trans text-gray-500 hover:text-blue-500 edit-transfer-btn"
+                        data-index="${index}"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
+                    <div>Quantité: ${transfer.quantity}</div>
+                    <div class="flex items-center">
+                      Statut:
+                      <span class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2"></span>
+                      ${transfer.status}
+                    </div>
+                    <div>Date: ${transfer.date}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
-      ),
+      `,
       showConfirmButton: true,
-      confirmButtonText: 'X',
+      confirmButtonText: 'Fermer',
       customClass: {
         confirmButton: 'custom-swal-ferme-button',
       },
       width: '700px',
+      didRender: () => {
+        // Section à n'exécuter que si plusieurs transferts
+        if (groupData.transfers.length > 1) {
+          // Initialiser la date avec la date du premier transfert
+          if (groupData.transfers.length > 0) {
+            const firstTransfer = groupData.transfers[0];
+            const dateInput = document.getElementById('group-date');
+            if (dateInput && firstTransfer.date) {
+              // Convertir format date si nécessaire
+              const convertToDateInput = (dateStr) => {
+                if (!dateStr) return '';
+                if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
+                const [day, month, year] = dateStr.split('/');
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+              };
+              dateInput.value = convertToDateInput(firstTransfer.date);
+            }
+            
+            // Initialiser le statut avec le statut le plus commun
+            const statusCounts = groupData.statusCounts;
+            let mostCommonStatus = 'En cours';
+            let maxCount = 0;
+            
+            for (const [status, count] of Object.entries(statusCounts)) {
+              if (count > maxCount) {
+                mostCommonStatus = status;
+                maxCount = count;
+              }
+            }
+            
+            const statusSelect = document.getElementById('group-status');
+            if (statusSelect) {
+              statusSelect.value = mostCommonStatus;
+            }
+          }
+          
+          // Système de toggle pour la section "Modifier tout le groupe"
+          const toggleGroupEditBtn = document.getElementById('toggle-group-edit-btn');
+          const groupEditForm = document.getElementById('group-edit-form');
+          const editToggleIcon = document.getElementById('edit-toggle-icon');
+          
+          // Par défaut fermé
+          let isGroupEditExpanded = false;
+          groupEditForm.style.maxHeight = '0';
+          editToggleIcon.style.transform = 'rotate(-90deg)';
+          
+          toggleGroupEditBtn.addEventListener('click', () => {
+            isGroupEditExpanded = !isGroupEditExpanded;
+            
+            if (isGroupEditExpanded) {
+              // Calculer la hauteur nécessaire pour afficher tous les éléments
+              const height = groupEditForm.scrollHeight + 'px';
+              groupEditForm.style.maxHeight = height;
+              editToggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+              groupEditForm.style.maxHeight = '0';
+              editToggleIcon.style.transform = 'rotate(-90deg)';
+            }
+          });
+          
+          // Ajouter l'événement de mise à jour du groupe
+          const updateGroupBtn = document.getElementById('update-group-btn');
+          if (updateGroupBtn) {
+            updateGroupBtn.addEventListener('click', () => {
+              const status = document.getElementById('group-status').value;
+              const date = document.getElementById('group-date').value;
+              
+              // Récupérer les valeurs "De" et "Vers"
+              const fromSelect = document.getElementById('group-from');
+              const toSelect = document.getElementById('group-to');
+              
+              const fromValue = fromSelect.value;
+              const toValue = toSelect.value;
+              
+              // Récupérer aussi les noms correspondants aux valeurs
+              const fromName = fromSelect.options[fromSelect.selectedIndex].getAttribute('data-name');
+              const toName = toSelect.options[toSelect.selectedIndex].getAttribute('data-name');
+              
+              updateEntireGroup({ 
+                status, 
+                date, 
+                from: fromValue, 
+                to: toValue,
+                fromName: fromName,
+                toName: toName
+              });
+            });
+          }
+        }
+        
+        // Ajouter les événements pour éditer les transferts individuels
+        document.querySelectorAll('.edit-transfer-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const index = parseInt(btn.getAttribute('data-index'));
+            const transfer = groupData.transfers[index];
+            
+            MySwal.close();
+            showTransferDetails(transfer, dayData, e);
+          });
+        });
+        
+        // Gestion de l'affichage/masquage des transferts
+        const toggleBtn = document.getElementById('toggle-transfers-btn');
+        const transfersList = document.getElementById('transfers-list');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        // Par défaut fermé
+        let isExpanded = false;
+        transfersList.style.maxHeight = '0';
+        toggleIcon.style.transform = 'rotate(-90deg)';
+        
+        toggleBtn.addEventListener('click', () => {
+          isExpanded = !isExpanded;
+          
+          if (isExpanded) {
+            // Calculer la hauteur nécessaire pour afficher tous les éléments
+            const height = transfersList.scrollHeight + 'px';
+            transfersList.style.maxHeight = height;
+            toggleIcon.style.transform = 'rotate(0deg)';
+          } else {
+            transfersList.style.maxHeight = '0';
+            toggleIcon.style.transform = 'rotate(-90deg)';
+          }
+        });
+      }
     });
   };
 // À l'intérieur du composant CalendarGrid
@@ -330,6 +581,98 @@ useEffect(() => {
     
   }
 }, [transfersData, transferOptions.fromOptions]);
+const renderGroupInCalendar = (transfer) => (
+  <div className="flex flex-col">
+    {transfer.transfers.some((t) => t.isManualTransfer) && (
+      <FilePenLine className="text-black text-center" size={25} />
+    )}
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <div className={`w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-1`}></div>
+        <div className="text-sm font-medium">De : {transfer.fromName}</div>
+      </div>
+      <div className="flex">
+        <button
+          onClick={(e) => toggleGroup(transfer.groupKey, e)}
+          className="p-1"
+          id="viewdocument"
+        >
+          {expandedGroups[transfer.groupKey] ? (
+            <ChevronDown size={16} />
+          ) : (
+            <ChevronRight size={16} />
+          )}
+        </button>
+      </div>
+    </div>
+    <div className="text-sm ml-4">À : {transfer.toName}</div>
+    <div className="text-xs text-gray-600 mt-1 flex justify-between">
+      <span>Quantité : {transfer.totalQuantity}</span>
+      <span>Transferts : {transfer.transfers.length}</span>
+    </div>
+    {transfer.documentNumbers && transfer.documentNumbers.length > 0 && (
+      <div className="text-xs text-gray-600 mt-1 truncate">
+        <span>N° : {transfer.documentNumbers.join(' / ')}</span>
+      </div>
+    )}
+    <div className="flex mt-2 space-x-1">
+      {Object.entries(transfer.statusCounts)
+        .filter(([_, count]) => count > 0)
+        .map(([status, count], i) => {
+          const statusColors = {
+            'En cours': 'bg-blue-500',
+            'Confirmé': 'bg-green-500',
+            'En attente': 'bg-orange-500',
+            'Annulé': 'bg-red-500',
+          };
+          return (
+            <div key={i} className="flex items-center">
+              <div className={`w-2 h-2 rounded-full ${statusColors[status]}`}></div>
+              <span className="text-xs ml-1">{count}</span>
+            </div>
+          );
+        })}
+    </div>
+    {(showFromWarning || showToWarning) && (
+      <div className="flex items-center text-red-600 mt-2 text-xs">
+        <AlertCircle className="mr-1" size={14} />
+        <span>Magasin(s) non actif chez Stradi.</span>
+      </div>
+    )}
+    {expandedGroups[transfer.groupKey] && (
+      <div className="mt-2 pt-2 border-t text-xs">
+        {transfer.transfers.map((item, i) => (
+          <div id="All_calendar" key={i} className="flex flex-col mt-1">
+            {!item.isManualTransfer && (
+              <div className="flex justify-between w-full">
+                <span>N° {item.Document_Number}</span>
+                <span>Qté: {item.quantity}</span>
+              </div>
+            )}
+            {item.isManualTransfer && item.items && (
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between w-full">
+                  <span>Manuel</span>
+                  <span>Qté: {item.quantity}</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {item.items.map((barcodeItem, idx) => (
+                    <span
+                      key={idx}
+                      className="px-1 py-0.5 bg-gray-100 text-gray-800 rounded text-xs"
+                    >
+                      {barcodeItem.barcode}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
   const showTransferDetails = (transfer, dayData, e) => {
     if (!transfer) return;
     e && e.stopPropagation();
@@ -796,62 +1139,62 @@ useEffect(() => {
 
   return (
     <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          {Object.keys(transfersData).map((day, index) => (
-            <th
-              key={index}
-              className={`p-3 border text-center font-normal ${
-                parseInt(transfersData[day].date) === selectedDay ? 'bg-blue-50' : ''
-              }`}
-              style={{
-                borderColor: '#e5e7eb',
-                borderWidth: '1px',
-              }}
-              onClick={() => selectDay(parseInt(transfersData[day].date))}
-            >
-              <div>{day}</div>
-              <div id="day_and_date">{transfersData[day].date}</div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from({ length: 50 }).map((_, transferRowIndex) => (
-          <tr key={`transfer-row-${transferRowIndex}`}>
-            {Object.keys(transfersData).map((day, dayIndex) => {
-              const dayData = transfersData[day];
-              const isSelectedDay = parseInt(dayData.date) === selectedDay;
-              const groupedTransfers = groupTransfers(dayData.transfers);
-              const transfer = groupedTransfers[transferRowIndex];
-              const showFromWarning = transfer && !transfer.showBoxIcon && !checkMagasinExists(transfer.fromName);
-              const showToWarning = transfer && !checkMagasinExists(transfer.toName);
+    <thead>
+      <tr>
+        {Object.keys(transfersData).map((day, index) => (
+          <th
+            key={index}
+            className={`p-3 border text-center font-normal ${
+              parseInt(transfersData[day].date) === selectedDay ? 'bg-blue-50' : ''
+            }`}
+            style={{
+              borderColor: '#e5e7eb',
+              borderWidth: '1px',
+            }}
+            onClick={() => selectDay(parseInt(transfersData[day].date))}
+          >
+            <div>{day}</div>
+            <div id="day_and_date">{transfersData[day].date}</div>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {Array.from({ length: maxTransfersCount }).map((_, transferRowIndex) => (
+        <tr key={`transfer-row-${transferRowIndex}`}>
+          {Object.keys(transfersData).map((day, dayIndex) => {
+            const dayData = transfersData[day];
+            const isSelectedDay = parseInt(dayData.date) === selectedDay;
+            const groupedTransfers = groupTransfers(dayData.transfers);
+            const transfer = groupedTransfers[transferRowIndex];
+            const showFromWarning = transfer && !transfer.showBoxIcon && !checkMagasinExists(transfer.fromName);
+            const showToWarning = transfer && !checkMagasinExists(transfer.toName);
 
-              return (
-                <td
-                  key={`transfer-cell-${dayIndex}-${transferRowIndex}`}
-                  className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
-                  style={{
-                    height: '100px',
-                    borderColor: '#e5e7eb',
-                    borderWidth: '1px',
-                    verticalAlign: 'top',
-                    position: 'relative',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => selectDay(parseInt(dayData.date))}
-                >
-                  {transfer && (
-                    <div
-                      className={`p-4 m-2 border-l-4 rounded ${
-                        transfer.showBoxIcon
-                          ? 'border-yellow-500 bg-yellow-100'
-                          : `${getBorderColor(transfer.type)} ${getBgColor(transfer.type)}`
-                      } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''} ${
-                        showFromWarning || showToWarning ? 'border-dashed border border-red-300' : ''
-                      }`}
-                      onClick={(e) => handleTransferItemClick(transfer, dayData, e)}
-                    >
+            return (
+              <td
+                key={`transfer-cell-${dayIndex}-${transferRowIndex}`}
+                className={`border ${isSelectedDay ? 'bg-blue-50' : ''}`}
+                style={{
+                  height: '100px',
+                  borderColor: '#e5e7eb',
+                  borderWidth: '1px',
+                  verticalAlign: 'top',
+                  position: 'relative',
+                  cursor: 'pointer',
+                }}
+                onClick={() => selectDay(parseInt(dayData.date))}
+              >
+             {transfer && (
+  <div
+    className={`p-4 m-2 border-l-4 rounded ${
+      transfer.showBoxIcon
+        ? 'border-yellow-500 bg-yellow-100'
+        : `${getBorderColor(transfer.type)} ${getBgColor(transfer.type)}`
+    } ${selectedTransfer === transfer ? 'ring-2 ring-blue-500' : ''} ${
+      showFromWarning || showToWarning ? 'border-dashed border border-red-300' : ''
+    }`}
+    onClick={(e) => handleTransferItemClick(transfer, dayData, e)}
+  >
                       {transfer.showBoxIcon ? (
                         <div className="flex flex-col">
                           <div className="flex items-center">

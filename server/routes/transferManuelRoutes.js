@@ -7,13 +7,15 @@ const {
   getTransferManuelById, 
   updateTransferManuel, 
   deleteTransferManuel,
-  getTransferManuelStats
+  getTransferManuelStats,
+  getFlaggedTransfersManuels
 } = require('../controllers/transferManuelController');
 const { protect } = require('../middleware/authMiddleware');
 
 // Routes publiques pour les tests (à sécuriser en production)
 router.post('/', createTransferManuel);
 router.get('/', getTransfersManuels);
+router.get('/flagged', getFlaggedTransfersManuels);
 router.get('/stats', getTransferManuelStats);
 router.get('/:id', getTransferManuelById);
 router.put('/:id', updateTransferManuel);

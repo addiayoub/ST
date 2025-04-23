@@ -53,11 +53,42 @@ const createTransferManuel = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Ajouter cette fonction au controller transferManuelController.js
+const getFlaggedTransfersManuels = asyncHandler(async (req, res) => {
+  const storeId = req.query.storeId;
+  
+  // Définir le filtre de base (Flag = 1)
+  let filter = { Flag: 1 };
+  
+  // Ajouter un filtre par magasin si fourni
+  if (storeId) {
+    filter.$or = [
+      { fromLocation: storeId },
+      { toLocation: storeId }
+    ];
+  }
+  
+  const flaggedTransfers = await TransferManuel.find(filter)
+    .populate('fromLocation', 'nomMagasin')
+    .populate('toLocation', 'nomMagasin')
+    .populate('createdBy', 'name')
+    .sort('-createdAt');
+
+  res.json({
+    success: true,
+    count: flaggedTransfers.length,
+    data: flaggedTransfers
+  });
+});
 // @desc    Obtenir tous les transferts manuels
 // @route   GET /api/transfers-manuel
 // @access  Private
+// @desc    Obtenir tous les transferts manuels (excluant ceux avec Flag=1)
+// @route   GET /api/transfers-manuel
+// @access  Private
 const getTransfersManuels = asyncHandler(async (req, res) => {
-  const transfersManuels = await TransferManuel.find({})
+  const transfersManuels = await TransferManuel.find({ Flag: { $ne: 1 } })
     .populate('fromLocation', 'nomMagasin')
     .populate('toLocation', 'nomMagasin')
     .populate('createdBy', 'name')
@@ -195,6 +226,7 @@ module.exports = {
   createTransferManuel,
   getTransfersManuels,
   getTransferManuelById,
+  getFlaggedTransfersManuels,
   updateTransferManuel,
   deleteTransferManuel,
   getTransferManuelStats

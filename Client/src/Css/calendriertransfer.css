@@ -248,7 +248,20 @@ cursor: pointer;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
-
+#update-group-btn{
+background: rgba(0, 128, 0, 0.397);
+}
+#update-group-btn:hover{
+  background: green;
+  transition: 0.5s;
+  cursor: pointer;
+}
+select{
+  cursor: pointer;
+}
+option{
+  cursor: pointer;
+}
 .month-selector-button {
   padding: 0.25rem 0;
   border-radius: 0.25rem;
@@ -261,7 +274,6 @@ cursor: pointer;
   border: 1px solid #e2e8f0;
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
-  height: ;
 }
 .Circlex_day{
   color: rgba(220, 124, 124, 0.956);
