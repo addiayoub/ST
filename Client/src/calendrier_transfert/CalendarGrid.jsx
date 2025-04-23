@@ -841,7 +841,7 @@ useEffect(() => {
         </tr>
       </thead>
       <tbody>
-        {Array.from({ length: 10 }).map((_, transferRowIndex) => (
+        {Array.from({ length: 50 }).map((_, transferRowIndex) => (
           <tr key={`transfer-row-${transferRowIndex}`}>
             {Object.keys(transfersData).map((day, dayIndex) => {
               const dayData = transfersData[day];
@@ -947,33 +947,38 @@ useEffect(() => {
                               <span>Magasin(s) non actif chez Stradi.</span>
                             </div>
                           )}
-                          {expandedGroups[transfer.groupKey] && (
-                            <div className="mt-2 pt-2 border-t text-xs">
-                              {transfer.transfers.slice(0, 3).map((item, i) => (
-                                <div id="All_calendar" key={i} className="flex flex-col mt-1">
-                                  {!item.isManualTransfer && <span>N° {item.Document_Number}</span>}
-                                  {item.isManualTransfer && item.items && (
-                                    <div className="flex flex-wrap gap-1">
-                                      {item.items.map((barcodeItem, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="px-1 py-0.5 bg-gray-100 text-gray-800 rounded text-xs"
-                                        >
-                                          {barcodeItem.barcode}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                  <span>Qté: {item.quantity}</span>
-                                </div>
-                              ))}
-                              {transfer.transfers.length > 3 && (
-                                <div className="text-blue-500 text-center mt-1">
-                                  +{transfer.transfers.length - 3} plus...
-                                </div>
-                              )}
-                            </div>
-                          )}
+  {expandedGroups[transfer.groupKey] && (
+  <div className="mt-2 pt-2 border-t text-xs">
+    {transfer.transfers.map((item, i) => (
+      <div id="All_calendar" key={i} className="flex flex-col mt-1">
+        {!item.isManualTransfer && (
+          <div className="flex justify-between w-full">
+            <span>N° {item.Document_Number}</span>
+            <span>Qté: {item.quantity}</span>
+          </div>
+        )}
+        {item.isManualTransfer && item.items && (
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between w-full">
+              <span>Manuel</span>
+              <span>Qté: {item.quantity}</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {item.items.map((barcodeItem, idx) => (
+                <span
+                  key={idx}
+                  className="px-1 py-0.5 bg-gray-100 text-gray-800 rounded text-xs"
+                >
+                  {barcodeItem.barcode}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
                         </div>
                       ) : (
                         <div className="flex flex-col">
