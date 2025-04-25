@@ -475,8 +475,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                     <div class="flex items-center justify-between">
                       <div class="flex items-center">
                         <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
-                        <span class="font-medium document-number-visible">N° ${transfer.Document_Number}</span>
-                        <span class="font-medium document-number-hidden hidden">N° •••••••</span>
+                        <span class="font-medium">N° ${transfer.Document_Number}</span>
                       </div>
                       <div class="flex items-center space-x-3">
                         <button
@@ -511,26 +510,8 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       },
       width: '700px',
       didRender: () => {
-        // État du masquage des numéros
-        let areDocNumbersVisible = true;
-        
-        // Fonction pour basculer la visibilité de tous les numéros de document
-        const toggleAllDocNumbers = () => {
-          areDocNumbersVisible = !areDocNumbersVisible;
-          
-          // Basculer les icônes d'œil
-          document.getElementById('eye-icon').classList.toggle('hidden');
-          document.getElementById('eye-off-icon').classList.toggle('hidden');
-          
-          // Mettre à jour les numéros de documents dans la liste des transferts
-          document.querySelectorAll('.document-number-visible').forEach(elem => {
-            elem.classList.toggle('hidden');
-          });
-          document.querySelectorAll('.document-number-hidden').forEach(elem => {
-            elem.classList.toggle('hidden');
-          });
-          
-          // Mettre à jour la zone d'édition du groupe
+        // Fonction pour basculer uniquement les numéros de document dans la section "Modifier tout le groupe"
+        const toggleGroupDocNumbers = () => {
           const docDisplay = document.getElementById('document-numbers-display');
           const docHidden = document.getElementById('document-numbers-hidden');
           
@@ -538,12 +519,16 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
             docDisplay.classList.toggle('hidden');
             docHidden.classList.toggle('hidden');
           }
+          
+          // Basculer les icônes d'œil
+          document.getElementById('eye-icon').classList.toggle('hidden');
+          document.getElementById('eye-off-icon').classList.toggle('hidden');
         };
         
         // Ajouter un écouteur d'événement pour le bouton de masquage dans la section d'édition
         const toggleDocBtn = document.getElementById('toggle-doc-numbers-btn');
         if (toggleDocBtn) {
-          toggleDocBtn.addEventListener('click', toggleAllDocNumbers);
+          toggleDocBtn.addEventListener('click', toggleGroupDocNumbers);
         }
   
         if (groupData.transfers.length > 1) {
