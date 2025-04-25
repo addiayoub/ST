@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { getMagasins, isMagasinActive } from '../les apis/magasinService';
 import '../Css/calendriertransfer.css';
 import axios from 'axios';
+import api from '../les apis/api';
 
 const MySwal = withReactContent(Swal);
 
@@ -258,6 +259,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       [groupKey]: !prev[groupKey],
     }));
   };
+
   const showGroupDetails = (groupData, dayData, e) => {
     e.stopPropagation();
   
@@ -303,12 +305,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
           },
         };
   
-        const response = await axios.put('http://192.168.1.15:5000/api/transfers/group', updateData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await api.put('/api/transfers/group', updateData);
   
         if (response.data.success) {
           MySwal.fire({
@@ -350,6 +347,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       }
     };
   
+    // Le reste du code reste inchangé...
     MySwal.fire({
       background: '#fff',
       title: `<div class="text-xl font-semibold text-black">
@@ -431,11 +429,28 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                     <input type="date" id="group-date" class="w-full p-2 border border-gray-300 rounded">
                   </div>
                 </div>
-                <div class="text-black font-medium mb-2">N° Documents: ${groupData.documentNumbers.join(' | ')}</div>
+                
+                <div class="flex justify-between items-center mb-2">
+                  <div class="text-black font-medium">
+                    N° Documents: 
+                    <span id="document-numbers-display">${groupData.documentNumbers.join(' | ')}</span>
+                    <span id="document-numbers-hidden" class="hidden">•••••••</span>
+                  </div>
+                  <button id="toggle-doc-numbers-btn" class="p-1 text-gray-500 cursor-pointer hover:text-blue-500 focus:outline-none">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </button>
+                </div>
   
                 <button 
                   id="update-group-btn" 
-                  class="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  class="w-full p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
                   disabled
                 >
                   Mettre à jour tous les transferts
@@ -460,7 +475,8 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                     <div class="flex items-center justify-between">
                       <div class="flex items-center">
                         <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
-                        <span class="font-medium">N° ${transfer.Document_Number}</span>
+                        <span class="font-medium document-number-visible">N° ${transfer.Document_Number}</span>
+                        <span class="font-medium document-number-hidden hidden">N° •••••••</span>
                       </div>
                       <div class="flex items-center space-x-3">
                         <button
@@ -495,6 +511,41 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       },
       width: '700px',
       didRender: () => {
+        // État du masquage des numéros
+        let areDocNumbersVisible = true;
+        
+        // Fonction pour basculer la visibilité de tous les numéros de document
+        const toggleAllDocNumbers = () => {
+          areDocNumbersVisible = !areDocNumbersVisible;
+          
+          // Basculer les icônes d'œil
+          document.getElementById('eye-icon').classList.toggle('hidden');
+          document.getElementById('eye-off-icon').classList.toggle('hidden');
+          
+          // Mettre à jour les numéros de documents dans la liste des transferts
+          document.querySelectorAll('.document-number-visible').forEach(elem => {
+            elem.classList.toggle('hidden');
+          });
+          document.querySelectorAll('.document-number-hidden').forEach(elem => {
+            elem.classList.toggle('hidden');
+          });
+          
+          // Mettre à jour la zone d'édition du groupe
+          const docDisplay = document.getElementById('document-numbers-display');
+          const docHidden = document.getElementById('document-numbers-hidden');
+          
+          if (docDisplay && docHidden) {
+            docDisplay.classList.toggle('hidden');
+            docHidden.classList.toggle('hidden');
+          }
+        };
+        
+        // Ajouter un écouteur d'événement pour le bouton de masquage dans la section d'édition
+        const toggleDocBtn = document.getElementById('toggle-doc-numbers-btn');
+        if (toggleDocBtn) {
+          toggleDocBtn.addEventListener('click', toggleAllDocNumbers);
+        }
+  
         if (groupData.transfers.length > 1) {
           // Initialiser la date et le statut comme avant
           if (groupData.transfers.length > 0) {
@@ -579,7 +630,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
             const status = document.getElementById('group-status').value;
             const date = document.getElementById('group-date').value;
             const fromValue = fromSelect.value;
-            const toValue = toSelect.value  = toSelect.value;
+            const toValue = toSelect.value;
             const fromName = fromSelect.options[fromSelect.selectedIndex].getAttribute('data-name');
             const toName = toSelect.options[toSelect.selectedIndex].getAttribute('data-name');
   
