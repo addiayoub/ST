@@ -24,6 +24,18 @@ const periodValidationRules = [
     return true;
   })
 ];
+// Ajouter ces lignes dans transferRoutes.js
+
+// Validation rules pour updateTransferGroup
+const groupUpdateValidationRules = [
+  check('fromId').isMongoId().withMessage('ID du magasin d\'origine invalide'),
+  check('toId').isMongoId().withMessage('ID du magasin de destination invalide'),
+  check('date').isISO8601().withMessage('Format de date invalide'),
+  check('updates').isObject().withMessage('Les mises à jour doivent être un objet')
+];
+
+// Ajouter cette route après les autres routes
+router.put('/group', protect, groupUpdateValidationRules, transferController.updateTransferGroup);
 
 // Routes
 router.get('/', protect, transferController.getAllTransfers);

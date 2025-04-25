@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { getMagasins, isMagasinActive } from '../les apis/magasinService';
 import '../Css/calendriertransfer.css';
+import axios from 'axios';
 
 const MySwal = withReactContent(Swal);
 
@@ -257,12 +258,10 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       [groupKey]: !prev[groupKey],
     }));
   };
-
-
   const showGroupDetails = (groupData, dayData, e) => {
     e.stopPropagation();
   
-    // If the group only contains one transfer, show the details of that transfer
+    // Si le groupe contient un seul transfert, rediriger vers les détails du transfert
     if (groupData.transfers.length === 1) {
       showTransferDetails(groupData.transfers[0], dayData, e);
       return;
@@ -271,40 +270,84 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
     const fromExists = checkMagasinExists(groupData.fromName, groupData.from);
     const toExists = checkMagasinExists(groupData.toName, groupData.to);
   
-    // Function to update the entire group
-    const updateEntireGroup = (updatedValues) => {
-      // Create updated copies of all transfers in the group
-      const updatedTransfers = groupData.transfers.map(transfer => ({
-        ...transfer,
-        // Update these fields from the form values
-        from: updatedValues.from || transfer.from,
-        to: updatedValues.to || transfer.to,
-        fromName: updatedValues.fromName || transfer.fromName,
-        toName: updatedValues.toName || transfer.toName,
-        status: updatedValues.status || transfer.status,
-        date: updatedValues.date || transfer.date
-      }));
-      
-      // Update each transfer individually
-      updatedTransfers.forEach(updatedTransfer => {
-        if (updateTransfer) {
-          updateTransfer(dayData, updatedTransfer);
+    const updateEntireGroup = async (updatedValues) => {
+      // Vérifier que les magasins source et destination sont différents
+      if (updatedValues.from === updatedValues.to) {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Les magasins source et destination doivent être différents.',
+          confirmButtonColor: '#3085d6',
+        });
+        return;
+      }
+  
+      try {
+        // Validation de la date
+        const dateInput = document.getElementById('group-date').value;
+        if (!dateInput) {
+          throw new Error('Date is required');
         }
-      });
-      
-      MySwal.fire({
-        background: 'transparent',
-        title: '<span class="text-white">Mise à jour effectuée !</span>',
-        html: '<span class="text-white">Tous les transferts du groupe ont été mis à jour.</span>',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'bg-transparent',
-          title: 'text-white',
-          content: 'text-white',
-        },
-      });
+  
+        const formattedDate = new Date(dateInput).toISOString();
+        const documentNumbers = groupData.transfers.map((transfer) => transfer.Document_Number);
+  
+        const updateData = {
+          fromId: updatedValues.from || groupData.from,
+          toId: updatedValues.to || groupData.to,
+          date: formattedDate,
+          documentNumbers: documentNumbers,
+          updates: {
+            status: updatedValues.status,
+            date: formattedDate,
+          },
+        };
+  
+        const response = await axios.put('http://192.168.1.15:5000/api/transfers/group', updateData, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+  
+        if (response.data.success) {
+          MySwal.fire({
+            background: 'transparent',
+            title: '<span class="text-white">Mise à jour effectuée !</span>',
+            html: `<span class="text-white">${response.data.message}</span>`,
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'bg-transparent',
+              title: 'text-white',
+              content: 'text-white',
+            },
+          });
+  
+          // Rafraîchir les données
+          if (typeof fetchData === 'function') {
+            fetchData();
+          } else if (typeof fetchCalendarData === 'function') {
+            fetchCalendarData();
+          } else if (typeof reloadCalendar === 'function') {
+            reloadCalendar();
+          } else if (window.fetchCalendarData) {
+            window.fetchCalendarData();
+          } else {
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour du groupe:', error);
+        MySwal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: error.response?.data?.error || 'Échec de la mise à jour du groupe',
+        });
+      }
     };
   
     MySwal.fire({
@@ -317,21 +360,21 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
           <div class="text-black font-medium">
             ${groupData.transfers.length} transfert(s) • Total: ${groupData.totalQuantity} articles
           </div>
-          
+  
           ${!fromExists ? `
             <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span>Le magasin source "${groupData.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
           ` : ''}
-          
+  
           ${!toExists ? `
             <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span>Le magasin destination "${groupData.toName}" n'appartient pas aux magasins Stradi actifs.</span>
             </div>
           ` : ''}
-          
+  
           ${groupData.transfers.length > 1 ? `
             <div class="bg-gray-50 p-4 rounded-lg border mb-6">
               <button id="toggle-group-edit-btn" class="w-full flex justify-between items-center cursor-pointer p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded mb-4">
@@ -340,42 +383,49 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
               </button>
-              
+  
               <div id="group-edit-form" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+                <div id="error-message" class="hidden text-red-600 text-sm mb-2"></div>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                  <!-- Champs "De:" et "Vers:" pour la mise à jour de groupe -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">De :</label>
                     <select id="group-from" class="w-full p-2 border border-gray-300 rounded">
                       <option value="${groupData.from}" data-name="${groupData.fromName}" selected>${groupData.fromName}</option>
-                      ${transferOptions.fromOptions.map(option => 
-                        option.value !== groupData.from ? 
-                        `<option value="${option.value}" data-name="${option.label}">${option.label}</option>` : ''
-                      ).join('')}
+                      ${transferOptions.fromOptions
+                        .map(
+                          (option) =>
+                            option.value !== groupData.from
+                              ? `<option value="${option.value}" data-name="${option.label}">${option.label}</option>`
+                              : ''
+                        )
+                        .join('')}
                     </select>
                   </div>
-                  
+  
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Vers :</label>
                     <select id="group-to" class="w-full p-2 border border-gray-300 rounded">
                       <option value="${groupData.to}" data-name="${groupData.toName}" selected>${groupData.toName}</option>
-                      ${transferOptions.toOptions.map(option => 
-                        option.value !== groupData.to ? 
-                        `<option value="${option.value}" data-name="${option.label}">${option.label}</option>` : ''
-                      ).join('')}
+                      ${transferOptions.toOptions
+                        .map(
+                          (option) =>
+                            option.value !== groupData.to
+                              ? `<option value="${option.value}" data-name="${option.label}">${option.label}</option>`
+                              : ''
+                        )
+                        .join('')}
                     </select>
                   </div>
-                  
-                  <!-- Statut et Date existants -->
+  
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Statut :</label>
                     <select id="group-status" class="w-full p-2 border border-gray-300 rounded">
-                      ${transferOptions.statusOptions.map(status => 
-                        `<option value="${status}">${status}</option>`
-                      ).join('')}
+                      ${transferOptions.statusOptions
+                        .map((status) => `<option value="${status}">${status}</option>`)
+                        .join('')}
                     </select>
                   </div>
-                  
+  
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Date :</label>
                     <input type="date" id="group-date" class="w-full p-2 border border-gray-300 rounded">
@@ -383,8 +433,12 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                 </div>
                 <div class="text-black font-medium mb-2">N° Documents: ${groupData.documentNumbers.join(' | ')}</div>
   
-                <button id="update-group-btn" class="w-full p-2 text-white rounded-full hover:bg-green-700">
-                  Mettre à jour tous les transferts 
+                <button 
+                  id="update-group-btn" 
+                  class="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  disabled
+                >
+                  Mettre à jour tous les transferts
                 </button>
               </div>
             </div>
@@ -397,35 +451,39 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
-            
+  
             <div id="transfers-list" class="divide-y max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-              ${groupData.transfers.map((transfer, index) => `
-                <div class="py-4 px-3 hover:bg-gray-50">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                      <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
-                      <span class="font-medium">N° ${transfer.Document_Number}</span>
+              ${groupData.transfers
+                .map(
+                  (transfer, index) => `
+                  <div class="py-4 px-3 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center">
+                        <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
+                        <span class="font-medium">N° ${transfer.Document_Number}</span>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <button
+                          class="p-2 edit_trans text-gray-500 hover:text-blue-500 edit-transfer-btn"
+                          data-index="${index}"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                      </div>
                     </div>
-                    <div class="flex items-center space-x-3">
-                      <button
-                        class="p-2 edit_trans text-gray-500 hover:text-blue-500 edit-transfer-btn"
-                        data-index="${index}"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                      </button>
+                    <div class="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
+                      <div>Quantité: ${transfer.quantity}</div>
+                      <div class="flex items-center">
+                        Statut:
+                        <span class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2"></span>
+                        ${transfer.status}
+                      </div>
+                      <div>Date: ${transfer.date}</div>
                     </div>
                   </div>
-                  <div class="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
-                    <div>Quantité: ${transfer.quantity}</div>
-                    <div class="flex items-center">
-                      Statut:
-                      <span class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2"></span>
-                      ${transfer.status}
-                    </div>
-                    <div>Date: ${transfer.date}</div>
-                  </div>
-                </div>
-              `).join('')}
+                `
+                )
+                .join('')}
             </div>
           </div>
         </div>
@@ -437,14 +495,12 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
       },
       width: '700px',
       didRender: () => {
-        // Section à n'exécuter que si plusieurs transferts
         if (groupData.transfers.length > 1) {
-          // Initialiser la date avec la date du premier transfert
+          // Initialiser la date et le statut comme avant
           if (groupData.transfers.length > 0) {
             const firstTransfer = groupData.transfers[0];
             const dateInput = document.getElementById('group-date');
             if (dateInput && firstTransfer.date) {
-              // Convertir format date si nécessaire
               const convertToDateInput = (dateStr) => {
                 if (!dateStr) return '';
                 if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
@@ -453,40 +509,40 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
               };
               dateInput.value = convertToDateInput(firstTransfer.date);
             }
-            
-            // Initialiser le statut avec le statut le plus commun
+  
             const statusCounts = groupData.statusCounts;
             let mostCommonStatus = 'En cours';
             let maxCount = 0;
-            
+  
             for (const [status, count] of Object.entries(statusCounts)) {
               if (count > maxCount) {
                 mostCommonStatus = status;
                 maxCount = count;
               }
             }
-            
+  
             const statusSelect = document.getElementById('group-status');
             if (statusSelect) {
               statusSelect.value = mostCommonStatus;
             }
           }
-          
-          // Système de toggle pour la section "Modifier tout le groupe"
+  
+          // Gestion du toggle pour la section "Modifier tout le groupe"
           const toggleGroupEditBtn = document.getElementById('toggle-group-edit-btn');
           const groupEditForm = document.getElementById('group-edit-form');
           const editToggleIcon = document.getElementById('edit-toggle-icon');
-          
-          // Par défaut fermé
+          const updateGroupBtn = document.getElementById('update-group-btn');
+          const fromSelect = document.getElementById('group-from');
+          const toSelect = document.getElementById('group-to');
+          const errorMessage = document.getElementById('error-message');
+  
           let isGroupEditExpanded = false;
           groupEditForm.style.maxHeight = '0';
           editToggleIcon.style.transform = 'rotate(-90deg)';
-          
+  
           toggleGroupEditBtn.addEventListener('click', () => {
             isGroupEditExpanded = !isGroupEditExpanded;
-            
             if (isGroupEditExpanded) {
-              // Calculer la hauteur nécessaire pour afficher tous les éléments
               const height = groupEditForm.scrollHeight + 'px';
               groupEditForm.style.maxHeight = height;
               editToggleIcon.style.transform = 'rotate(0deg)';
@@ -495,63 +551,64 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
               editToggleIcon.style.transform = 'rotate(-90deg)';
             }
           });
-          
-          // Ajouter l'événement de mise à jour du groupe
-          const updateGroupBtn = document.getElementById('update-group-btn');
-          if (updateGroupBtn) {
-            updateGroupBtn.addEventListener('click', () => {
-              const status = document.getElementById('group-status').value;
-              const date = document.getElementById('group-date').value;
-              
-              // Récupérer les valeurs "De" et "Vers"
-              const fromSelect = document.getElementById('group-from');
-              const toSelect = document.getElementById('group-to');
-              
-              const fromValue = fromSelect.value;
-              const toValue = toSelect.value;
-              
-              // Récupérer aussi les noms correspondants aux valeurs
-              const fromName = fromSelect.options[fromSelect.selectedIndex].getAttribute('data-name');
-              const toName = toSelect.options[toSelect.selectedIndex].getAttribute('data-name');
-              
-              updateEntireGroup({ 
-                status, 
-                date, 
-                from: fromValue, 
-                to: toValue,
-                fromName: fromName,
-                toName: toName
-              });
-            });
-          }
+  
+          // Validation en temps réel des magasins
+          const validateStores = () => {
+            const fromValue = fromSelect.value;
+            const toValue = toSelect.value;
+  
+            if (fromValue === toValue && fromValue !== '') {
+              errorMessage.classList.remove('hidden');
+              errorMessage.textContent = 'Les magasins source et destination doivent être différents.';
+              updateGroupBtn.disabled = true;
+            } else {
+              errorMessage.classList.add('hidden');
+              errorMessage.textContent = '';
+              updateGroupBtn.disabled = false;
+            }
+          };
+  
+          fromSelect.addEventListener('change', validateStores);
+          toSelect.addEventListener('change', validateStores);
+  
+          // Appel initial pour valider l'état actuel
+          validateStores();
+  
+          // Gestion de la mise à jour
+          updateGroupBtn.addEventListener('click', async () => {
+            const status = document.getElementById('group-status').value;
+            const date = document.getElementById('group-date').value;
+            const fromValue = fromSelect.value;
+            const toValue = toSelect.value  = toSelect.value;
+            const fromName = fromSelect.options[fromSelect.selectedIndex].getAttribute('data-name');
+            const toName = toSelect.options[toSelect.selectedIndex].getAttribute('data-name');
+  
+            await updateEntireGroup({ status, date, from: fromValue, to: toValue, fromName, toName });
+          });
         }
-        
-        // Ajouter les événements pour éditer les transferts individuels
-        document.querySelectorAll('.edit-transfer-btn').forEach(btn => {
+  
+        // Gestion des boutons d'édition des transferts individuels
+        document.querySelectorAll('.edit-transfer-btn').forEach((btn) => {
           btn.addEventListener('click', (e) => {
             const index = parseInt(btn.getAttribute('data-index'));
             const transfer = groupData.transfers[index];
-            
             MySwal.close();
             showTransferDetails(transfer, dayData, e);
           });
         });
-        
-        // Gestion de l'affichage/masquage des transferts
+  
+        // Gestion du toggle pour la liste des transferts
         const toggleBtn = document.getElementById('toggle-transfers-btn');
         const transfersList = document.getElementById('transfers-list');
         const toggleIcon = document.getElementById('toggle-icon');
-        
-        // Par défaut fermé
+  
         let isExpanded = false;
         transfersList.style.maxHeight = '0';
         toggleIcon.style.transform = 'rotate(-90deg)';
-        
+  
         toggleBtn.addEventListener('click', () => {
           isExpanded = !isExpanded;
-          
           if (isExpanded) {
-            // Calculer la hauteur nécessaire pour afficher tous les éléments
             const height = transfersList.scrollHeight + 'px';
             transfersList.style.maxHeight = height;
             toggleIcon.style.transform = 'rotate(0deg)';
@@ -560,7 +617,7 @@ const maxTransfersCount = Math.max(getMaxTransfersCount(), 10) + 5; // Add buffe
             toggleIcon.style.transform = 'rotate(-90deg)';
           }
         });
-      }
+      },
     });
   };
 // À l'intérieur du composant CalendarGrid
@@ -673,344 +730,346 @@ const renderGroupInCalendar = (transfer) => (
     )}
   </div>
 );
-  const showTransferDetails = (transfer, dayData, e) => {
-    if (!transfer) return;
-    e && e.stopPropagation();
+const showTransferDetails = (transfer, dayData, e) => {
+  if (!transfer) return;
+  e && e.stopPropagation();
 
-    const isManualTransfer = transfer.isManualTransfer;
-    const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.fromName, transfer.from);
-    const toExists = checkMagasinExists(transfer.toName, transfer.to);
+  const isManualTransfer = transfer.isManualTransfer;
+  const fromExists = transfer.showBoxIcon ? true : checkMagasinExists(transfer.fromName, transfer.from);
+  const toExists = checkMagasinExists(transfer.toName, transfer.to);
 
-    
-
-    const convertToDateInput = (dateStr) => {
-      if (!dateStr) return '';
-      if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
-      const [day, month, year] = dateStr.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    };
-
-    // Normaliser le nom du magasin pour correspondre à transferOptions.toOptions
-    const normalizeMagasinName = (name) => {
-      if (!name) return '';
-      return `Stradi ${name.trim().replace(/^Stradi\s+/i, '')}`;
-    };
-
-    const totalQuantity = isManualTransfer
-      ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
-      : transfer.quantity || 0;
-
-    const barcodeCounts = {};
-    if (isManualTransfer && transfer.items) {
-      transfer.items.forEach((item) => {
-        barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
-      });
-    }
-
-    MySwal.fire({
-      background: transfer.showBoxIcon ? '#fff' : '#FFF',
-      html: (
-        <div className="p-4 space-y-4">
-          <div className="text-transfer font-semibold mb-4 text-black">
-            Détails {transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
-          </div>
-
-          {!transfer.showBoxIcon && !fromExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>Le magasin source "{transfer.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
-            </div>
-          )}
-          {!toExists && (
-            <div className="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              <AlertCircle className="mr-2" size={20} />
-              <span>
-                Le magasin {transfer.showBoxIcon ? '' : 'destination '} "{transfer.toName}" n'appartient pas aux
-                magasins Stradi actifs.
-              </span>
-            </div>
-          )}
-
-          {transfer.showBoxIcon ? (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="block mb-1 text-black">Emplacement :</strong>
-                <select
-                  name="to"
-                  defaultValue={transfer.to || ''} // Utiliser l'ID
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-                >
-                  {transferOptions.toOptions.map((option, index) => (
-                    <option key={index} value={option.value} className="text-black">
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <strong className="block mb-1 text-black">Date :</strong>
-                <input
-                  type="date"
-                  name="date"
-                  defaultValue={convertToDateInput(transfer.date || '')}
-                  className="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
-                />
-              </div>
-              <div>
-                <strong className="block mb-1 text-black">Statut :</strong>
-                <select
-                  name="status"
-                  defaultValue={transfer.status || ''}
-                  className="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
-                >
-                  {transferOptions.statusOptions.map((option, index) => (
-                    <option key={index} value={option} className="text-black">
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">De :</strong>
-                  <select
-                    name="from"
-                    defaultValue={transfer.from || ''} // Utiliser l'ID
-                    className="w-full p-2 border border-black text-black bg-transparent rounded"
-                  >
-                    {/* Ajouter l'option actuelle si elle n'existe pas dans fromOptions */}
-                    {!transferOptions.fromOptions.some((opt) => opt.value === transfer.from) &&
-                      transfer.fromName && (
-                        <option value={transfer.from} className="text-black">
-                          {transfer.fromName}
-                        </option>
-                      )}
-                    {transferOptions.fromOptions.map((option, index) => (
-                      <option key={index} value={option.value} className="text-black">
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <strong className="block mb-1 text-black">Vers :</strong>
-                  <select
-                    name="to"
-                    defaultValue={transfer.to || ''} // Utiliser l'ID
-                    className="w-full p-2 border border-black text-black bg-transparent rounded"
-                  >
-                    {/* Ajouter l'option actuelle si elle n'existe pas dans toOptions */}
-                    {!transferOptions.toOptions.some((opt) => opt.value === transfer.to) && transfer.toName && (
-                      <option value={transfer.to} className="text-black">
-                        {transfer.toName}
-                      </option>
-                    )}
-                    {transferOptions.toOptions.map((option, index) => (
-                      <option key={index} value={option.value} className="text-black">
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">Date :</strong>
-                  <input
-                    type="date"
-                    name="date"
-                    defaultValue={convertToDateInput(transfer.date || '')}
-                    className="w-full p-2 border border-black text-black bg-transparent rounded"
-                  />
-                </div>
-                <div>
-                  <strong className="block mb-1 text-black">Quantité totale :</strong>
-                  <input
-                    type="number"
-                    name="quantity"
-                    defaultValue={totalQuantity}
-                    readOnly
-                    className="w-full p-2 border border-black text-black bg-transparent rounded"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong className="block mb-1 text-black">Statut :</strong>
-                  <select
-                    name="status"
-                    defaultValue={transfer.status || ''}
-                    className="w-full p-2 border border-black text-black bg-transparent rounded"
-                  >
-                    {transferOptions.statusOptions.map((option, index) => (
-                      <option key={index} value={option} className="text-black">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              {isManualTransfer && transfer.items && (
-                <>
-                  <div className="mt-4">
-                    <strong className="block mb-1 text-black">
-                      Codes-barres ({Object.keys(barcodeCounts).length} uniques) :
-                    </strong>
-                    <div className="flex flex-wrap gap-2 p-2 border overflow-auto max-h-48 border-black rounded bg-gray-50">
-                      {transfer.items.map((item, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-gray-200 text-black rounded-full"
-                        >
-                          {item.barcode}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <strong className="block mb-1 text-black">Détails des codes-barres :</strong>
-                    <div className="overflow-auto max-h-48 border border-black rounded">
-                      <table className="w-full text-black">
-                        <thead>
-                          <tr className="bg-gray-100">
-                            <th className="p-2 border-b">Code-barres</th>
-                            <th className="p-2 border-b">Quantité</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(barcodeCounts).map(([barcode, qty], index) => (
-                            <tr key={index} className="border-b">
-                              <td className="p-2">{barcode}</td>
-                              <td className="p-2">{qty}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      ),
-      showConfirmButton: false,
-      showCancelButton: false,
-      width: '1000px',
-      customClass: {
-        popup: 'bg-transparent',
-        content: 'p-0',
-      },
-      footer: `
-        <div class="w-full flex justify-center space-x-4 pb-4">
-          <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
-              <path d="M18 6 6 18"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
-          <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </button>
-        </div>
-      `,
-      didRender: () => {
-        document.getElementById('close-btn').addEventListener('click', () => {
-          MySwal.close();
-        });
-
-        document.getElementById('confirm-btn').addEventListener('click', () => {
-          const formElements = MySwal.getPopup().querySelectorAll('input, select');
-          const values = {};
-
-          formElements.forEach((el) => {
-            if (el.type === 'date') {
-              values.date = el.value;
-            } else if (el.type === 'number') {
-              values.quantity = Number(el.value);
-            } else {
-              values[el.name] = el.value;
-            }
-          });
-
-          const updatedTransfer = transfer.showBoxIcon
-            ? {
-                ...transfer,
-                to: values.to || transfer.to, // ID du magasin
-                date: values.date,
-                status: values.status || transfer.status,
-                toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName, // Mettre à jour le nom
-              }
-            : {
-                ...transfer,
-                from: transfer.showBoxIcon ? '' : values.from || transfer.from, // ID du magasin
-                to: values.to || transfer.to, // ID du magasin
-                quantity: values.quantity || transfer.quantity,
-                Document_Number: values.Document_Number || transfer.Document_Number,
-                status: values.status || transfer.status,
-                date: values.date,
-                items: transfer.items, // Conserver les items pour les transferts manuels
-                fromName: transferOptions.fromOptions.find((opt) => opt.value === values.from)?.label || transfer.fromName, // Mettre à jour le nom
-                toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName, // Mettre à jour le nom
-              };
-
-          const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.fromName, updatedTransfer.from);
-          const newToExists = checkMagasinExists(updatedTransfer.toName, updatedTransfer.to);
-
-          if (!transfer.showBoxIcon && !newFromExists) {
-            showNonStradiAlert(updatedTransfer.fromName, 'source');
-          }
-          if (!newToExists) {
-            showNonStradiAlert(updatedTransfer.toName, 'destination');
-          }
-
-          if (updateTransfer) {
-            updateTransfer(dayData, updatedTransfer);
-          }
-
-          MySwal.fire({
-            background: 'transparent',
-            title: '<span class="text-white">Confirmé !</span>',
-            html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-            customClass: {
-              popup: 'bg-transparent',
-              title: 'text-white',
-              content: 'text-white',
-            },
-          });
-        });
-
-        const deleteBtn = document.getElementById('delete-btn');
-        if (deleteBtn) {
-          deleteBtn.addEventListener('click', () => {
-            MySwal.fire({
-              title: 'Êtes-vous sûr ?',
-              text: 'Cette action ne peut pas être annulée !',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#d33',
-              cancelButtonColor: '#3085d6',
-              confirmButtonText: 'Oui, supprimer',
-              cancelButtonText: 'Annuler',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                onDeleteTransfer(transfer._id, transfer.showBoxIcon);
-                MySwal.close();
-              }
-            });
-          });
-        }
-      },
-    });
+  const convertToDateInput = (dateStr) => {
+    if (!dateStr) return '';
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr;
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
+
+  const normalizeMagasinName = (name) => {
+    if (!name) return '';
+    return `Stradi ${name.trim().replace(/^Stradi\s+/i, '')}`;
+  };
+
+  const totalQuantity = isManualTransfer
+    ? transfer.items?.reduce((total, item) => total + (item.quantity || 0), 0) || transfer.quantity || 0
+    : transfer.quantity || 0;
+
+  const barcodeCounts = {};
+  if (isManualTransfer && transfer.items) {
+    transfer.items.forEach((item) => {
+      barcodeCounts[item.barcode] = (barcodeCounts[item.barcode] || 0) + (item.quantity || 0);
+    });
+  }
+
+  MySwal.fire({
+    background: transfer.showBoxIcon ? '#fff' : '#FFF',
+    html: `
+      <div class="p-4 space-y-4">
+        <div class="text-transfer font-semibold mb-4 text-black">
+          Détails ${transfer.showBoxIcon ? "de l'Inventaire" : isManualTransfer ? "du Transfert Manuel" : "du Transfert"}
+        </div>
+
+        ${!transfer.showBoxIcon && !fromExists ? `
+          <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <svg class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Le magasin source "${transfer.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
+          </div>
+        ` : ''}
+
+        ${!toExists ? `
+          <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <svg class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1 "8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Le magasin ${transfer.showBoxIcon ? '' : 'destination '} "${transfer.toName}" n'appartient pas aux magasins Stradi actifs.</span>
+          </div>
+        ` : ''}
+
+        ${transfer.showBoxIcon ? `
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <strong class="block mb-1 text-black">Emplacement :</strong>
+              <select
+                name="to"
+                id="to-select"
+                class="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+              >
+                ${transferOptions.toOptions.map((option, index) => `
+                  <option key="${index}" value="${option.value}" ${option.value === transfer.to ? 'selected' : ''} class="text-black">
+                    ${option.label}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+            <div>
+              <strong class="block mb-1 text-black">Date :</strong>
+              <input
+                type="date"
+                name="date"
+                value="${convertToDateInput(transfer.date || '')}"
+                class="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
+              />
+            </div>
+            <div>
+              <strong class="block mb-1 text-black">Statut :</strong>
+              <select
+                name="status"
+                class="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+              >
+                ${transferOptions.statusOptions.map((option, index) => `
+                  <option key="${index}" value="${option}" ${option === transfer.status ? 'selected' : ''} class="text-black">
+                    ${option}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+        ` : `
+          <div id="error-message" class="hidden text-red-600 text-sm mb-2"></div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <strong class="block mb-1 text-black">De :</strong>
+              <select
+                name="from"
+                id="from-select"
+                class="w-full p-2 border border-black text-black bg-transparent rounded"
+              >
+                ${!transferOptions.fromOptions.some((opt) => opt.value === transfer.from) && transfer.fromName ? `
+                  <option value="${transfer.from}" class="text-black">${transfer.fromName}</option>
+                ` : ''}
+                ${transferOptions.fromOptions.map((option, index) => `
+                  <option key="${index}" value="${option.value}" ${option.value === transfer.from ? 'selected' : ''} class="text-black">
+                    ${option.label}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+            <div>
+              <strong class="block mb-1 text-black">Vers :</strong>
+              <select
+                name="to"
+                id="to-select"
+                class="w-full p-2 border border-black text-black bg-transparent rounded"
+              >
+                ${!transferOptions.toOptions.some((opt) => opt.value === transfer.to) && transfer.toName ? `
+                  <option value="${transfer.to}" class="text-black">${transfer.toName}</option>
+                ` : ''}
+                ${transferOptions.toOptions.map((option, index) => `
+                  <option key="${index}" value="${option.value}" ${option.value === transfer.to ? 'selected' : ''} class="text-black">
+                    ${option.label}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <strong class="block mb-1 text-black">Date :</strong>
+              <input
+                type="date"
+                name="date"
+                value="${convertToDateInput(transfer.date || '')}"
+                class="w-full p-2 border border-black text-black bg-transparent rounded"
+              />
+            </div>
+            <div>
+              <strong class="block mb-1 text-black">Quantité totale :</strong>
+              <input
+                type="number"
+                name="quantity"
+                value="${totalQuantity}"
+                readOnly
+                class="w-full p-2 border border-black text-black bg-transparent rounded"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <strong class="block mb-1 text-black">Statut :</strong>
+              <select
+                name="status"
+                class="w-full p-2 border border-black text-black bg-transparent rounded"
+              >
+                ${transferOptions.statusOptions.map((option, index) => `
+                  <option key="${index}" value="${option}" ${option === transfer.status ? 'selected' : ''} class="text-black">
+                    ${option}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+          ${isManualTransfer && transfer.items ? `
+            <div class="mt-4">
+              <strong class="block mb-1 text-black">Codes-barres (${Object.keys(barcodeCounts).length} uniques) :</strong>
+              <div class="flex flex-wrap gap-2 p-2 border overflow-auto max-h-48 border-black rounded bg-gray-50">
+                ${transfer.items.map((item, index) => `
+                  <span
+                    key="${index}"
+                    class="px-2 py-1 bg-gray-200 text-black rounded-full"
+                  >
+                    ${item.barcode}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+            <div class="mt-4">
+              <strong class="block mb-1 text-black">Détails des codes-barres :</strong>
+              <div class="overflow-auto max-h-48 border border-black rounded">
+                <table class="w-full text-black">
+                  <thead>
+                    <tr class="bg-gray-100">
+                      <th class="p-2 border-b">Code-barres</th>
+                      <th class="p-2 border-b">Quantité</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${Object.entries(barcodeCounts).map(([barcode, qty], index) => `
+                      <tr key="${index}" class="border-b">
+                        <td class="p-2">${barcode}</td>
+                        <td class="p-2">${qty}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ` : ''}
+        `}
+      </div>
+    `,
+    showConfirmButton: false,
+    showCancelButton: false,
+    width: '1000px',
+    customClass: {
+      popup: 'bg-transparent',
+      content: 'p-0',
+    },
+    footer: `
+      <div class="w-full flex justify-center space-x-4 pb-4">
+        <button id="close-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+        <button id="confirm-btn" class="bg-transparent border text-white w-12 h-12 rounded-full flex items-center justify-center" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </div>
+    `,
+    didRender: () => {
+      const closeBtn = document.getElementById('close-btn');
+      const confirmBtn = document.getElementById('confirm-btn');
+      const fromSelect = document.getElementById('from-select');
+      const toSelect = document.getElementById('to-select');
+      const errorMessage = document.getElementById('error-message');
+
+      closeBtn.addEventListener('click', () => {
+        MySwal.close();
+      });
+
+      // Validation en temps réel des magasins
+      const validateStores = () => {
+        if (!fromSelect || !toSelect) return;
+
+        const fromValue = fromSelect.value;
+        const toValue = toSelect.value;
+
+        if (fromValue === toValue && fromValue !== '') {
+          errorMessage.classList.remove('hidden');
+          errorMessage.textContent = 'Les magasins source et destination doivent être différents.';
+          confirmBtn.disabled = true;
+        } else {
+          errorMessage.classList.add('hidden');
+          errorMessage.textContent = '';
+          confirmBtn.disabled = false;
+        }
+      };
+
+      if (fromSelect) fromSelect.addEventListener('change', validateStores);
+      if (toSelect) toSelect.addEventListener('change', validateStores);
+
+      // Appel initial pour valider l'état actuel
+      validateStores();
+
+      confirmBtn.addEventListener('click', () => {
+        const formElements = MySwal.getPopup().querySelectorAll('input, select');
+        const values = {};
+
+        formElements.forEach((el) => {
+          if (el.type === 'date') {
+            values.date = el.value;
+          } else if (el.type === 'number') {
+            values.quantity = Number(el.value);
+          } else {
+            values[el.name] = el.value;
+          }
+        });
+
+        // Vérification finale avant mise à jour
+        if (!transfer.showBoxIcon && values.from === values.to) {
+          MySwal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Les magasins source et destination doivent être différents.',
+            confirmButtonColor: '#3085d6',
+          });
+          return;
+        }
+
+        const updatedTransfer = transfer.showBoxIcon
+          ? {
+              ...transfer,
+              to: values.to || transfer.to,
+              date: values.date,
+              status: values.status || transfer.status,
+              toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName,
+            }
+          : {
+              ...transfer,
+              from: values.from || transfer.from,
+              to: values.to || transfer.to,
+              quantity: values.quantity || transfer.quantity,
+              Document_Number: values.Document_Number || transfer.Document_Number,
+              status: values.status || transfer.status,
+              date: values.date,
+              items: transfer.items,
+              fromName:
+                transferOptions.fromOptions.find((opt) => opt.value === values.from)?.label || transfer.fromName,
+              toName: transferOptions.toOptions.find((opt) => opt.value === values.to)?.label || transfer.toName,
+            };
+
+        const newFromExists = transfer.showBoxIcon ? true : checkMagasinExists(updatedTransfer.fromName, updatedTransfer.from);
+        const newToExists = checkMagasinExists(updatedTransfer.toName, updatedTransfer.to);
+
+        if (!transfer.showBoxIcon && !newFromExists) {
+          showNonStradiAlert(updatedTransfer.fromName, 'source');
+        }
+        if (!newToExists) {
+          showNonStradiAlert(updatedTransfer.toName, 'destination');
+        }
+
+        if (updateTransfer) {
+          updateTransfer(dayData, updatedTransfer);
+        }
+
+        MySwal.fire({
+          background: 'transparent',
+          title: '<span class="text-white">Confirmé !</span>',
+          html: '<span class="text-white">Les modifications ont été enregistrées.</span>',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'bg-transparent',
+            title: 'text-white',
+            content: 'text-white',
+          },
+        });
+      });
+    },
+  });
+};
   const checkMagasinAndGetName = (magasinName, magasinId) => {
     // Si nous avons l'ID et qu'il correspond à un entrepôt
     if (magasinId) {

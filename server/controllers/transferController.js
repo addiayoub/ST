@@ -236,7 +236,6 @@ exports.updateTransfer = async (req, res) => {
     handleErrors(res, error, 400);
   }
 };
-// Add this new method to transferController.js
 
 exports.getFlaggedTransfers = async (req, res) => {
   try {
@@ -289,5 +288,181 @@ exports.deleteTransfer = async (req, res) => {
     });
   } catch (error) {
     handleErrors(res, error);
+  }
+}
+,
+exports.updateTransferGroup = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
+      });
+    }
+
+    const { fromId, toId, date, documentNumbers, updates } = req.body;
+    
+    if ((!fromId || !toId || !date) && !documentNumbers) {
+      return res.status(400).json({
+        success: false,
+        error: 'Paramètres manquants. Veuillez fournir fromId, toId, date ou documentNumbers.'
+      });
+    }
+
+    // Vérifier que les magasins existent si fournis
+    if (fromId) {
+      const fromStore = await Magasin.findById(fromId);
+      if (!fromStore) {
+        return res.status(400).json({
+          success: false,
+          error: 'Magasin source non trouvé'
+        });
+      }
+    }
+
+    if (toId) {
+      const toStore = await Magasin.findById(toId);
+      if (!toStore) {
+        return res.status(400).json({
+          success: false,
+          error: 'Magasin destination non trouvé'
+        });
+      }
+    }
+
+    let query = {};
+    
+    // If document numbers are provided, use them as primary matching criteria
+    if (documentNumbers && documentNumbers.length > 0) {
+      query = {
+        Document_Number: { $in: documentNumbers }
+      };
+      console.log('Using document numbers for query:', documentNumbers);
+    } else {
+      // Otherwise, use fromId, toId, and date
+      // Convert the date string to a Date object
+      const dateObj = new Date(date);
+      
+      // Create the start and end of day in UTC to match database format
+      const startOfDay = new Date(dateObj);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(dateObj);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+      
+      console.log('Date search range:', {
+        startOfDay: startOfDay.toISOString(),
+        endOfDay: endOfDay.toISOString(),
+        fromId,
+        toId
+      });
+
+      query = {
+        $and: [
+          { from: fromId },
+          { to: toId },
+          { 
+            Date: { 
+              $gte: startOfDay,
+              $lte: endOfDay
+            }
+          }
+        ]
+      };
+    }
+    
+    console.log('Executing query:', JSON.stringify(query));
+    
+    // First check if we have any matching transfers
+    const matchingTransfers = await Transfer.find(query).lean();
+    console.log(`Found ${matchingTransfers.length} matching transfers`);
+
+    if (matchingTransfers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Aucun transfert trouvé avec ces critères'
+      });
+    }
+
+    // Prepare updates
+    const updateData = {};
+    
+    // Only include fields that are provided in the request
+    if (updates.status) {
+      updateData.status = updates.status;
+      
+      // Ajout: Mise à jour automatique du type selon le status
+      switch (updates.status) {
+        case 'En cours':
+          updateData.type = 'blue';
+          break;
+        case 'Confirmé':
+          updateData.type = 'green';
+          break;
+        case 'En attente':
+          updateData.type = 'orange';
+          break;
+        case 'Annulé':
+          updateData.type = 'red';
+          break;
+        case 'Inventaire':
+        case 'Inventaire z':
+          // Conserver le type actuel ou définir une valeur par défaut si nécessaire
+          // Pour l'instant, nous ne définissons pas de type spécifique pour ces statuts
+          break;
+      }
+    }
+    
+    if (updates.date) {
+      updateData.Date = new Date(updates.date);
+    }
+
+    // Ajouter la mise à jour des magasins si fournis
+    if (fromId) {
+      updateData.from = fromId;
+    }
+
+    if (toId) {
+      updateData.to = toId;
+    }
+
+    console.log('Update data:', updateData);
+
+    // Update the transfers
+    const result = await Transfer.updateMany(
+      query,
+      { $set: updateData },
+      { runValidators: true }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Aucun transfert trouvé avec ces critères'
+      });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Aucune modification nécessaire, les transferts sont déjà à jour',
+        modifiedCount: 0
+      });
+    }
+
+    // Get the updated transfers for the response
+    const updatedTransfers = await Transfer.find(query)
+      .populate('from', '_id nomMagasin')
+      .populate('to', '_id nomMagasin');
+
+    res.status(200).json({
+      success: true,
+      message: `${result.modifiedCount} transfert(s) modifié(s) avec succès`,
+      data: updatedTransfers.map(formatTransferResponse)
+    });
+  } catch (error) {
+    console.error('Error updating transfer group:', error);
+    handleErrors(res, error, 400);
   }
 };
