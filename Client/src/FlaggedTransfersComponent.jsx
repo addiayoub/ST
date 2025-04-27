@@ -184,7 +184,7 @@ export default function FlaggedTransfersComponent() {
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white opacity-10"></div>
         <div className="relative z-10 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">Transferts intégrés</h1>
+          <h1 className="text-4xl font-bold text-white">Transferts intégrés</h1>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

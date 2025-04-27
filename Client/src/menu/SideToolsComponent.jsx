@@ -1,7 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import '../Css/SideToolsComponent.css';
-import { CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup  } from 'lucide-react';
+import { CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup, BarChart2 } from 'lucide-react';
 
 const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, userRole }) => {
   const [user, setUser] = useState(null);
@@ -26,7 +26,8 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     const baseItems = [
       { id: 'calendar', icon: CalendarDays, tooltip: 'Calendrier Transfert' },
       { id: 'upload', icon: Upload, tooltip: 'Importer Transfert' },
-      { id: 'flagged', icon: DatabaseBackup , tooltip: 'Transferts intégrés' }, // Nouvel élément
+      { id: 'flagged', icon: DatabaseBackup, tooltip: 'Transferts intégrés' },
+      { id: 'stats', icon: BarChart2, tooltip: 'Statistiques' }, // Nouvel élément pour les statistiques
     ];
     const superAdminItems = [
       { id: 'boxes', icon: Boxes, tooltip: 'Inventaires' },
@@ -37,7 +38,7 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
   };
 
   const handleMenuClick = (componentId) => {
-    if (['calendar', 'upload', 'flagged'].includes(componentId) || user?.role === 'Admin') {
+    if (['calendar', 'upload', 'flagged', 'stats'].includes(componentId) || user?.role === 'Admin') {
       setActiveComponent(componentId);
     } else {
       setActiveComponent('calendar');

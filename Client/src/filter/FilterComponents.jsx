@@ -200,7 +200,7 @@ const FilterComponent = ({
               placeholder="Tous les magasins"
             />
           </div>
-          
+
           <div className="flex"> 
             {/* Bouton Tout */}
             <button 

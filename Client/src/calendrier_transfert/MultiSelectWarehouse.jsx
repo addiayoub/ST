@@ -15,45 +15,44 @@ const MultiSelectWarehouse = ({
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
   
-// Dans MultiSelectWarehouse.js
-useEffect(() => {
-  const fetchActiveWarehouses = async () => {
-    try {
-      setLoading(true); 
-      const response = await getMagasins('/api/magasins');
-      
-      // Ajouter un console.log pour voir la structure de la réponse
-      
-      // Vérifier si response.data existe et si c'est un tableau
-      let warehouseData = [];
-      
-      if (response && response.data) {
-        // Si c'est un objet avec une propriété data (structure { success: true, data: [...] })
-        if (Array.isArray(response.data.data)) {
-          warehouseData = response.data.data;
-        } 
-        // Si c'est directement un tableau
-        else if (Array.isArray(response.data)) {
-          warehouseData = response.data;
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        setLoading(true); 
+        const response = await getMagasins('/api/magasins');
+        
+        let warehouseData = [];
+        
+        if (response && response.data) {
+          if (Array.isArray(response.data.data)) {
+            warehouseData = response.data.data;
+          } else if (Array.isArray(response.data)) {
+            warehouseData = response.data;
+          }
         }
+        
+        // Filtrer pour ne garder que les magasins actifs
+        const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
+        
+        // Ajouter uniquement l'option "Magasin inconnu" à la liste des actifs
+        const warehousesWithUnknown = [
+          ...activeWarehouses,
+          { id: 'unknown', nomMagasin: 'Magasin inconnu', statut: 'inactive' }
+        ];
+        
+        setWarehouses(warehousesWithUnknown);
+        setError(null);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des magasins:', err);
+        setError('Impossible de charger les magasins');
+        setWarehouses([]);
+      } finally {
+        setLoading(false);
       }
-      
-      // Filtrer pour ne garder que les magasins actifs
-      const activeWarehouses = warehouseData.filter(warehouse => warehouse.statut === 'active');
-      
-      setWarehouses(activeWarehouses);
-      setError(null);
-    } catch (err) {
-      console.error('Erreur lors de la récupération des magasins:', err);
-      setError('Impossible de charger les magasins');
-      setWarehouses([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchActiveWarehouses();
-}, []);
+    };
+  
+    fetchWarehouses();
+  }, []);
 
  // Modifiez filteredWarehouses pour utiliser les propriétés de l'objet
 const filteredWarehouses = warehouses.filter(

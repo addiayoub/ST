@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CalendrierTransferts from './calendrier_transfert/CalendrierTransferts';
+import CalendrierTransferts from './calendrier_transfert/Main/CalendrierTransferts';
 import SideToolsComponent from './menu/SideToolsComponent';
 import Loader from './Loader/Loader';
 import LoaderNesk from './Loader NESK/LoaderNesk';
@@ -9,7 +9,8 @@ import Importer from './Importer/Importer';
 import Inventaires from './Planification_Inventaires/Inventaires';
 import Magasin from './Magasin/Magasin';
 import Utilisateurs from './Utilisateurs/Utilisateurs';
-import FlaggedTransfersComponent from './FlaggedTransfersComponent'; // Importez votre nouveau composant
+import FlaggedTransfersComponent from './FlaggedTransfersComponent';
+import Statistic from './Statistic/Statistic'; // Import du nouveau composant Statistic
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -42,7 +43,8 @@ function App() {
     const pathToComponent = {
       '/': 'calendar',
       '/upload': 'upload',
-      '/flagged': 'flagged', // Nouvelle route
+      '/flagged': 'flagged',
+      '/stats': 'stats', // Nouvelle route pour les statistiques
       '/inventaires': 'boxes',
       '/magasin': 'house',
       '/utilisateurs': 'user'
@@ -143,7 +145,7 @@ function App() {
   const hasAccess = (componentName) => {
     if (!user) return false;
     if (user.role === 'Admin') return true;
-    if (user.role === 'User') return ['calendar', 'upload', 'flagged'].includes(componentName); // Ajout de 'flagged'
+    if (user.role === 'User') return ['calendar', 'upload', 'flagged', 'stats'].includes(componentName); // Ajout de 'stats'
     return false;
   };
 
@@ -152,7 +154,8 @@ function App() {
     const componentToPath = {
       'calendar': '/',
       'upload': '/upload',
-      'flagged': '/flagged', // Nouvelle route
+      'flagged': '/flagged',
+      'stats': '/stats', // Mapping pour la nouvelle route
       'boxes': '/inventaires',
       'house': '/magasin',
       'user': '/utilisateurs'
@@ -210,10 +213,21 @@ function App() {
             />
           </>
         } />
-        {/* Nouvelle route pour les transferts marqués */}
         <Route path="/flagged" element={
           <>
             {hasAccess('flagged') && <FlaggedTransfersComponent />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        {/* Nouvelle route pour les statistiques */}
+        <Route path="/stats" element={
+          <>
+            {hasAccess('stats') && <Statistic />}
             <SideToolsComponent 
               activeComponent={activeComponent} 
               setActiveComponent={handleNavigation}
