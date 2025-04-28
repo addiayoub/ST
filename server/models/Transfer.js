@@ -29,7 +29,6 @@ const TransferSchema = new mongoose.Schema({
   Document_Number: {
     type: Number,
     required: true,
-    unique: true
   },
   Document_Date: Date,
   Sequence: Number,
