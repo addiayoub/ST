@@ -2,9 +2,6 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from '/Logo-nesk-investment@2x.png'; // Remplacez par le chemin de votre logo
 
-// Étendre jsPDF avec autoTable
-jsPDF.autoTable = autoTable;
-
 export const generateProfessionalPDF = ({
   data,
   columns,
@@ -80,8 +77,8 @@ export const generateProfessionalPDF = ({
       })
     );
 
-    // Add table
-    doc.autoTable({
+    // Add table - using autoTable directly on the doc instance
+    autoTable(doc, {
       head: [headers],
       body: tableData,
       startY: 40,
@@ -125,17 +122,20 @@ export const generateProfessionalPDF = ({
         doc.setFont('helvetica', 'bold');
         doc.text(footerText, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 5, { align: 'center' });
 
+        // Développé par
+        doc.text('Développé par ID&A TECH', doc.internal.pageSize.width - 15, doc.internal.pageSize.height - 5, { align: 'right' });
+
         // Bottom line
         doc.setDrawColor(secondaryColor);
         doc.setLineWidth(0.3);
         doc.line(15, doc.internal.pageSize.height - 15, doc.internal.pageSize.width - 15, doc.internal.pageSize.height - 15);
-        // Dans la fonction didDrawPage, ajoutez cette ligne avant ou après le texte confidentiel
-doc.text('Développé par ID&A TECH', doc.internal.pageSize.width - 15, doc.internal.pageSize.height - 5, { align: 'right' });
       }
     });
 
+    // Get the last position of the table
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 40;
+
     // Summary section
-    const finalY = doc.lastAutoTable.finalY + 10;
     if (finalY < doc.internal.pageSize.height - 30) {
       doc.setFontSize(12);
       doc.setTextColor(primaryColor);

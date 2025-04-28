@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Dropdown, message, Tooltip } from 'antd';
 import { DownloadOutlined, FileTextOutlined, FilePdfOutlined, FileImageOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { generateProfessionalPDF } from './PdfDesigner';
-// Étendre jsPDF avec autoTable
-jsPDF.autoTable = autoTable;
 
 const ExportTools = ({
   data,
@@ -19,7 +15,6 @@ const ExportTools = ({
   reportType = 'Statistiques',
   footerText = 'Strictement confidentiel'
 }) => {
-
   const exportToCSV = () => {
     try {
       const csvData = data.map(row => {
@@ -31,11 +26,9 @@ const ExportTools = ({
         });
         return item;
       });
-
       const worksheet = XLSX.utils.json_to_sheet(csvData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-
       XLSX.writeFile(workbook, `${filename}.csv`);
       message.success('Export CSV réussi');
     } catch (error) {
@@ -43,7 +36,7 @@ const ExportTools = ({
       message.error('Erreur lors de l\'export CSV');
     }
   };
-
+  
   const exportToPDF = () => {
     const success = generateProfessionalPDF({
       data,
@@ -60,19 +53,18 @@ const ExportTools = ({
       message.error('Erreur lors de l\'export PDF');
     }
   };
+  
   const downloadChartAsImage = () => {
     if (!chartRef || !chartRef.current) {
       message.warning('Aucun graphique disponible à exporter');
       return;
     }
-
     try {
       const chartElement = chartRef.current.ele;
       if (!chartElement) {
         message.warning('Élément de graphique non disponible');
         return;
       }
-
       html2canvas(chartElement, {
         backgroundColor: '#ffffff',
         useCORS: true,
@@ -91,7 +83,7 @@ const ExportTools = ({
       message.error('Erreur lors du téléchargement de l\'image');
     }
   };
-
+  
   const menuItems = [
     {
       key: 'csv',
@@ -106,7 +98,7 @@ const ExportTools = ({
       onClick: exportToPDF
     }
   ];
-
+  
   if (chartRef) {
     menuItems.push({
       key: 'image',
@@ -115,7 +107,7 @@ const ExportTools = ({
       onClick: downloadChartAsImage
     });
   }
-
+  
   return (
     <Tooltip title="Options d'exportation">
       <Dropdown menu={{ items: menuItems }} placement="bottomRight">
