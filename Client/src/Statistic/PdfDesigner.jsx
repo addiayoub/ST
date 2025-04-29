@@ -1,3 +1,4 @@
+// PdfDesigner.js
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from '/Logo-nesk-investment@2x.png'; // Remplacez par le chemin de votre logo
@@ -9,7 +10,9 @@ export const generateProfessionalPDF = ({
   filename = 'rapport-professionnel',
   companyName = 'Nesk-Investment',
   reportType = 'Statistiques',
-  footerText = 'Strictement confidentiel'
+  footerText = 'Strictement confidentiel',
+  startDate = null, // Nouvelle propriété pour la date de début
+  endDate = null // Nouvelle propriété pour la date de fin
 }) => {
   try {
     // Initialize PDF with custom settings
@@ -61,6 +64,20 @@ export const generateProfessionalPDF = ({
     doc.setTextColor(textColor);
     doc.text(`Généré le : ${date}`, doc.internal.pageSize.width - 15, 15, { align: 'right' });
 
+   
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 40;
+
+    // Summary section
+    if (finalY < doc.internal.pageSize.height - 30) {
+      doc.setFontSize(12);
+      doc.setTextColor(primaryColor);
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(10);
+      doc.setTextColor(textColor);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Total des enregistrements : ${data.length}`, + 230,finalY - 8);
+    }
     // Add a decorative line
     doc.setDrawColor(primaryColor);
     doc.setLineWidth(0.5);
@@ -77,7 +94,7 @@ export const generateProfessionalPDF = ({
       })
     );
 
-    // Add table - using autoTable directly on the doc instance
+    // Add table
     autoTable(doc, {
       head: [headers],
       body: tableData,
@@ -133,25 +150,12 @@ export const generateProfessionalPDF = ({
     });
 
     // Get the last position of the table
-    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 40;
-
-    // Summary section
-    if (finalY < doc.internal.pageSize.height - 30) {
-      doc.setFontSize(12);
-      doc.setTextColor(primaryColor);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Résumé', 15, finalY);
-
-      doc.setFontSize(10);
-      doc.setTextColor(textColor);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Total des enregistrements : ${data.length}`, 15, finalY + 8);
-    }
+ 
 
     // Save PDF
     doc.save(`${filename}-${date.replace(/\//g, '-')}.pdf`);
     return true;
- 
+
   } catch (error) {
     console.error('Erreur lors de la génération du PDF:', error);
     return false;

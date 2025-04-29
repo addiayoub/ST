@@ -1287,6 +1287,8 @@ const frenchDays = {
         columns={columns}
         filename={`transferts-${moment().format('YYYY-MM-DD')}`}
         title="Statistiques des transferts Stradivarius"
+        startDate={filters.dateRangeStrings && filters.dateRangeStrings[0] ? moment(filters.dateRangeStrings[0]).format('DD/MM/YYYY') : null}
+  endDate={filters.dateRangeStrings && filters.dateRangeStrings[1] ? moment(filters.dateRangeStrings[1]).format('DD/MM/YYYY') : null}
       />
     
               <Tabs activeKey={activeTab} onChange={setActiveTab}>
@@ -1353,6 +1355,8 @@ const frenchDays = {
           chartRef={chartRef}
           filename={`graphique-${activeChartTab}-${moment().format('YYYY-MM-DD')}`}
           title={`Visualisation: ${activeChartTab}`}
+          startDate={filters.dateRangeStrings && filters.dateRangeStrings[0] ? moment(filters.dateRangeStrings[0]).format('DD/MM/YYYY') : null}
+  endDate={filters.dateRangeStrings && filters.dateRangeStrings[1] ? moment(filters.dateRangeStrings[1]).format('DD/MM/YYYY') : null}
         />
       </div>
     }

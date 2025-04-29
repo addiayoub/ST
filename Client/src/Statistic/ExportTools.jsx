@@ -1,3 +1,4 @@
+// ExportTools.jsx
 import React from 'react';
 import { Button, Dropdown, message, Tooltip } from 'antd';
 import { DownloadOutlined, FileTextOutlined, FilePdfOutlined, FileImageOutlined, FileExcelOutlined } from '@ant-design/icons';
@@ -13,7 +14,9 @@ const ExportTools = ({
   title = 'Rapport Transactionnel',
   companyName = 'Nesk-Investment',
   reportType = 'Statistiques',
-  footerText = 'Strictement confidentiel'
+  footerText = 'Strictement confidentiel',
+  startDate = null, // Nouvelle prop pour la date de début
+  endDate = null // Nouvelle prop pour la date de fin
 }) => {
   const exportToCSV = () => {
     try {
@@ -36,7 +39,7 @@ const ExportTools = ({
       message.error('Erreur lors de l\'export CSV');
     }
   };
-  
+
   const exportToExcel = () => {
     try {
       const excelData = data.map(row => {
@@ -58,7 +61,7 @@ const ExportTools = ({
       message.error('Erreur lors de l\'export Excel');
     }
   };
-  
+
   const exportToPDF = () => {
     const success = generateProfessionalPDF({
       data,
@@ -67,7 +70,9 @@ const ExportTools = ({
       filename,
       companyName,
       reportType,
-      footerText
+      footerText,
+      startDate, // Passer la date de début
+      endDate // Passer la date de fin
     });
     if (success) {
       message.success('Export PDF réussi');
@@ -75,7 +80,7 @@ const ExportTools = ({
       message.error('Erreur lors de l\'export PDF');
     }
   };
-  
+
   const downloadChartAsImage = () => {
     if (!chartRef || !chartRef.current) {
       message.warning('Aucun graphique disponible à exporter');
@@ -105,7 +110,7 @@ const ExportTools = ({
       message.error('Erreur lors du téléchargement de l\'image');
     }
   };
-  
+
   const menuItems = [
     {
       key: 'excel',
@@ -126,7 +131,7 @@ const ExportTools = ({
       onClick: exportToPDF
     }
   ];
-  
+
   if (chartRef) {
     menuItems.push({
       key: 'image',
@@ -135,7 +140,7 @@ const ExportTools = ({
       onClick: downloadChartAsImage
     });
   }
-  
+
   return (
     <Tooltip title="Options d'exportation">
       <Dropdown menu={{ items: menuItems }} placement="bottomRight">
