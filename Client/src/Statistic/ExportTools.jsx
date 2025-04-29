@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Dropdown, message, Tooltip } from 'antd';
-import { DownloadOutlined, FileTextOutlined, FilePdfOutlined, FileImageOutlined } from '@ant-design/icons';
+import { DownloadOutlined, FileTextOutlined, FilePdfOutlined, FileImageOutlined, FileExcelOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import { generateProfessionalPDF } from './PdfDesigner';
@@ -34,6 +34,28 @@ const ExportTools = ({
     } catch (error) {
       console.error('Erreur lors de l\'export CSV:', error);
       message.error('Erreur lors de l\'export CSV');
+    }
+  };
+  
+  const exportToExcel = () => {
+    try {
+      const excelData = data.map(row => {
+        const item = {};
+        columns.forEach(col => {
+          if (col.dataIndex) {
+            item[col.title] = row[col.dataIndex];
+          }
+        });
+        return item;
+      });
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+      XLSX.writeFile(workbook, `${filename}.xlsx`);
+      message.success('Export Excel réussi');
+    } catch (error) {
+      console.error('Erreur lors de l\'export Excel:', error);
+      message.error('Erreur lors de l\'export Excel');
     }
   };
   
@@ -86,6 +108,12 @@ const ExportTools = ({
   
   const menuItems = [
     {
+      key: 'excel',
+      icon: <FileExcelOutlined />,
+      label: 'Exporter en Excel',
+      onClick: exportToExcel
+    },
+    {
       key: 'csv',
       icon: <FileTextOutlined />,
       label: 'Exporter en CSV',
@@ -94,7 +122,7 @@ const ExportTools = ({
     {
       key: 'pdf',
       icon: <FilePdfOutlined />,
-      label: 'Exporter en PDF ',
+      label: 'Exporter en PDF',
       onClick: exportToPDF
     }
   ];
