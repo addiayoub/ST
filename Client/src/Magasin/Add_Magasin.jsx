@@ -114,9 +114,9 @@ useEffect(() => {
       });
       return;
     }
-    const isCodeInditexValid = newMagasin.codeInditex.length > 3; 
-    const isNomMagasinValid = newMagasin.nomMagasin.length > 3;
-    const isCodeFuturaValid = newMagasin.codeFutura.length > 3; 
+    const isCodeInditexValid = newMagasin.codeInditex.length > 0; 
+    const isNomMagasinValid = newMagasin.nomMagasin.length > 0;
+    const isCodeFuturaValid = newMagasin.codeFutura.length > 0; 
     
     // Vérifications d'unicité pour tous les champs
     const isMagasinNameUnique = !magasins.some(mag => 

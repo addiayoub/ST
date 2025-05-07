@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from './les apis/api';
 import { getMagasins } from './les apis/magasinService';
 import { List, Truck, ClipboardList } from 'lucide-react';  
-import {DatabaseBackup} from 'lucide-react'
+import { DatabaseBackup } from 'lucide-react';
 export default function FlaggedTransfersComponent() {
   const [regularTransfers, setRegularTransfers] = useState([]);
   const [manualTransfers, setManualTransfers] = useState([]);
@@ -97,6 +97,26 @@ export default function FlaggedTransfersComponent() {
     return new Date(dateString).toLocaleDateString('fr-FR', options);
   };
 
+  // Fonction pour calculer les quantités totales
+  const calculateTotals = () => {
+    const regularTotal = regularTransfers.reduce((sum, transfer) => {
+      return sum + (transfer.quantity || transfer.totalQuantity || 0);
+    }, 0);
+    
+    const manualTotal = manualTransfers.reduce((sum, transfer) => {
+      return sum + (transfer.quantity || transfer.totalQuantity || 0);
+    }, 0);
+    
+    return {
+      regularTotal,
+      manualTotal,
+      allTotal: regularTotal + manualTotal,
+      filteredTotal: getFilteredTransfers().reduce((sum, transfer) => {
+        return sum + (transfer.quantity || transfer.totalQuantity || 0);
+      }, 0)
+    };
+  };
+
   // Fonction pour filtrer localement les transferts
   const getFilteredTransfers = () => {
     let transfers = [];
@@ -141,6 +161,9 @@ export default function FlaggedTransfersComponent() {
   const totalManualTransfers = manualTransfers.length;
   const totalTransfers = totalRegularTransfers + totalManualTransfers;
   const filteredTransfers = getFilteredTransfers();
+  
+  // Calculer les totaux des quantités
+  const quantityTotals = calculateTotals();
 
   // Animation variants
   const containerVariants = {
@@ -192,7 +215,7 @@ export default function FlaggedTransfersComponent() {
             className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-all"
             disabled={isRefreshing}
           >
-          <DatabaseBackup />
+            <DatabaseBackup size={24} className="text-white" />
           </motion.button>
         </div>
       </motion.div>
@@ -309,68 +332,114 @@ export default function FlaggedTransfersComponent() {
           </motion.button>
         </motion.div>
       </motion.div>
+
+      {/* Cartes d'informations avec totaux des quantités */}
       <motion.div 
-  variants={containerVariants}
-  className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
->
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <List size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts affichés</p>
-    </div>
-    <motion.p 
-      key={`filtered-${filteredTransfers.length}`}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.darkTeal }}
-    >
-      {filteredTransfers.length}
-    </motion.p>
-  </motion.div>
-  
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <Truck size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts standards</p>
-    </div>
-    <motion.p 
-      key={totalRegularTransfers}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.mediumTeal }}
-    >
-      {totalRegularTransfers}
-    </motion.p>
-  </motion.div>
-  
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <ClipboardList size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts manuels</p>
-    </div>
-    <motion.p 
-      key={totalManualTransfers}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.darkTeal }}
-    >
-      {totalManualTransfers}
-    </motion.p>
-  </motion.div>
-</motion.div>
+        variants={containerVariants}
+        className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        {/* Transferts affichés */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <List size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts affichés</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={`filtered-${filteredTransfers.length}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.darkTeal }}
+            >
+              {filteredTransfers.length}
+            </motion.p>
+            <motion.div
+              key={`qty-filtered-${quantityTotals.filteredTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.darkTeal }}>
+                {quantityTotals.filteredTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+        
+        {/* Transferts standards */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <Truck size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts standards</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={totalRegularTransfers}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.mediumTeal }}
+            >
+              {totalRegularTransfers}
+            </motion.p>
+            <motion.div
+              key={`qty-regular-${quantityTotals.regularTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.mediumTeal }}>
+                {quantityTotals.regularTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+        
+        {/* Transferts manuels */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <ClipboardList size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts manuels</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={totalManualTransfers}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.darkTeal }}
+            >
+              {totalManualTransfers}
+            </motion.p>
+            <motion.div
+              key={`qty-manual-${quantityTotals.manualTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.darkTeal }}>
+                {quantityTotals.manualTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
+
       <br />
+
       {/* Contenu principal */}
       <motion.div 
         variants={containerVariants}
@@ -483,8 +552,6 @@ export default function FlaggedTransfersComponent() {
           </div>
         )}
       </motion.div>
-
-     
     </motion.div>
   );
 }
