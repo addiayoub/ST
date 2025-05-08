@@ -1,9 +1,9 @@
-import { Menu, X } from 'lucide-react';
+import { Menu, X, CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup, BarChart2, Zap, Database, RefreshCw, Folder } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import '../Css/SideToolsComponent.css';
-import { CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup, BarChart2, Zap, Database, RefreshCw } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import FolderUrlManager from '../Url_Manager/FolderUrlManager'; // Assurez-vous d'ajuster le chemin
 
 const MySwal = withReactContent(Swal);
 
@@ -17,9 +17,9 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     width: window.innerWidth,
     height: window.innerHeight
   });
-  // Track zoom level
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [showFolderManager, setShowFolderManager] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -31,13 +31,11 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
         height: window.innerHeight
       });
       
-      // Calculate zoom level more accurately
       const currentZoom = window.devicePixelRatio || 1;
       setZoomLevel(currentZoom);
     };
 
     window.addEventListener('resize', handleResize);
-    // Initialize zoom level
     setZoomLevel(window.devicePixelRatio || 1);
     
     return () => window.removeEventListener('resize', handleResize);
@@ -52,7 +50,7 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
   };
 
   const toggleAutomate = (e) => {
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
     setSubMenuRotating(true);
     setTimeout(() => {
       setSubMenuRotating(false);
@@ -60,7 +58,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     }, 300);
   };
 
-  // Close automate menu when clicking elsewhere
   useEffect(() => {
     const handleClickOutside = () => {
       if (automateOpen) {
@@ -75,7 +72,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
   const getMenuItems = () => {
     if (!user) return [];
     
-    // Define all possible menu items with their details and order
     const allMenuItems = [
       { id: 'calendar', icon: CalendarDays, tooltip: 'Calendrier Transfert', order: 1, adminOnly: false },
       { id: 'automate', icon: Zap, tooltip: 'Automate', order: 2, adminOnly: true, isAutomateButton: true },
@@ -85,15 +81,14 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
       { id: 'boxes', icon: Boxes, tooltip: 'Inventaires', order: 6, adminOnly: true },
       { id: 'house', icon: HousePlus, tooltip: 'Magasin', order: 7, adminOnly: true },
       { id: 'user', icon: UserCog, tooltip: 'Utilisateurs', order: 8, adminOnly: true },
+      { id: 'folder', icon: Folder, tooltip: 'Gérer le dossier', order: 9, adminOnly: true },
     ];
     
-    // Filter items based on user role
     return allMenuItems
       .filter(item => !item.adminOnly || user.role === 'Admin')
       .sort((a, b) => a.order - b.order);
   };
 
-  // Function to execute batch process
   const executeBatch = async () => {
     try {
       setIsLoading(true);
@@ -116,7 +111,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
       const data = await response.json();
       
       if (data.status === 'success') {
-        // Format logs for better display
         let logsHtml = '<div class="mt-4 text-left">';
         for (const [key, value] of Object.entries(data.logs)) {
           logsHtml += `<p><strong>${key}:</strong> ${value}</p>`;
@@ -129,7 +123,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           html: `${data.message}<br>${logsHtml}`,
           confirmButtonColor: '#3085d6'
         }).then(() => {
-          // Actualiser la page après la fermeture de l'alerte
           window.location.reload();
         });
       } else {
@@ -139,7 +132,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           text: data.message || 'Une erreur est survenue lors du traitement du batch',
           confirmButtonColor: '#d33'
         }).then(() => {
-          // Actualiser la page même en cas d'erreur
           window.location.reload();
         });
       }
@@ -151,7 +143,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
         text: 'Une erreur est survenue lors de la communication avec le serveur',
         confirmButtonColor: '#d33'
       }).then(() => {
-        // Actualiser la page même en cas d'erreur de communication
         window.location.reload();
       });
     } finally {
@@ -159,7 +150,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     }
   };
 
-  // Function to insert data into database
   const insertIntoDatabase = async () => {
     try {
       setIsLoading(true);
@@ -182,16 +172,13 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
       const data = await response.json();
       
       if (data.traitement_info) {
-        // Format both traitement_info and download_info for better display
         let summaryHtml = '<div class="mt-4 text-left">';
         summaryHtml += '<h3 class="font-bold mb-2">Résultats de l\'insertion:</h3>';
         
-        // Traitement info
         for (const [key, value] of Object.entries(data.traitement_info)) {
           summaryHtml += `<p><strong>${key}:</strong> ${value}</p>`;
         }
         
-        // Download info
         summaryHtml += '<h3 class="font-bold mt-3 mb-2">Informations de téléchargement:</h3>';
         summaryHtml += `<p><strong>Fichiers téléchargés:</strong> ${data.download_info.downloaded_files_count}</p>`;
         summaryHtml += `<p><strong>Temps écoulé:</strong> ${data.download_info.elapsed_time_download.toFixed(2)} secondes</p>`;
@@ -203,7 +190,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           html: summaryHtml,
           confirmButtonColor: '#3085d6'
         }).then(() => {
-          // Actualiser la page après la fermeture de l'alerte
           window.location.reload();
         });
       } else {
@@ -213,7 +199,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           text: 'Une erreur est survenue lors de l\'insertion des données',
           confirmButtonColor: '#d33'
         }).then(() => {
-          // Actualiser la page même en cas d'erreur
           window.location.reload();
         });
       }
@@ -225,7 +210,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
         text: 'Une erreur est survenue lors de la communication avec le serveur',
         confirmButtonColor: '#d33'
       }).then(() => {
-        // Actualiser la page même en cas d'erreur de communication
         window.location.reload();
       });
     } finally {
@@ -243,10 +227,14 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
       insertIntoDatabase();
       return;
     }
+
+    if (componentId === 'folder') {
+      setShowFolderManager(true);
+      return;
+    }
     
     if (['calendar', 'upload', 'flagged', 'stats'].includes(componentId) || user?.role === 'Admin') {
       setActiveComponent(componentId);
-      // Close automate menu when clicking other menu items
       if (automateOpen) {
         setAutomateOpen(false);
       }
@@ -258,11 +246,8 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     }
   };
 
-  // Calculate button size based on zoom level
   const calculateButtonSize = () => {
-    const baseSize = 48; // 3rem base size
-    
-    // Adjust size based on zoom level
+    const baseSize = 38;
     return baseSize * (1 / zoomLevel);
   };
 
@@ -271,14 +256,13 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     width: `${buttonSize}px`,
     height: `${buttonSize}px`,
     fontSize: `${buttonSize * 0.5}px`,
-    minWidth: `${buttonSize}px`, // Ensure minimum size
-    minHeight: `${buttonSize}px` // Ensure minimum size
+    minWidth: `${buttonSize}px`,
+    minHeight: `${buttonSize}px`
   };
 
   const menuItems = getMenuItems();
   const ToggleIcon = menuVisible ? X : Menu;
 
-  // Render the automate submenu only if admin
   const renderAutomateSubMenu = (item) => {
     if (!item.isAutomateButton) return null;
     
@@ -299,15 +283,13 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           </span>
         </div>
 
-        {/* Sous-menu Automate */}
         <div 
           className={`absolute right-full mr-2 top-0 transition-all duration-300 ease-in-out ${
             automateOpen ? 'opacity-100 translate-x-0 ' : 'opacity-0 translate-x-4 pointer-events-none '
           }`}
-          onClick={(e) => e.stopPropagation()} // Prevent clicks inside submenu from closing it
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex flex-col space-y-3">
-            {/* Bouton Insertion */}
             <div className="relative group">
               <button
                 onClick={() => handleMenuClick('insert')}
@@ -322,7 +304,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
               </span>
             </div>
 
-            {/* Bouton Batch */}
             <div className="relative group">
               <button
                 onClick={() => handleMenuClick('batch')}
@@ -342,7 +323,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
     );
   };
 
-  // Render regular menu button
   const renderRegularButton = (item) => {
     if (item.isAutomateButton) return null;
     
@@ -369,7 +349,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
 
   return (
     <>
-      {/* Bouton de Toggle avec tooltip */}
       <div className="fixed right-6 top-[30%] z-50">
         <div className="relative group">
           <button
@@ -386,7 +365,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
         </div>
       </div>
 
-      {/* Menu latéral */}
       <div 
         className={`fixed right-6 z-40 transition-all duration-300 ease-in-out ${
           menuVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
@@ -400,7 +378,6 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
             </div>
           ))}
 
-          {/* Logout button */}
           <div className="relative group">
             <button
               onClick={onLogout}
@@ -416,6 +393,23 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
           </div>
         </div>
       </div>
+
+      {showFolderManager && (
+  <div className="fixed inset-0 bg-transparent backdrop-blur-sm bg-opacity-30 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Gestion du dossier</h2>
+        <button 
+          onClick={() => setShowFolderManager(false)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <X size={24} />
+        </button>
+      </div>
+      <FolderUrlManager onClose={() => setShowFolderManager(false)} />
+    </div>
+  </div>
+)}
     </>
   );
 };

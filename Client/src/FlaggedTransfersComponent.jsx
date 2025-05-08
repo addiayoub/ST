@@ -5,7 +5,6 @@ import { getMagasins } from './les apis/magasinService';
 import { List, Truck, ClipboardList, Clock, X } from 'lucide-react';  
 import { DatabaseBackup } from 'lucide-react';
 import { Calendar as CalendarIcon } from 'lucide-react';
-
 export default function FlaggedTransfersComponent() {
   const [regularTransfers, setRegularTransfers] = useState([]);
   const [manualTransfers, setManualTransfers] = useState([]);
