@@ -16,7 +16,7 @@ const FilterComponent = ({
   currentMonth,
   filterDirection,
   setFilterDirection,
-  selectedWarehouses = [],
+  selectedWarehouses = { from: [], to: [] }, // Modifié pour gérer deux listes
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [rotating, setRotating] = useState(false);
@@ -70,6 +70,13 @@ const FilterComponent = ({
 
   const handleWeekSelect = (weekStart) => {
     onWeekSelect(weekStart);
+  };
+
+  const handleWarehouseChange = (type, warehouses) => {
+    onFilterWarehouse({
+      ...selectedWarehouses,
+      [type]: warehouses
+    });
   };
 
   const ToggleIcon = menuVisible ? X : CalendarIcon;
@@ -182,6 +189,14 @@ const FilterComponent = ({
               <span className="ml-2 text-sm">De</span>
             </label>
 
+            {/* Sélection multiple pour les magasins source */}
+            <MultiSelectWarehouse
+              selectedWarehouses={selectedWarehouses.from}
+              onChange={(warehouses) => handleWarehouseChange('from', warehouses)}
+              placeholder="Magasins source"
+              className="mr-2"
+            />
+
             {/* Checkbox "Vers" */}
             <label className="flex items-center mx-2 cursor-pointer">
               <input
@@ -193,11 +208,11 @@ const FilterComponent = ({
               <span className="ml-2 text-sm">Vers</span>
             </label>
 
-            {/* Sélection multiple pour les magasins */}
+            {/* Sélection multiple pour les magasins destination */}
             <MultiSelectWarehouse
-              selectedWarehouses={selectedWarehouses}
-              onChange={onFilterWarehouse}
-              placeholder="Tous les magasins"
+              selectedWarehouses={selectedWarehouses.to}
+              onChange={(warehouses) => handleWarehouseChange('to', warehouses)}
+              placeholder="Magasins destination"
             />
           </div>
 

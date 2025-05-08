@@ -6,7 +6,8 @@ const MultiSelectWarehouse = ({
   selectedWarehouses = [], 
   onChange,
   placeholder = "Sélectionner magasins",
-  className = ""
+  className = "",
+  singleSelect = false // Ajouté pour permettre une sélection unique si nécessaire
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,10 +55,10 @@ const MultiSelectWarehouse = ({
     fetchWarehouses();
   }, []);
 
- // Modifiez filteredWarehouses pour utiliser les propriétés de l'objet
-const filteredWarehouses = warehouses.filter(
-  warehouse => warehouse.nomMagasin.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  // Modifiez filteredWarehouses pour utiliser les propriétés de l'objet
+  const filteredWarehouses = warehouses.filter(
+    warehouse => warehouse.nomMagasin.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,14 +72,21 @@ const filteredWarehouses = warehouses.filter(
   }, []);
 
   const toggleWarehouse = (warehouse) => {
-    const updatedSelection = selectedWarehouses.includes(warehouse)
-      ? selectedWarehouses.filter(item => item !== warehouse)
-      : [...selectedWarehouses, warehouse];
-    
-    onChange(updatedSelection);
+    if (singleSelect) {
+      // Pour une sélection unique, remplacez la sélection actuelle
+      onChange([warehouse]);
+    } else {
+      // Pour une sélection multiple
+      const updatedSelection = selectedWarehouses.includes(warehouse)
+        ? selectedWarehouses.filter(item => item !== warehouse)
+        : [...selectedWarehouses, warehouse];
+      
+      onChange(updatedSelection);
+    }
   };
 
   const toggleSelectAll = () => {
+    if (singleSelect) return; // Pas de sélection totale en mode singleSelect
     onChange(selectedWarehouses.length === warehouses.length ? [] : [...warehouses]);
   };
 
@@ -132,7 +140,7 @@ const filteredWarehouses = warehouses.filter(
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden animate-fadeIn">
+        <div className="absolute mt-2  w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden animate-fadeIn">
           {/* Search input */}
           <div className="p-3 border-b border-gray-100 bg-gray-50">
             <div className="relative">
@@ -145,20 +153,7 @@ const filteredWarehouses = warehouses.filter(
                 onClick={(e) => e.stopPropagation()}
                 autoFocus
               />
-              <svg
-                className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+              
             </div>
           </div>
 
@@ -178,49 +173,51 @@ const filteredWarehouses = warehouses.filter(
           {!loading && !error && (
             <>
               {/* Select all option */}
-              <div 
-                className="p-2 hover:bg-blue-50 cursor-pointer transition-colors"
-                onClick={toggleSelectAll}
-              >
-                <label className="flex items-center cursor-pointer px-2 py-1.5">
-                  <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                    selectedWarehouses.length === warehouses.length 
-                      ? "bg-blue-500 border-blue-500" 
-                      : "border-gray-300"
-                  }`}>
-                    {selectedWarehouses.length === warehouses.length && (
-                      <Check size={14} className="text-white" />
-                    )}
-                  </div>
-                  <span className="text-sm font-medium">Sélectionner tout</span>
-                </label>
-              </div>
+              {!singleSelect && (
+                <div 
+                  className="p-2 hover:bg-blue-50 cursor-pointer transition-colors"
+                  onClick={toggleSelectAll}
+                >
+                  <label className="flex items-center cursor-pointer px-2 py-1.5">
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
+                      selectedWarehouses.length === warehouses.length 
+                        ? "bg-blue-500 border-blue-500" 
+                        : "border-gray-300"
+                    }`}>
+                      {selectedWarehouses.length === warehouses.length && (
+                        <Check size={14} className="text-white" />
+                      )}
+                    </div>
+                    <span className="text-sm font-medium">Sélectionner tout</span>
+                  </label>
+                </div>
+              )}
 
               {/* List of warehouses */}
               <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
                 {filteredWarehouses.length > 0 ? (
-          filteredWarehouses.map((warehouse) => (
-            <div 
-              key={warehouse.id} 
-              className={`px-2 py-1.5 hover:bg-blue-50 cursor-pointer transition-colors ${
-                selectedWarehouses.some(w => w.id === warehouse.id) ? "bg-blue-50" : ""
-              }`}
-              onClick={() => toggleWarehouse(warehouse)}
-            >
-              <div className="flex items-center px-2 py-1.5">
-                <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                  selectedWarehouses.some(w => w.id === warehouse.id)
-                    ? "bg-blue-500 border-blue-500"
-                    : "border-gray-300"
-                }`}>
-                  {selectedWarehouses.some(w => w.id === warehouse.id) && (
-                    <Check size={14} className="text-white" />
-                  )}
-                </div>
-                <span className="text-sm flex-1">{warehouse.nomMagasin}</span>
-              </div>
-            </div>
-          ))
+                  filteredWarehouses.map((warehouse) => (
+                    <div 
+                      key={warehouse.id} 
+                      className={`py-1.5 hover:bg-blue-50 cursor-pointer transition-colors ${
+                        selectedWarehouses.some(w => w.id === warehouse.id) ? "bg-blue-50" : ""
+                      }`}
+                      onClick={() => toggleWarehouse(warehouse)}
+                    >
+                      <div className="flex items-center px-2 py-1.5">
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
+                          selectedWarehouses.some(w => w.id === warehouse.id)
+                            ? "bg-blue-500 border-blue-500"
+                            : "border-gray-300"
+                        }`}>
+                          {selectedWarehouses.some(w => w.id === warehouse.id) && (
+                            <Check size={14} className="text-white" />
+                          )}
+                        </div>
+                        <span className="text-sm flex-1">{warehouse.nomMagasin}</span>
+                      </div>
+                    </div>
+                  ))
                 ) : (
                   <div className="p-4 text-center text-gray-500 text-sm">
                     Aucun magasin trouvé

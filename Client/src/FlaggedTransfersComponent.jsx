@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from './les apis/api';
 import { getMagasins } from './les apis/magasinService';
-import { List, Truck, ClipboardList } from 'lucide-react';  
-import {DatabaseBackup} from 'lucide-react'
+import { List, Truck, ClipboardList, Clock, X } from 'lucide-react';  
+import { DatabaseBackup } from 'lucide-react';
+import { Calendar as CalendarIcon } from 'lucide-react';
+
 export default function FlaggedTransfersComponent() {
   const [regularTransfers, setRegularTransfers] = useState([]);
   const [manualTransfers, setManualTransfers] = useState([]);
@@ -16,6 +18,8 @@ export default function FlaggedTransfersComponent() {
   // Filtres locaux
   const [fromStoreFilter, setFromStoreFilter] = useState('');
   const [toStoreFilter, setToStoreFilter] = useState('');
+  const [startDateFilter, setStartDateFilter] = useState('');
+  const [endDateFilter, setEndDateFilter] = useState('');
 
   // Couleurs inspirées du logo NESK Investment
   const colors = {
@@ -97,6 +101,44 @@ export default function FlaggedTransfersComponent() {
     return new Date(dateString).toLocaleDateString('fr-FR', options);
   };
 
+  // Fonction pour calculer les quantités totales
+  const calculateTotals = () => {
+    const regularTotal = regularTransfers.reduce((sum, transfer) => {
+      return sum + (transfer.quantity || transfer.totalQuantity || 0);
+    }, 0);
+    
+    const manualTotal = manualTransfers.reduce((sum, transfer) => {
+      return sum + (transfer.quantity || transfer.totalQuantity || 0);
+    }, 0);
+    
+    return {
+      regularTotal,
+      manualTotal,
+      allTotal: regularTotal + manualTotal,
+      filteredTotal: getFilteredTransfers().reduce((sum, transfer) => {
+        return sum + (transfer.quantity || transfer.totalQuantity || 0);
+      }, 0)
+    };
+  };
+
+  // Fonction pour vérifier si une date est dans la plage sélectionnée
+  const isDateInRange = (dateString) => {
+    if (!startDateFilter && !endDateFilter) return true;
+    
+    const date = new Date(dateString);
+    const startDate = startDateFilter ? new Date(startDateFilter) : null;
+    const endDate = endDateFilter ? new Date(endDateFilter) : null;
+    
+    if (startDate && endDate) {
+      return date >= startDate && date <= endDate;
+    } else if (startDate) {
+      return date >= startDate;
+    } else if (endDate) {
+      return date <= endDate;
+    }
+    return true;
+  };
+
   // Fonction pour filtrer localement les transferts
   const getFilteredTransfers = () => {
     let transfers = [];
@@ -133,6 +175,12 @@ export default function FlaggedTransfersComponent() {
       });
     }
 
+    // Filtrer par date
+    transfers = transfers.filter(transfer => {
+      const transferDate = transfer.Date || transfer.transferDate;
+      return isDateInRange(transferDate);
+    });
+
     // Trier par date (plus récent d'abord)
     return transfers.sort((a, b) => new Date(b.Date || b.transferDate) - new Date(a.Date || a.transferDate));
   };
@@ -141,6 +189,9 @@ export default function FlaggedTransfersComponent() {
   const totalManualTransfers = manualTransfers.length;
   const totalTransfers = totalRegularTransfers + totalManualTransfers;
   const filteredTransfers = getFilteredTransfers();
+  
+  // Calculer les totaux des quantités
+  const quantityTotals = calculateTotals();
 
   // Animation variants
   const containerVariants = {
@@ -167,6 +218,17 @@ export default function FlaggedTransfersComponent() {
     }
   };
 
+  // Réinitialiser tous les filtres
+  const resetAllFilters = () => {
+    setFromStoreFilter('');
+    setToStoreFilter('');
+    setStartDateFilter('');
+    setEndDateFilter('');
+  };
+
+  // Vérifier si des filtres sont actifs
+  const hasActiveFilters = fromStoreFilter || toStoreFilter || startDateFilter || endDateFilter;
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -192,7 +254,7 @@ export default function FlaggedTransfersComponent() {
             className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-all"
             disabled={isRefreshing}
           >
-          <DatabaseBackup />
+            <DatabaseBackup size={24} className="text-white" />
           </motion.button>
         </div>
       </motion.div>
@@ -204,7 +266,7 @@ export default function FlaggedTransfersComponent() {
         animate="visible"
         className="mb-6 space-y-4"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Filtre par magasin source */}
           <motion.div variants={itemVariants}>
             <label htmlFor="fromStoreFilter" className="block text-sm font-medium text-gray-700 mb-1">
@@ -243,22 +305,138 @@ export default function FlaggedTransfersComponent() {
             </select>
           </motion.div>
 
-          {/* Bouton pour réinitialiser les filtres */}
-          <motion.div variants={itemVariants} className="flex items-end">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setFromStoreFilter('');
-                setToStoreFilter('');
-              }}
-              className="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-              disabled={!fromStoreFilter && !toStoreFilter}
-            >
-              Réinitialiser les filtres
-            </motion.button>
-          </motion.div>
+          {/* Filtre par date de début */}
+<motion.div variants={itemVariants} className="flex flex-col">
+  <label htmlFor="dateRange" className="block text-sm font-medium text-gray-700 mb-1">
+    Période
+  </label>
+  <motion.div 
+    className="flex items-center gap-2"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+  >
+    {/* Sélecteur de date de début */}
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      className="relative flex-1"
+    >
+      <div className="absolute inset-y-0 left-0 pl-9 flex items-center pointer-events-none">
+      </div>
+      <input
+        type="date"
+        id="startDateFilter"
+        value={startDateFilter}
+        onChange={(e) => setStartDateFilter(e.target.value)}
+        className="block w-full pl-9 pr-3 py-2 border rounded-md shadow-sm hover:cursor-pointer  focus:outline-none focus:ring-1 focus:border-teal-500 text-sm"
+        style={{ 
+          borderColor: startDateFilter ? colors.mediumTeal : colors.gray,
+          backgroundColor: startDateFilter ? 'rgba(45, 140, 140, 0.05)' : 'white'
+        }}
+      />
+      {startDateFilter && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          whileHover={{ scale: 1.1 }}
+          onClick={() => setStartDateFilter('')}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        >
+          <X className="h-4 w-4 text-red" style={{ color: colors.mediumTeal }} />
+        </motion.button>
+      )}
+    </motion.div>
+
+    {/* Séparateur élégant */}
+    <motion.span 
+      className="text-gray-400"
+      animate={{ opacity: [0.5, 1, 0.5] }}
+      transition={{ repeat: Infinity, duration: 2 }}
+    >
+      →
+    </motion.span>
+
+    {/* Sélecteur de date de fin */}
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      className="relative flex-1"
+    >
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      </div>
+      <input
+        type="date"
+        id="endDateFilter"
+        value={endDateFilter}
+        onChange={(e) => setEndDateFilter(e.target.value)}
+        className="block w-full pl-9 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:border-teal-500 text-sm"
+        style={{ 
+          borderColor: endDateFilter ? colors.mediumTeal : colors.gray,
+          backgroundColor: endDateFilter ? 'rgba(45, 140, 140, 0.05)' : 'white'
+        }}
+      />
+      {endDateFilter && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          whileHover={{ scale: 1.1 }}
+          onClick={() => setEndDateFilter('')}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        >
+          <X className="h-4 w-4" style={{ color: colors.mediumTeal }} />
+        </motion.button>
+      )}
+    </motion.div>
+  </motion.div>
+
+  {/* Affichage de la période sélectionnée */}
+  {(startDateFilter || endDateFilter) && (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      className="mt-2 text-xs text-gray-500 flex items-center gap-1"
+    >
+      <CalendarIcon className="h-3 w-3" />
+      <span>
+        {startDateFilter ? formatDate(startDateFilter) : '∞'} 
+        {' → '} 
+        {endDateFilter ? formatDate(endDateFilter) : '∞'}
+      </span>
+    </motion.div>
+  )}
+</motion.div>
         </div>
+
+        {/* Boutons de contrôle des filtres */}
+        <motion.div variants={itemVariants} className="flex gap-4">
+          {/* Bouton pour réinitialiser tous les filtres */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={resetAllFilters}
+            className={`px-4 py-2 rounded-md transition-colors flex items-center gap-2 ${
+              hasActiveFilters 
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
+            disabled={!hasActiveFilters}
+          >
+            <X size={16} />
+            Réinitialiser tous les filtres
+          </motion.button>
+
+          {/* Indicateur de filtres actifs */}
+          {hasActiveFilters && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
+            >
+              Filtres actifs
+            </motion.div>
+          )}
+        </motion.div>
 
         {/* Tabs pour choisir le type de transfert */}
         <motion.div variants={itemVariants} className="flex rounded-md shadow-sm overflow-hidden">
@@ -309,68 +487,114 @@ export default function FlaggedTransfersComponent() {
           </motion.button>
         </motion.div>
       </motion.div>
+
+      {/* Cartes d'informations avec totaux des quantités */}
       <motion.div 
-  variants={containerVariants}
-  className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
->
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <List size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts affichés</p>
-    </div>
-    <motion.p 
-      key={`filtered-${filteredTransfers.length}`}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.darkTeal }}
-    >
-      {filteredTransfers.length}
-    </motion.p>
-  </motion.div>
-  
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <Truck size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts standards</p>
-    </div>
-    <motion.p 
-      key={totalRegularTransfers}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.mediumTeal }}
-    >
-      {totalRegularTransfers}
-    </motion.p>
-  </motion.div>
-  
-  <motion.div 
-    variants={itemVariants}
-    className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-  >
-    <div className="flex items-center gap-2">
-      <ClipboardList size={30} className="text-gray-400" />
-      <p className="text-m font-medium text-gray-500">Transferts manuels</p>
-    </div>
-    <motion.p 
-      key={totalManualTransfers}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="mt-1 text-2xl font-semibold"
-      style={{ color: colors.darkTeal }}
-    >
-      {totalManualTransfers}
-    </motion.p>
-  </motion.div>
-</motion.div>
+        variants={containerVariants}
+        className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        {/* Transferts affichés */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <List size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts affichés</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={`filtered-${filteredTransfers.length}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.darkTeal }}
+            >
+              {filteredTransfers.length}
+            </motion.p>
+            <motion.div
+              key={`qty-filtered-${quantityTotals.filteredTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.darkTeal }}>
+                {quantityTotals.filteredTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+        
+        {/* Transferts standards */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <Truck size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts standards</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={totalRegularTransfers}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.mediumTeal }}
+            >
+              {totalRegularTransfers}
+            </motion.p>
+            <motion.div
+              key={`qty-regular-${quantityTotals.regularTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.mediumTeal }}>
+                {quantityTotals.regularTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+        
+        {/* Transferts manuels */}
+        <motion.div 
+          variants={itemVariants}
+          className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center gap-2">
+            <ClipboardList size={30} className="text-gray-400" />
+            <p className="text-m font-medium text-gray-500">Transferts manuels</p>
+          </div>
+          <div className="flex justify-between items-end">
+            <motion.p 
+              key={totalManualTransfers}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mt-1 text-2xl font-semibold"
+              style={{ color: colors.darkTeal }}
+            >
+              {totalManualTransfers}
+            </motion.p>
+            <motion.div
+              key={`qty-manual-${quantityTotals.manualTotal}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-end"
+            >
+              <p className="text-xs text-gray-500">Quantité totale</p>
+              <p className="text-xl font-semibold" style={{ color: colors.darkTeal }}>
+                {quantityTotals.manualTotal}
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
+
       <br />
+
       {/* Contenu principal */}
       <motion.div 
         variants={containerVariants}
@@ -417,6 +641,8 @@ export default function FlaggedTransfersComponent() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Vers</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Quantité</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Statut</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Dernière MAJ</th>
+
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -475,6 +701,15 @@ export default function FlaggedTransfersComponent() {
                           {transfer.status}
                         </motion.span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <Clock size={16} className="mr-2 text-gray-400" />
+                          <span className="text-sm text-gray-900" 
+                                style={{ color: transfer.updatedAt ? colors.darkGray : colors.gray }}>
+                            {transfer.updatedAt || 'N/A'}
+                          </span>
+                        </div>
+                      </td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
@@ -483,8 +718,6 @@ export default function FlaggedTransfersComponent() {
           </div>
         )}
       </motion.div>
-
-     
     </motion.div>
   );
 }

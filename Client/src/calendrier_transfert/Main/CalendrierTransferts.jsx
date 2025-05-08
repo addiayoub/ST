@@ -18,13 +18,7 @@ import {
   updateInventory, 
   deleteInventory, 
   updateManualTransfer,
-  mergeTransfersAndInventories,
   formatDateToKey,
-  formatDateString,
-  formatDateTimeString,
-  getManualTransferTypeColor,
-  createInventoryObject,
-  getInventoryTypeColor
 } from './TransferApiService';
 
 const MySwal = withReactContent(Swal);
@@ -99,7 +93,7 @@ const CalendrierTransferts = () => {
   const [error, setError] = useState(null);
   const hoverAreaRef = useRef(null);
   const sidebarRef = useRef(null);
-  const [selectedWarehouses, setSelectedWarehouses] = useState([]);
+  const [selectedWarehouses, setSelectedWarehouses] = useState({ from: [], to: [] }); // Modifié pour gérer source et destination
   const { getDotColor, getBorderColor, getBgColor } = colorUtils;
   const [filter, setFilter] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
@@ -274,49 +268,37 @@ const CalendrierTransferts = () => {
         if (activeFilter === 'inventory' && !transfer.isInventory) return false;
         if (activeFilter === 'transfers' && transfer.isInventory) return false;
   
-        if (selectedWarehouses.length > 0) {
-          // Vérifier si "Magasin inconnu" est sélectionné
-          const hasUnknownWarehouse = selectedWarehouses.some(wh => wh.id === 'unknown');
-          
+        // Logique de filtrage pour les magasins source et destination
+        let fromMatch = true;
+        let toMatch = true;
+  
+        if (selectedWarehouses.from.length > 0 && filterDirection.from) {
+          const hasUnknownWarehouse = selectedWarehouses.from.some(wh => wh.id === 'unknown');
           if (hasUnknownWarehouse) {
-            // Pour les inventaires
-            if (transfer.isInventory) {
-              const isUnknown = !transfer.toName || 
-                               transfer.toName === 'Inconnu' || 
-                               !warehouses.some(wh => wh.nomMagasin === transfer.toName && wh.statut === 'active');
-              return filterDirection.to && isUnknown;
-            } 
-            // Pour les transferts
-            else {
-              const fromIsUnknown = !transfer.fromName || 
-                                   transfer.fromName === 'Inconnu' || 
-                                   !warehouses.some(wh => wh.nomMagasin === transfer.fromName && wh.statut === 'active');
-              const toIsUnknown = !transfer.toName || 
-                                transfer.toName === 'Inconnu' || 
-                                !warehouses.some(wh => wh.nomMagasin === transfer.toName && wh.statut === 'active');
-              
-              return (filterDirection.from && fromIsUnknown) || 
-                     (filterDirection.to && toIsUnknown);
-            }
+            fromMatch = !transfer.fromName || 
+                       transfer.fromName === 'Inconnu' || 
+                       !warehouses.some(wh => wh.nomMagasin === transfer.fromName && wh.statut === 'active');
           } else {
-            // Filtre normal pour les magasins actifs
+            fromMatch = selectedWarehouses.from.some((wh) => transfer.fromName && transfer.fromName.includes(wh.nomMagasin));
+          }
+        }
+  
+        if (selectedWarehouses.to.length > 0 && filterDirection.to) {
+          const hasUnknownWarehouse = selectedWarehouses.to.some(wh => wh.id === 'unknown');
+          if (hasUnknownWarehouse) {
+            toMatch = !transfer.toName || 
+                     transfer.toName === 'Inconnu' || 
+                     !warehouses.some(wh => wh.nomMagasin === transfer.toName && wh.statut === 'active');
+          } else {
             if (transfer.isInventory) {
-              const inventoryMatch =
-                filterDirection.to &&
-                selectedWarehouses.some((wh) => transfer.toName && transfer.toName.includes(wh.nomMagasin));
-              return inventoryMatch;
+              toMatch = selectedWarehouses.to.some((wh) => transfer.toName && transfer.toName.includes(wh.nomMagasin));
             } else {
-              const fromMatch =
-                filterDirection.from &&
-                selectedWarehouses.some((wh) => transfer.fromName && transfer.fromName.includes(wh.nomMagasin));
-              const toMatch =
-                filterDirection.to &&
-                selectedWarehouses.some((wh) => transfer.toName && transfer.toName.includes(wh.nomMagasin));
-              return fromMatch || toMatch;
+              toMatch = selectedWarehouses.to.some((wh) => transfer.toName && transfer.toName.includes(wh.nomMagasin));
             }
           }
         }
-        return true;
+  
+        return (filterDirection.from ? fromMatch : true) && (filterDirection.to ? toMatch : true);
       });
   
       result[dayOfWeek] = {
@@ -757,6 +739,12 @@ const CalendrierTransferts = () => {
             getDotColor={getDotColor}
             getBorderColor={getBorderColor}
             getBgColor={getBgColor}
+            fetchAllTransfers={fetchAllTransfers} // Add this prop
+  formatDateToKey={formatDateToKey}
+  setAllTransfers={setAllTransfers} // Add this prop
+  setIsLoading={setIsLoading} // Add this prop
+  setError={setError} // Add this prop
+            setTransfersData={setTransfersData} // Ajout de cette prop
             updateTransfer={handleUpdateTransfer}
             onDeleteTransfer={(id, isInventory) => handleDeleteItem(id, isInventory)}
           />
@@ -766,4 +754,4 @@ const CalendrierTransferts = () => {
   );
 };
 
-export default CalendrierTransferts;
+export default CalendrierTransferts; 

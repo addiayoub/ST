@@ -81,10 +81,24 @@ const CalendarGrid = ({
   getBorderColor,
   getBgColor,
   updateTransfer,
+  setTransfersData,
+  fetchAllTransfers, // Add this prop
+  formatDateToKey, // Add this prop // Ajout de cette prop
+  setAllTransfers,
+  setIsLoading,
+  setError
 }) => {
   const transferOptions = useTransferOptions();
   const [expandedGroups, setExpandedGroups] = useState({});
-
+  const getTypeFromStatus = (status) => {
+    switch (status) {
+      case 'En cours': return 'blue';
+      case 'Confirmé': return 'green';
+      case 'En attente': return 'orange';
+      case 'Annulé': return 'red';
+      default: return 'blue';
+    }
+  };
   // Fonction pour synchroniser les noms des magasins
   const syncWarehouseNames = (transfers) => {
     if (!transfers || !Array.isArray(transfers) || transferOptions.fromOptions.length === 0) {
@@ -201,17 +215,17 @@ const CalendarGrid = ({
         });
         return;
       }
-  
+    
       try {
         // Validation de la date
         const dateInput = document.getElementById('group-date').value;
         if (!dateInput) {
           throw new Error('Date is required');
         }
-  
-        const formattedDate = new Date(dateInput).toISOString();
+    
+        const formattedDate = new Date(dateInput).toISOString().split('T')[0];
         const documentNumbers = groupData.transfers.map((transfer) => transfer.Document_Number);
-  
+    
         const updateData = {
           fromId: updatedValues.from || groupData.from,
           toId: updatedValues.to || groupData.to,
@@ -222,9 +236,9 @@ const CalendarGrid = ({
             date: formattedDate,
           },
         };
-  
+    
         const response = await api.put('/api/transfers/group', updateData);
-  
+    
         if (response.data.success) {
           MySwal.fire({
             background: 'transparent',
@@ -239,21 +253,67 @@ const CalendarGrid = ({
               content: 'text-white',
             },
           });
-  
-          // Rafraîchir les données
-          if (typeof fetchData === 'function') {
-            fetchData();
-          } else if (typeof fetchCalendarData === 'function') {
-            fetchCalendarData();
-          } else if (typeof reloadCalendar === 'function') {
-            reloadCalendar();
-          } else if (window.fetchCalendarData) {
-            window.fetchCalendarData();
-          } else {
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-          }
+    
+          // Mise à jour locale des données pour éviter un rechargement complet
+          setTransfersData((prevData) => {
+            const updatedTransfersData = { ...prevData };
+            const dateStr = formatDateToKey(new Date(formattedDate));
+    
+            // Parcourir chaque transfert du groupe pour mettre à jour les données
+            groupData.transfers.forEach((transfer) => {
+              const oldDateStr = formatDateToKey(new Date(transfer.date));
+              const fromName = transferOptions.fromOptions.find((opt) => opt.value === updateData.fromId)?.label || groupData.fromName;
+              const toName = transferOptions.toOptions.find((opt) => opt.value === updateData.toId)?.label || groupData.toName;
+    
+              // Mettre à jour le transfert
+              const updatedTransfer = {
+                ...transfer,
+                from: updateData.fromId,
+                to: updateData.toId,
+                fromName,
+                toName,
+                status: updateData.updates.status,
+                date: formattedDate,
+                type: getTypeFromStatus(updateData.updates.status),
+              };
+    
+              // Si la date a changé, déplacer le transfert vers la nouvelle date
+              if (oldDateStr !== dateStr) {
+                // Supprimer de l'ancienne date
+                if (updatedTransfersData[oldDateStr]) {
+                  updatedTransfersData[oldDateStr].transfers = updatedTransfersData[oldDateStr].transfers.filter(
+                    (t) => t.Document_Number !== transfer.Document_Number
+                  );
+                  if (updatedTransfersData[oldDateStr].transfers.length === 0) {
+                    delete updatedTransfersData[oldDateStr];
+                  }
+                }
+              }
+    
+              // Ajouter ou mettre à jour à la nouvelle date
+              if (!updatedTransfersData[dateStr]) {
+                updatedTransfersData[dateStr] = {
+                  date: String(new Date(formattedDate).getDate()),
+                  transfers: [],
+                  fullDate: dateStr,
+                };
+              }
+    
+              const existingIndex = updatedTransfersData[dateStr].transfers.findIndex(
+                (t) => t.Document_Number === transfer.Document_Number
+              );
+              if (existingIndex !== -1) {
+                updatedTransfersData[dateStr].transfers[existingIndex] = updatedTransfer;
+              } else {
+                updatedTransfersData[dateStr].transfers.push(updatedTransfer);
+              }
+            });
+    
+            return updatedTransfersData;
+          });
+    
+          // Rafraîchir toutes les données des transferts en arrière-plan
+          await fetchAllTransfers(setAllTransfers, setIsLoading, setError);
         }
       } catch (error) {
         console.error('Erreur lors de la mise à jour du groupe:', error);
@@ -265,7 +325,6 @@ const CalendarGrid = ({
       }
     };
   
-    // Le reste du code reste inchangé...
     MySwal.fire({
       background: '#fff',
       title: `<div class="text-xl font-semibold text-black">
