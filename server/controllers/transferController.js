@@ -185,6 +185,8 @@ exports.createTransfer = async (req, res) => {
   }
 };
 
+// Dans votre fichier de contrôleur de transfert
+
 exports.updateTransfer = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -209,23 +211,61 @@ exports.updateTransfer = async (req, res) => {
     // Si MOVEMENTS est modifié, recalculer la quantité
     if (req.body.MOVEMENTS) {
       req.body.quantity = req.body.MOVEMENTS.reduce((sum, movement) => sum + (movement.Units || 0), 0);
+      
+      // Vérifier si tous les codes-barres sont valides
+      const allBarcodesValid = req.body.MOVEMENTS.every(
+        movement => movement.flag_code_barre === 1 && movement.code_barre
+      );
+      req.body.all_barcodes_valid = allBarcodesValid;
     }
 
-    const updatedTransfer = await Transfer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    // Utiliser findById puis save pour éviter les problèmes avec les sous-documents
+    const transfer = await Transfer.findById(req.params.id);
     
-    if (!updatedTransfer) {
+    if (!transfer) {
       return res.status(404).json({ 
         success: false,
         error: 'Transfert non trouvé' 
       });
     }
     
+    // Mettre à jour les propriétés du transfert
+    Object.keys(req.body).forEach(key => {
+      // Gérer les MOVEMENTS séparément pour éviter la création de nouveaux IDs
+      if (key !== 'MOVEMENTS') {
+        transfer[key] = req.body[key];
+      }
+    });
+    
+    // Si MOVEMENTS est présent, mettre à jour chaque mouvement individuellement
+    if (req.body.MOVEMENTS) {
+      // Pour chaque mouvement dans req.body.MOVEMENTS
+      req.body.MOVEMENTS.forEach((updatedMovement, index) => {
+        if (index < transfer.MOVEMENTS.length) {
+          // Mettre à jour les propriétés du mouvement existant
+          Object.keys(updatedMovement).forEach(key => {
+            // Ne pas écraser _id
+            if (key !== '_id') {
+              transfer.MOVEMENTS[index][key] = updatedMovement[key];
+            }
+          });
+        } else {
+          // S'il s'agit d'un nouveau mouvement, l'ajouter
+          transfer.MOVEMENTS.push(updatedMovement);
+        }
+      });
+      
+      // Si la liste des mouvements a été réduite
+      if (req.body.MOVEMENTS.length < transfer.MOVEMENTS.length) {
+        transfer.MOVEMENTS = transfer.MOVEMENTS.slice(0, req.body.MOVEMENTS.length);
+      }
+    }
+    
+    // Sauvegarder les modifications
+    await transfer.save();
+    
     // Repeupler les champs from et to pour la réponse
-    const populatedTransfer = await Transfer.findById(updatedTransfer._id)
+    const populatedTransfer = await Transfer.findById(transfer._id)
       .populate('from', '_id nomMagasin')
       .populate('to', '_id nomMagasin');
     

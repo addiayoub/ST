@@ -13,36 +13,41 @@ const BarcodeChecker = ({ transfers = [] }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const [localTransfers, setLocalTransfers] = useState([]);
-const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fonction pour réinitialiser le filtre
   const resetFilter = () => {
     setSearchTerm('');
   };
+  
   // Charger les transferts depuis l'API si non fournis en props
- useEffect(() => {
-  const fetchTransfers = async () => {
-    try {
-      setIsLoading(true);
-      const response = await api.get('/api/transfers');
-      if (response.data && response.data.data) {
-        setLocalTransfers(response.data.data);
+  useEffect(() => {
+    const fetchTransfers = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/api/transfers');
+        if (response.data && response.data.data) {
+          setLocalTransfers(response.data.data);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des transferts:', error);
+        MySwal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Impossible de charger les transferts'
+        });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Erreur lors du chargement des transferts:', error);
-      MySwal.fire(/* ... */);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  // Ne fetch que si transfers est vide ET localTransfers est vide
-  if ((!transfers || transfers.length === 0) && localTransfers.length === 0) {
-    fetchTransfers();
-  } else if (transfers && transfers.length > 0 && localTransfers.length === 0) {
-    setLocalTransfers(transfers);
-  }
-}, []); // Retirer transfers des dépendances
+    // Ne fetch que si transfers est vide ET localTransfers est vide
+    if ((!transfers || transfers.length === 0) && localTransfers.length === 0) {
+      fetchTransfers();
+    } else if (transfers && transfers.length > 0 && localTransfers.length === 0) {
+      setLocalTransfers(transfers);
+    }
+  }, []); // Retirer transfers des dépendances
 
   // Traiter les codes-barres invalides
   useEffect(() => {
@@ -84,6 +89,32 @@ const [searchTerm, setSearchTerm] = useState('');
     setEditedBarcode('');
   };
 
+  // Fonction pour vérifier le code-barres via l'API directement avec fetch
+  const checkBarcode = async (transferId) => {
+    try {
+      // Extraire l'ID de l'objet (retirer "$oid" si présent)
+      const cleanId = typeof transferId === 'object' && transferId.$oid 
+        ? transferId.$oid 
+        : transferId;
+      
+      const response = await fetch(`http://192.168.1.15:30000/check-barcodes/${cleanId}`, {
+        method: 'GET',
+        headers: {
+          'accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur lors de la vérification du code-barres:', error);
+      throw error;
+    }
+  };
+
   const saveBarcode = async (item) => {
     if (!editedBarcode) {
       MySwal.fire({
@@ -116,13 +147,13 @@ const [searchTerm, setSearchTerm] = useState('');
         throw new Error('Mouvement non trouvé');
       }
 
-      // Créer une copie du transfert et mettre à jour le mouvement
-      const updatedTransfer = { ...transferToUpdate };
-      updatedTransfer.MOVEMENTS[movementIndex] = {
-        ...updatedTransfer.MOVEMENTS[movementIndex],
-        code_barre: editedBarcode,
-        flag_code_barre: 1
-      };
+      // Créer une copie du transfert
+      const updatedTransfer = JSON.parse(JSON.stringify(transferToUpdate));
+      
+      // Mettre à jour uniquement le code-barres
+      updatedTransfer.MOVEMENTS[movementIndex].code_barre = editedBarcode;
+      
+      // Ne pas mettre à jour le flag_code_barre ici, cela sera fait par l'API de vérification
 
       // Envoyer la mise à jour à l'API
       const response = await api.put(`/api/transfers/${item.transferId}`, updatedTransfer);
@@ -131,22 +162,74 @@ const [searchTerm, setSearchTerm] = useState('');
         throw new Error('Échec de la mise à jour');
       }
 
-      // Mettre à jour les données locales
+      // Appeler l'API de vérification du code-barres
+      const checkResult = await checkBarcode(item.transferId);
+      
+      // Mettre à jour les données locales avec les informations de vérification
+      const verifiedTransfer = JSON.parse(JSON.stringify(updatedTransfer));
+      
+      // Mettre à jour les flags selon la réponse de l'API
+      verifiedTransfer.all_barcodes_valid = checkResult.all_barcodes_valid;
+      
+      // Mettre à jour les mouvements avec les informations de l'API
+      if (checkResult.updated_movements && checkResult.updated_movements.length > 0) {
+        checkResult.updated_movements.forEach(updatedMovement => {
+          const mIndex = verifiedTransfer.MOVEMENTS.findIndex(m => 
+            m.Model === updatedMovement.Model && 
+            m.Quality === updatedMovement.Quality &&
+            m.Colour === updatedMovement.Colour &&
+            m.Size === updatedMovement.Size
+          );
+          
+          if (mIndex !== -1) {
+            verifiedTransfer.MOVEMENTS[mIndex].flag_code_barre = updatedMovement.flag_code_barre;
+          }
+        });
+      }
+      
+      // Mettre à jour l'état local
       setLocalTransfers(prev => 
-        prev.map(t => t._id === item.transferId ? updatedTransfer : t)
+        prev.map(t => t._id === item.transferId ? verifiedTransfer : t)
       );
 
-      // Supprimer l'élément de la liste des codes-barres invalides
-      setInvalidBarcodes(prev => 
-        prev.filter(b => b.id !== item.id)
-      );
-
-      MySwal.fire({
-        icon: 'success',
-        title: 'Succès',
-        text: 'Code-barres mis à jour avec succès',
-        confirmButtonColor: '#3085d6'
-      });
+      // Mettre à jour la liste des codes-barres invalides
+      // Si tous les codes-barres sont valides, supprimer l'élément de la liste
+      if (verifiedTransfer.MOVEMENTS[movementIndex].flag_code_barre === 1) {
+        setInvalidBarcodes(prev => 
+          prev.filter(b => b.id !== item.id)
+        );
+        
+        MySwal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Code-barres validé avec succès',
+          confirmButtonColor: '#3085d6'
+        });
+      } else {
+        // Sinon, mettre à jour l'élément dans la liste
+        setInvalidBarcodes(prev => 
+          prev.map(b => {
+            if (b.id === item.id) {
+              return {
+                ...b,
+                movement: {
+                  ...b.movement,
+                  code_barre: editedBarcode,
+                  flag_code_barre: verifiedTransfer.MOVEMENTS[movementIndex].flag_code_barre
+                }
+              };
+            }
+            return b;
+          })
+        );
+        
+        MySwal.fire({
+          icon: 'warning',
+          title: 'Attention',
+          text: 'Le code-barres a été mis à jour mais reste invalide',
+          confirmButtonColor: '#f0ad4e'
+        });
+      }
 
       setEditingId(null);
     } catch (error) {
@@ -161,8 +244,6 @@ const [searchTerm, setSearchTerm] = useState('');
       setIsLoading(false);
     }
   };
-
-
 
   if (isLoading && invalidBarcodes.length === 0) {
     return (
@@ -188,8 +269,7 @@ const [searchTerm, setSearchTerm] = useState('');
           </h2>
         </div>
         
-        {/* Barre de recherche */}
-            {/* Barre de recherche avec bouton de réinitialisation */}
+        {/* Barre de recherche avec bouton de réinitialisation */}
         <div className="flex items-center space-x-2">
           <div className="relative w-300">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -251,16 +331,13 @@ const [searchTerm, setSearchTerm] = useState('');
                 </div>
                 <div className="flex space-x-2">
                   {editingId !== item.id ? (
-                    <>
-                      <button
-                        onClick={() => startEditing(item)}
-                        className="p-2 mr-10 text-blue-600 hover:bg-blue-50 cursor-pointer rounded-full transition-colors"
-                        title="Modifier"
-                      >
-                        <Edit size={18} />
-                      </button>
-                    
-                    </>
+                    <button
+                      onClick={() => startEditing(item)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 cursor-pointer rounded-full transition-colors"
+                      title="Modifier"
+                    >
+                      <Edit size={18} />
+                    </button>
                   ) : (
                     <>
                       <button
@@ -269,7 +346,7 @@ const [searchTerm, setSearchTerm] = useState('');
                         title="Enregistrer"
                         disabled={isLoading}
                       >
-                        <Save size={18} />
+                        {isLoading ? <RotateCw size={18} className="animate-spin" /> : <Save size={18} />}
                       </button>
                       <button
                         onClick={cancelEditing}
