@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const MovementSchema = new mongoose.Schema({
   Model: Number,
   Quality: Number,
@@ -11,7 +10,12 @@ const MovementSchema = new mongoose.Schema({
   Campaign: Number,
   Period: Number,
   Information: String,
-  Box: String
+  Box: String,
+  code_barre: String,
+  flag_code_barre: {
+    type: Number,
+    default: 0 // 0 = invalide, 1 = valide
+  }
 });
 
 const TransferSchema = new mongoose.Schema({
@@ -66,6 +70,10 @@ const TransferSchema = new mongoose.Schema({
     default: ''
   },
   Flag: {
+    type: Number,
+    default: 0
+  },
+   all_barcodes_valid: {
     type: Number,
     default: 0
   },

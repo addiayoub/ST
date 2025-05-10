@@ -1,4 +1,4 @@
-import { Menu, X, CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup, BarChart2, Zap, Database, RefreshCw, Folder } from 'lucide-react';
+import { Menu, X, CalendarDays, Upload, Boxes, HousePlus, UserCog, LogOut, DatabaseBackup, BarChart2, Zap, Database, RefreshCw, Folder, Barcode } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import '../Css/SideToolsComponent.css';
 import Swal from 'sweetalert2';
@@ -82,6 +82,8 @@ const SideToolsComponent = ({ activeComponent, setActiveComponent, onLogout, use
       { id: 'house', icon: HousePlus, tooltip: 'Magasin', order: 7, adminOnly: true },
       { id: 'user', icon: UserCog, tooltip: 'Utilisateurs', order: 8, adminOnly: true },
       { id: 'folder', icon: Folder, tooltip: 'Gérer le dossier', order: 9, adminOnly: true },
+      // Dans SideToolsComponent.js, dans le tableau getMenuItems()
+{ id: 'barcode', icon: Barcode, tooltip: 'Vérifier codes-barres', order: 4, adminOnly: false }
     ];
     
     return allMenuItems

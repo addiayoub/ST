@@ -14,6 +14,7 @@ import Statistic from './Statistic/Statistic'; // Import du nouveau composant St
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import BarcodeChecker from './BarcodeChecker';
 
 const MySwal = withReactContent(Swal);
 
@@ -47,7 +48,9 @@ function App() {
       '/stats': 'stats', // Nouvelle route pour les statistiques
       '/inventaires': 'boxes',
       '/magasin': 'house',
-      '/utilisateurs': 'user'
+      '/utilisateurs': 'user',
+        '/barcode': 'barcode' // Ajoutez cette ligne
+
     };
 
     const currentComponent = pathToComponent[location.pathname] || 'calendar';
@@ -55,6 +58,7 @@ function App() {
       setActiveComponent(currentComponent);
     }
   }, [location.pathname]);
+
 
   // Vérifier la visibilité de l'onglet
   useEffect(() => {
@@ -145,7 +149,7 @@ function App() {
   const hasAccess = (componentName) => {
     if (!user) return false;
     if (user.role === 'Admin') return true;
-    if (user.role === 'User') return ['calendar', 'upload', 'flagged', 'stats'].includes(componentName); // Ajout de 'stats'
+    if (user.role === 'User') return ['calendar', 'upload', 'flagged', 'stats', 'barcode'].includes(componentName); // Ajout de 'stats'
     return false;
   };
 
@@ -156,6 +160,8 @@ function App() {
       'upload': '/upload',
       'flagged': '/flagged',
       'stats': '/stats', // Mapping pour la nouvelle route
+          'barcode': '/barcode', // Nouvelle route
+
       'boxes': '/inventaires',
       'house': '/magasin',
       'user': '/utilisateurs'
@@ -239,6 +245,17 @@ function App() {
         <Route path="/inventaires" element={
           <>
             {hasAccess('boxes') && <Inventaires />}
+            <SideToolsComponent 
+              activeComponent={activeComponent} 
+              setActiveComponent={handleNavigation}
+              onLogout={handleLogout}
+              userRole={user.role}
+            />
+          </>
+        } />
+        <Route path="/barcode" element={
+          <>
+            {hasAccess('barcode') && <BarcodeChecker  />}
             <SideToolsComponent 
               activeComponent={activeComponent} 
               setActiveComponent={handleNavigation}

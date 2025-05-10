@@ -25,7 +25,11 @@ const periodValidationRules = [
   })
 ];
 // Ajouter ces lignes dans transferRoutes.js
-
+const barcodeValidationRules = [
+  check('transferId').isMongoId().withMessage('ID de transfert invalide'),
+  check('movementId').notEmpty().withMessage('ID de mouvement requis'),
+  check('code_barre').notEmpty().withMessage('Le code-barres ne peut pas être vide')
+];
 // Validation rules pour updateTransferGroup
 const groupUpdateValidationRules = [
   check('fromId').isMongoId().withMessage('ID du magasin d\'origine invalide'),
@@ -41,6 +45,7 @@ router.put('/group', protect, groupUpdateValidationRules, transferController.upd
 router.get('/', protect, transferController.getAllTransfers);
 router.get('/flagged', protect, transferController.getFlaggedTransfers); // New route for flagged transfers
 router.get('/period', protect, periodValidationRules, transferController.getTransfersByPeriod);
+router.put('/barcode/update', protect, barcodeValidationRules, transferController.updateBarcode);
 router.get('/:id', protect, transferController.getTransferById);
 router.post('/', protect, transferValidationRules, transferController.createTransfer);
 router.put('/:id', protect, transferValidationRules, transferController.updateTransfer);

@@ -29,6 +29,7 @@ const formatTransferResponse = (transfer) => ({
   quantity: transfer.quantity,
   description: transfer.description,
   Flag: transfer.Flag,
+  all_barcodes_valid: transfer.all_barcodes_valid,
   createdAt: moment(transfer.createdAt).format('YYYY-MM-DD HH:mm'),
   updatedAt: moment(transfer.updatedAt).format('YYYY-MM-DD HH:mm')
 });
@@ -464,5 +465,42 @@ exports.updateTransferGroup = async (req, res) => {
   } catch (error) {
     console.error('Error updating transfer group:', error);
     handleErrors(res, error, 400);
+  }
+};
+exports.updateBarcode = async (req, res) => {
+  try {
+    const { transferId, movementId, code_barre } = req.body;
+
+    // Trouver le transfert
+    const transfer = await Transfer.findById(transferId);
+    if (!transfer) {
+      return res.status(404).json({
+        success: false,
+        error: 'Transfert non trouvé'
+      });
+    }
+
+    // Trouver le mouvement à mettre à jour
+    const movement = transfer.MOVEMENTS.id(movementId);
+    if (!movement) {
+      return res.status(404).json({
+        success: false,
+        error: 'Mouvement non trouvé'
+      });
+    }
+
+    // Mettre à jour le code-barres
+    movement.code_barre = code_barre;
+    movement.flag_code_barre = 1; // Marquer comme valide
+
+    // Sauvegarder les modifications
+    const updatedTransfer = await transfer.save();
+
+    res.status(200).json({
+      success: true,
+      data: formatTransferResponse(updatedTransfer)
+    });
+  } catch (error) {
+    handleErrors(res, error);
   }
 };
