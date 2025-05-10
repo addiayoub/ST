@@ -45,7 +45,6 @@ const TransferSchema = new mongoose.Schema({
   to: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Magasin',
-    required: true
   },
   status: {
     type: String,

@@ -6,7 +6,6 @@ const { check, query } = require('express-validator');
 
 // Validation rules
 const transferValidationRules = [
-  check('to').notEmpty().withMessage('La destination est obligatoire'),
   check('Date').isISO8601().withMessage('Format de date invalide'),
   check('Document_Number').isNumeric().withMessage('Le numéro de document doit être un nombre'),
   check('MOVEMENTS').isArray().withMessage('MOVEMENTS doit être un tableau'),

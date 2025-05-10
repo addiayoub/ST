@@ -378,12 +378,7 @@ const hasInvalidBarcodes = (transfer) => {
             <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span>Le magasin source "${groupData.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
-              <button 
-                id="add-store-from-btn" 
-                class="ml-auto px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm"
-              >
-                Ajouter
-              </button>
+             
             </div>
           ` : ''}
   
@@ -391,12 +386,7 @@ const hasInvalidBarcodes = (transfer) => {
             <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span>Le magasin destination "${groupData.toName}" n'appartient pas aux magasins Stradi actifs.</span>
-              <button 
-                id="add-store-to-btn" 
-                class="ml-auto px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm"
-              >
-                Ajouter
-              </button>
+              
             </div>
           ` : ''}
   
@@ -765,7 +755,7 @@ const hasInvalidBarcodes = (transfer) => {
       },
     });
   };
-  const showTransferDetails = (transfer, dayData, e) => {
+ const showTransferDetails = (transfer, dayData, e) => {
   if (!transfer) return;
   e && e.stopPropagation();
 
@@ -803,7 +793,7 @@ const hasInvalidBarcodes = (transfer) => {
         ${hasInvalidBarcodesFlag ? `
           <div class="p-4 mb-4 bg-red-50 border-l-4 border-red-500 rounded">
             <div class="flex items-center text-red-700 font-medium">
-              <AlertCircle class="mr-2" size={20} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <span>Codes-barres invalides détectés</span>
             </div>
             <div class="mt-2 text-sm">
@@ -819,14 +809,14 @@ const hasInvalidBarcodes = (transfer) => {
 
         ${!transfer.showBoxIcon && !fromExists ? `
           <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-            <AlertCircle class="mr-2" size={20} />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span>Le magasin source "${transfer.fromName}" n'appartient pas aux magasins Stradi actifs.</span>
           </div>
         ` : ''}
 
         ${!toExists ? `
           <div class="flex items-center p-2 mb-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-            <AlertCircle class="mr-2" size={20} />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span>Le magasin ${transfer.showBoxIcon ? '' : 'destination '}"${transfer.toName}" n'appartient pas aux magasins Stradi actifs.</span>
           </div>
         ` : ''}
@@ -839,6 +829,7 @@ const hasInvalidBarcodes = (transfer) => {
                 name="to"
                 id="to-select"
                 class="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               >
                 ${transferOptions.toOptions.map((option, index) => `
                   <option key="${index}" value="${option.value}" ${option.value === transfer.to ? 'selected' : ''} class="text-black">
@@ -854,6 +845,7 @@ const hasInvalidBarcodes = (transfer) => {
                 name="date"
                 value="${convertToDateInput(transfer.date || '')}"
                 class="w-full p-2 border border-black-500 text-black bg-white-500/20 rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               />
             </div>
             <div>
@@ -861,6 +853,7 @@ const hasInvalidBarcodes = (transfer) => {
               <select
                 name="status"
                 class="w-full p-2 border border-black-500 text-black bg-black-500/20 rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               >
                 ${transferOptions.statusOptions.map((option, index) => `
                   <option key="${index}" value="${option}" ${option === transfer.status ? 'selected' : ''} class="text-black">
@@ -879,6 +872,7 @@ const hasInvalidBarcodes = (transfer) => {
                 name="from"
                 id="from-select"
                 class="w-full p-2 border border-black text-black bg-transparent rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               >
                 ${!transferOptions.fromOptions.some((opt) => opt.value === transfer.from) && transfer.fromName ? `
                   <option value="${transfer.from}" class="text-black">${transfer.fromName}</option>
@@ -896,6 +890,7 @@ const hasInvalidBarcodes = (transfer) => {
                 name="to"
                 id="to-select"
                 class="w-full p-2 border border-black text-black bg-transparent rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               >
                 ${!transferOptions.toOptions.some((opt) => opt.value === transfer.to) && transfer.toName ? `
                   <option value="${transfer.to}" class="text-black">${transfer.toName}</option>
@@ -916,6 +911,7 @@ const hasInvalidBarcodes = (transfer) => {
                 name="date"
                 value="${convertToDateInput(transfer.date || '')}"
                 class="w-full p-2 border border-black text-black bg-transparent rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               />
             </div>
             <div>
@@ -935,6 +931,7 @@ const hasInvalidBarcodes = (transfer) => {
               <select
                 name="status"
                 class="w-full p-2 border border-black text-black bg-transparent rounded"
+                ${hasInvalidBarcodesFlag ? 'disabled' : ''}
               >
                 ${transferOptions.statusOptions.map((option, index) => `
                   <option key="${index}" value="${option}" ${option === transfer.status ? 'selected' : ''} class="text-black">
@@ -1011,7 +1008,10 @@ const hasInvalidBarcodes = (transfer) => {
             disabled
             title="Corriger les codes-barres d'abord"
           >
-            <Lock size={20} />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
           </button>
         `}
       </div>
@@ -1026,6 +1026,11 @@ const hasInvalidBarcodes = (transfer) => {
       closeBtn.addEventListener('click', () => {
         MySwal.close();
       });
+
+      // Si nous avons des codes-barres invalides, terminer ici et ne pas ajouter d'écouteurs d'événements supplémentaires
+      if (hasInvalidBarcodesFlag) {
+        return;
+      }
 
       const validateStores = () => {
         if (!fromSelect || !toSelect) return;
@@ -1049,9 +1054,10 @@ const hasInvalidBarcodes = (transfer) => {
 
       validateStores();
 
-      if (confirmBtn && !confirmBtn.disabled) {
+      // Ajouter l'écouteur d'événement uniquement si confirmBtn existe et n'est pas désactivé
+      if (confirmBtn && !hasInvalidBarcodesFlag) {
         confirmBtn.addEventListener('click', () => {
-          const formElements = MySwal.getPopup().querySelectorAll('input, select');
+          const formElements = MySwal.getPopup().querySelectorAll('input:not([disabled]), select:not([disabled])');
           const values = {};
 
           formElements.forEach((el) => {
@@ -1128,7 +1134,6 @@ const hasInvalidBarcodes = (transfer) => {
     },
   });
 };
-
   const checkMagasinAndGetName = (magasinName, magasinId) => {
     if (magasinId) {
       const foundOption = transferOptions.fromOptions.find(opt => opt.value === magasinId);
