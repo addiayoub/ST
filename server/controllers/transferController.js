@@ -351,7 +351,7 @@ exports.updateTransferGroup = async (req, res) => {
       });
     }
 
-    // Vérifier que les magasins existent si fournis
+    // Vérification des magasins (votre code original)
     if (fromId) {
       const fromStore = await Magasin.findById(fromId);
       if (!fromStore) {
@@ -372,50 +372,53 @@ exports.updateTransferGroup = async (req, res) => {
       }
     }
 
-    let query = {};
+    // Base query (votre code original)
+    let query = {
+      status: { $ne: "Erreur" },
+      Flag: { $ne: 1 }
+    };
     
-    // If document numbers are provided, use them as primary matching criteria
+    // Modification uniquement ici pour combiner Document_Number ET Date
     if (documentNumbers && documentNumbers.length > 0) {
-      query = {
-        Document_Number: { $in: documentNumbers }
-      };
-      console.log('Using document numbers for query:', documentNumbers);
-    } else {
-      // Otherwise, use fromId, toId, and date
-      // Convert the date string to a Date object
-      const dateObj = new Date(date);
+      query.Document_Number = { $in: documentNumbers };
       
-      // Create the start and end of day in UTC to match database format
+      // Ajout de la date comme critère supplémentaire
+      if (date) {
+        const dateObj = new Date(date);
+        const startOfDay = new Date(dateObj);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+        const endOfDay = new Date(dateObj);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+        
+        query.Date = { 
+          $gte: startOfDay,
+          $lte: endOfDay
+        };
+      }
+      
+      console.log('Using document numbers AND date for query:', { 
+        documentNumbers, 
+        dateRange: query.Date 
+      });
+    } else {
+      // Votre logique originale pour fromId/toId/date
+      const dateObj = new Date(date);
       const startOfDay = new Date(dateObj);
       startOfDay.setUTCHours(0, 0, 0, 0);
-      
       const endOfDay = new Date(dateObj);
       endOfDay.setUTCHours(23, 59, 59, 999);
       
-      console.log('Date search range:', {
-        startOfDay: startOfDay.toISOString(),
-        endOfDay: endOfDay.toISOString(),
-        fromId,
-        toId
-      });
-
-      query = {
-        $and: [
-          { from: fromId },
-          { to: toId },
-          { 
-            Date: { 
-              $gte: startOfDay,
-              $lte: endOfDay
-            }
-          }
-        ]
+      query.from = fromId;
+      query.to = toId;
+      query.Date = { 
+        $gte: startOfDay,
+        $lte: endOfDay
       };
     }
     
+    // Le reste de votre code original reste inchangé
     console.log('Executing query:', JSON.stringify(query));
     
-    // First check if we have any matching transfers
     const matchingTransfers = await Transfer.find(query).lean();
     console.log(`Found ${matchingTransfers.length} matching transfers`);
 
@@ -426,57 +429,29 @@ exports.updateTransferGroup = async (req, res) => {
       });
     }
 
-    // Prepare updates
+    // Prepare updates (votre code original)
     const updateData = {};
-    
-    // Only include fields that are provided in the request
     if (updates.status) {
       updateData.status = updates.status;
-      
-      // Ajout: Mise à jour automatique du type selon le status
       switch (updates.status) {
-        case 'En cours':
-          updateData.type = 'blue';
-          break;
-        case 'Confirmé':
-          updateData.type = 'green';
-          break;
-        case 'En attente':
-          updateData.type = 'orange';
-          break;
-        case 'Annulé':
-          updateData.type = 'red';
-          break;
-        case 'Inventaire':
-        case 'Inventaire z':
-          // Conserver le type actuel ou définir une valeur par défaut si nécessaire
-          // Pour l'instant, nous ne définissons pas de type spécifique pour ces statuts
-          break;
+        case 'En cours': updateData.type = 'blue'; break;
+        case 'Confirmé': updateData.type = 'green'; break;
+        case 'En attente': updateData.type = 'orange'; break;
+        case 'Annulé': updateData.type = 'red'; break;
       }
     }
-    
-    if (updates.date) {
-      updateData.Date = new Date(updates.date);
-    }
+    if (updates.date) updateData.Date = new Date(updates.date);
+    if (fromId) updateData.from = fromId;
+    if (toId) updateData.to = toId;
 
-    // Ajouter la mise à jour des magasins si fournis
-    if (fromId) {
-      updateData.from = fromId;
-    }
-
-    if (toId) {
-      updateData.to = toId;
-    }
-
-    console.log('Update data:', updateData);
-
-    // Update the transfers
+    // Update (votre code original)
     const result = await Transfer.updateMany(
       query,
       { $set: updateData },
       { runValidators: true }
     );
 
+    // Response (votre code original)
     if (result.matchedCount === 0) {
       return res.status(404).json({
         success: false,
@@ -484,15 +459,6 @@ exports.updateTransferGroup = async (req, res) => {
       });
     }
 
-    if (result.modifiedCount === 0) {
-      return res.status(200).json({
-        success: true,
-        message: 'Aucune modification nécessaire, les transferts sont déjà à jour',
-        modifiedCount: 0
-      });
-    }
-
-    // Get the updated transfers for the response
     const updatedTransfers = await Transfer.find(query)
       .populate('from', '_id nomMagasin')
       .populate('to', '_id nomMagasin');

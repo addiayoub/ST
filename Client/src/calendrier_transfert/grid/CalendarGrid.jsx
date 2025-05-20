@@ -496,54 +496,72 @@ const hasInvalidBarcodes = (transfer) => {
             </button>
   
             <div id="transfers-list" class="divide-y max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            ${groupData.transfers
-                .map(
-                  (transfer, index) => `
-                  <div class="py-4 px-3 hover:bg-gray-50">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
-                        <span class="font-medium">
-                          N° ${transfer.Document_Number}
-                          ${hasInvalidBarcodes(transfer) ? 
-                            `<span class="ml-2 text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">Codes-barres invalides</span>` 
-                            : ''}
-                        </span>
-                      </div>
-                      <span class="font-medium">ID STORE : ${transfer.Id_Store}</span>                      
+              <!-- Barre de recherche élégante -->
+              <div class="relative px-4 pt-4 pb-4">
+              
+                <input 
+                  type="text" 
+                  id="transfer-search" 
+                  class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" 
+                  placeholder="Rechercher par numéro de document..."
+                >
+                <div id="search-clear" class="absolute inset-y-0 right-6 flex items-center pr-3 cursor-pointer hidden">
+                  <svg class="w-4 h-4 text-gray-500 hover:text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+  <!-- Liste des transferts -->
+              <div id="transfer-items-container">
+                ${groupData.transfers
+                  .map(
+                    (transfer, index) => `
+                    <div class="py-4 px-3 hover:bg-gray-50 transfer-item" data-document-number="${transfer.Document_Number}">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                          <div class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} mr-2"></div>
+                          <span class="font-medium document-number">
+                            N° ${transfer.Document_Number}
+                            ${hasInvalidBarcodes(transfer) ? 
+                              `<span class="ml-2 text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">Codes-barres invalides</span>` 
+                              : ''}
+                          </span>
+                        </div>
+                        <span class="font-medium">ID STORE : ${transfer.Id_Store}</span>                      
 
-                      <div class="flex items-center space-x-3">
-                        <button
-                          class="p-2 edit_trans text-gray-500 hover:text-blue-500 edit-transfer-btn"
-                          data-index="${index}"
-                          ${hasInvalidBarcodes(transfer) ? 'disabled' : ''}
-                          ${hasInvalidBarcodes(transfer) ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}
-                           ${hasInvalidBarcodesFlag ? 'disabled' : ''}
-                          ${hasInvalidBarcodesFlag ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
+                        <div class="flex items-center space-x-3">
+                          <button
+                            class="p-2 edit_trans text-gray-500 hover:text-blue-500 edit-transfer-btn"
+                            data-index="${index}"
+                            ${hasInvalidBarcodes(transfer) ? 'disabled' : ''}
+                            ${hasInvalidBarcodes(transfer) ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}
+                             ${hasInvalidBarcodesFlag ? 'disabled' : ''}
+                            ${hasInvalidBarcodesFlag ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
+                        <div>Quantité: ${transfer.quantity}</div>
+                        <div class="flex items-center">
+                          Statut:
+                          <span class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2"></span>
+                          ${transfer.status}
+                        </div>
+                        <div>Date: ${transfer.date}</div>
+                        ${hasInvalidBarcodes(transfer) ? 
+                          `<div class="col-span-2 text-xs text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            Ce transfert contient des codes-barres non valides. Veuillez les corriger avant de pouvoir modifier ce transfert.
+                          </div>` 
+                          : ''}
                       </div>
                     </div>
-                    <div class="mt-2 text-gray-600 text-sm grid grid-cols-2 gap-2">
-                      <div>Quantité: ${transfer.quantity}</div>
-                      <div class="flex items-center">
-                        Statut:
-                        <span class="w-3 h-3 rounded-full ${getDotColor(transfer.type)} ml-2"></span>
-                        ${transfer.status}
-                      </div>
-                      <div>Date: ${transfer.date}</div>
-                      ${hasInvalidBarcodes(transfer) ? 
-                        `<div class="col-span-2 text-xs text-red-600">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                          Ce transfert contient des codes-barres non valides. Veuillez les corriger avant de pouvoir modifier ce transfert.
-                        </div>` 
-                        : ''}
-                    </div>
-                  </div>
-                `
-                )
-                .join('')}
+                  `
+                  )
+                  .join('')}
+              </div>
             </div>
           </div>
         </div>
@@ -621,7 +639,85 @@ const hasInvalidBarcodes = (transfer) => {
           document.getElementById('eye-icon').classList.toggle('hidden');
           document.getElementById('eye-off-icon').classList.toggle('hidden');
         };
-        
+        const searchInput = document.getElementById('transfer-search');
+        const searchClear = document.getElementById('search-clear');
+        const transferItems = document.querySelectorAll('.transfer-item');
+
+        searchInput.addEventListener('input', (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          let hasResults = false;
+
+          // Animation de recherche
+          searchInput.classList.remove('animate-pulse');
+          void searchInput.offsetWidth; // Trigger reflow
+          searchInput.classList.add('animate-pulse');
+
+          setTimeout(() => {
+            transferItems.forEach(item => {
+              const docNumber = item.getAttribute('data-document-number').toLowerCase();
+              const isVisible = docNumber.includes(searchTerm);
+              
+              item.style.display = isVisible ? '' : 'none';
+              if (isVisible) hasResults = true;
+              
+              // Animation pour les éléments qui apparaissent
+              if (isVisible) {
+                item.style.opacity = '0';
+                item.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                  item.style.opacity = '1';
+                }, 10);
+              }
+            });
+
+            // Afficher/masquer le bouton de suppression de recherche
+            if (searchTerm.length > 0) {
+              searchClear.classList.remove('hidden');
+            } else {
+              searchClear.classList.add('hidden');
+            }
+
+            // Message si aucun résultat
+            const noResultsMsg = document.getElementById('no-results-message');
+            if (!hasResults && searchTerm.length > 0) {
+              if (!noResultsMsg) {
+                const msg = document.createElement('div');
+                msg.id = 'no-results-message';
+                msg.className = 'py-4 text-center text-gray-500 italic';
+                msg.textContent = 'Aucun transfert trouvé avec ce numéro de document';
+                document.getElementById('transfer-items-container').appendChild(msg);
+              }
+            } else if (noResultsMsg) {
+              noResultsMsg.remove();
+            }
+
+            searchInput.classList.remove('animate-pulse');
+          }, 300);
+        });
+
+        // Effacer la recherche
+        searchClear.addEventListener('click', () => {
+          searchInput.value = '';
+          searchClear.classList.add('hidden');
+          transferItems.forEach(item => {
+            item.style.display = '';
+            item.style.opacity = '0';
+            setTimeout(() => {
+              item.style.opacity = '1';
+            }, 10);
+          });
+          
+          const noResultsMsg = document.getElementById('no-results-message');
+          if (noResultsMsg) noResultsMsg.remove();
+          
+          // Animation de retour
+          searchInput.focus();
+          searchInput.classList.add('animate-pulse');
+          setTimeout(() => {
+            searchInput.classList.remove('animate-pulse');
+          }, 300);
+        });
+
         // Ajouter un écouteur d'événement pour le bouton de masquage dans la section d'édition
         const toggleDocBtn = document.getElementById('toggle-doc-numbers-btn');
         if (toggleDocBtn) {
